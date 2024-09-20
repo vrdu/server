@@ -28,6 +28,17 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public User loginUser(User loginUser){
+        User userDatabase = userRepository.findByEmail(loginUser.getEmail());
+        if (userDatabase == null){
+            throw new ResponseStatusException(HttpStatus.valueOf(401), "Username is not registered");
+        }
+        if (!(userDatabase.getPassword().equals(loginUser.getPassword()))) {
+            throw new ResponseStatusException(HttpStatus.valueOf(401), "Wrong Password");
+        }
+        log.debug("loged in:{}",userDatabase);
+        return userDatabase;
+    }
     public User createUser(User newUser){
         checkEmail(newUser.getEmail());
         checkPassword(newUser.getPassword());
