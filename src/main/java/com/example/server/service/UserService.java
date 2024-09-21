@@ -3,8 +3,8 @@ package com.example.server.service;
 
 import com.example.server.entity.User;
 import com.example.server.repository.UserRepository;
+
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+import java.util.Date;
 
-import java.util.UUID;
 
 
 
@@ -22,6 +26,8 @@ import java.util.UUID;
 public class UserService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
+
+    private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Generate a secure key
 
     @Autowired
     public UserService(@Qualifier("userRepository") UserRepository userRepository) {
@@ -43,13 +49,22 @@ public class UserService {
         checkEmail(newUser.getEmail());
         checkPassword(newUser.getPassword());
         checkIfUserExists(newUser);
-        newUser.setToken(UUID.randomUUID().toString());
+        String token = generateToken(newUser.getUsername());
+        newUser.setToken(token);
         String username = newUser.getEmail().split("@")[0];
         newUser.setUsername(username);
         newUser = userRepository.save(newUser);
         userRepository.flush();
         log.debug("Created User:{}",newUser);
         return newUser;
+    }
+    public String generateToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10-hour expiration
+                .signWith(key) // Use the key generated above
+                .compact();
     }
 
     private void checkEmail(String email){
@@ -74,6 +89,7 @@ public class UserService {
                     "add User failed because email is already used");
         }
     }
+
 
 
 
