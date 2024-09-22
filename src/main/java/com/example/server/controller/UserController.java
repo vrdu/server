@@ -26,6 +26,7 @@ public class UserController {
         User userInput = DTOMapper.INSTANCE.convertUserPostDTOToEntity(userPostDTO);
         User createdUser = userService.createUser(userInput);
         addTokenToCookie(response, createdUser.getToken());
+        System.out.println("there");
         return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
     }
 

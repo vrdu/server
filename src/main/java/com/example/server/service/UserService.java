@@ -37,7 +37,7 @@ public class UserService {
     public User loginUser(User loginUser){
         User userDatabase = userRepository.findByEmail(loginUser.getEmail());
         if (userDatabase == null){
-            throw new ResponseStatusException(HttpStatus.valueOf(401), "Username is not registered");
+            throw new ResponseStatusException(HttpStatus.valueOf(401), "Email is not registered");
         }
         if (!(userDatabase.getPassword().equals(loginUser.getPassword()))) {
             throw new ResponseStatusException(HttpStatus.valueOf(401), "Wrong Password");
@@ -67,9 +67,15 @@ public class UserService {
                 .compact();
     }
 
-    private void checkEmail(String email){
-        if (!email.contains("@") || email.contains(" ") || !email.contains(".")) {
-            throw new ResponseStatusException(HttpStatus.valueOf(404), "Email not valid");
+    private void checkEmail(String email) {
+        if (!email.contains("@")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Email must contain '@'");
+        }
+        if (email.contains(" ")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Email must not contain spaces");
+        }
+        if (!email.contains(".")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Email must contain a domain");
         }
     }
 
@@ -86,7 +92,7 @@ public class UserService {
         User userByEmail = userRepository.findByEmail(userToBeCreated.getEmail());
         if (userByEmail != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "add User failed because email is already used");
+                    "add User failed because email is already used, try login");
         }
     }
 
