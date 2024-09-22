@@ -22,6 +22,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public UserGetDTO createUser(@RequestBody UserPostDTO userPostDTO, HttpServletResponse response){
+        System.out.println("here");
         User userInput = DTOMapper.INSTANCE.convertUserPostDTOToEntity(userPostDTO);
         User createdUser = userService.createUser(userInput);
         addTokenToCookie(response, createdUser.getToken());
