@@ -4,6 +4,9 @@ package com.example.server.service;
 import com.example.server.entity.User;
 import com.example.server.repository.UserRepository;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +68,28 @@ public class UserService {
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10-hour expiration
                 .signWith(key) // Use the key generated above
                 .compact();
+    }
+    public boolean validateToken (HttpServletRequest  request){
+        String token = extractTokenFromRequest(request);
+        User user = userRepository.findByToken(token);
+        if (user == null){
+            System.out.println("user is null...");
+            return false;
+        }else{
+            return true;
+        }
+    }
+    private String extractTokenFromRequest(HttpServletRequest request){
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("token")) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        System.out.println("no Token sent...");
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"No token was sent, please try to login.");
     }
 
     private void checkEmail(String email) {
