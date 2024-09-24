@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 public class ProjectController {
     private final ProjectService projectService;
@@ -24,12 +27,25 @@ public class ProjectController {
     @PostMapping("/projects/create/{username}")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public ProjectGetDTO createUser(@RequestBody ProjectPostDTO projectPostDTO , HttpServletRequest request){
+    public ProjectGetDTO createUser(@RequestBody ProjectPostDTO projectPostDTO,@PathVariable String username, HttpServletRequest request){
         userService.validateToken(request);
-        System.out.println(projectPostDTO.getProjectName());
         Project userInput = DTOMapper.INSTANCE.convertProjectPostDTOToEntity(projectPostDTO);
-        System.out.println(userInput.getProjectName());
-        Project createdProject = projectService.createProject(userInput);
+        Project createdProject = projectService.createProject(userInput, username);
         return DTOMapper.INSTANCE.convertEntityProjectGetDTO(createdProject);
     }
+    @GetMapping("/projects/{username}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<List<ProjectGetDTO>> getProjectsByUsername(@PathVariable String username, HttpServletRequest request) {
+        userService.validateToken(request);
+        // Call projectService to get the list of projects for the given username
+        List<Project> projects = projectService.getProjectsByUsername(username);
+
+        // Convert the list of Project entities to a list of ProjectDTOs (using a DTOMapper or similar)
+        List<ProjectGetDTO> projectDTOs = projects.stream()
+                .map(DTOMapper.INSTANCE::convertEntityProjectGetDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(projectDTOs);
+    }
+
 }
