@@ -1,19 +1,16 @@
 package com.example.server.entity;
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serial;
-import java.io.Serializable;
 
 @Entity
-@Table(name = "users")
+@Table(name = "projects")
 @Getter
 @Setter
-public class User implements Serializable {
-
+public class Project {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -22,16 +19,12 @@ public class User implements Serializable {
     private Long id;
 
     @Column(nullable = false)
-    private String password;
+    private int f1;
+
+    @Column(nullable = false)
+    private int anls;
 
     @Column(nullable = false, unique = true)
-    private String username;
-
-    @Column(nullable = false, unique = true)
-    private String token;
-
-    @Column(nullable = false, unique = true)
-    private String email;
-
+    private String projectName;
 
 }

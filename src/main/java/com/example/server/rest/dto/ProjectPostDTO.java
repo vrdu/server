@@ -5,7 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserGetDTO {
-    private String username;
-
+public class ProjectPostDTO {
+    private String projectName;
 }
