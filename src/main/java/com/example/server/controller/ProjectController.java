@@ -1,10 +1,10 @@
 package com.example.server.controller;
 
 import com.example.server.entity.Project;
-import com.example.server.entity.User;
 import com.example.server.rest.dto.ProjectGetDTO;
 import com.example.server.rest.dto.ProjectPostDTO;
 import com.example.server.rest.mapper.DTOMapper;
+import com.example.server.service.DocumentService;
 import com.example.server.service.ProjectService;
 import com.example.server.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,10 +18,12 @@ import java.util.stream.Collectors;
 @RestController
 public class ProjectController {
     private final ProjectService projectService;
+    private final DocumentService documentService;
     private final UserService userService;
 
-    public ProjectController(ProjectService projectService, UserService userService) {
+    public ProjectController(ProjectService projectService, DocumentService documentService, UserService userService) {
         this.projectService = projectService;
+        this.documentService = documentService;
         this.userService = userService;
     }
     @PostMapping("/projects/create/{username}")
@@ -38,7 +40,6 @@ public class ProjectController {
     @ResponseBody
     public ResponseEntity<List<ProjectGetDTO>> getProjectsByUsername(@PathVariable String username, HttpServletRequest request) {
         userService.validateToken(request);
-        // Call projectService to get the list of projects for the given username
         List<Project> projects = projectService.getProjectsByUsername(username);
 
         // Convert the list of Project entities to a list of ProjectDTOs (using a DTOMapper or similar)
@@ -47,5 +48,7 @@ public class ProjectController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(projectDTOs);
     }
+
+
 
 }

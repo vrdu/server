@@ -1,7 +1,9 @@
 package com.example.server.rest.mapper;
 
+import com.example.server.entity.Document;
 import com.example.server.entity.Project;
 import com.example.server.entity.User;
+import com.example.server.rest.dto.DocumentPostDTO;
 import com.example.server.rest.dto.ProjectGetDTO;
 import com.example.server.rest.dto.ProjectPostDTO;
 import com.example.server.rest.dto.UserGetDTO;
@@ -10,7 +12,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-09-24T15:58:34+0200",
+    date = "2024-09-26T16:42:30+0200",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.4.1 (Eclipse Adoptium)"
 )
 public class DTOMapperImpl implements DTOMapper {
@@ -69,5 +71,20 @@ public class DTOMapperImpl implements DTOMapper {
         projectGetDTO.setAnls( project.getAnls() );
 
         return projectGetDTO;
+    }
+
+    @Override
+    public Document convertDocumentPostDTOToEntity(DocumentPostDTO documentPostDTO) {
+        if ( documentPostDTO == null ) {
+            return null;
+        }
+
+        Document document = new Document();
+
+        document.setProjectName( documentPostDTO.getProjectName() );
+        document.setDocumentName( documentPostDTO.getDocumentName() );
+        document.setOwner( documentPostDTO.getOwner() );
+
+        return document;
     }
 }
