@@ -46,4 +46,7 @@ public class Document {
 
     @Column(nullable =false)
     private boolean ocrNotPossible;
+
+    @Column(nullable =false)
+    private boolean currentlyInOCR;
 }

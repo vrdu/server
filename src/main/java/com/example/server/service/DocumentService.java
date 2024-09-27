@@ -6,6 +6,8 @@ import jakarta.transaction.Transactional;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,7 @@ public class DocumentService {
     public CompletableFuture<Void> safeInDB(Document document) {
         boolean documentExists = checkDuplicates(document.getDocumentName(), document.getProjectName(), document.getOwner());
         if (!documentExists) {
+            document.setCurrentlyInOCR(true);
             document = documentRepository.save(document);
             documentRepository.flush();
             log.debug("Created Project:{}", document);
@@ -62,7 +65,7 @@ public class DocumentService {
     @Async
     public CompletableFuture<Void> startOCRProcessAsync(Document document) {
         Document ocrResult = performOCR(document);
-
+        ocrResult.setCurrentlyInOCR(false);
         documentRepository.save(ocrResult);
         documentRepository.flush();
         log.debug("OCR process completed for document: {}", document.getDocumentName());
@@ -71,54 +74,65 @@ public class DocumentService {
     }
 
     public Document performOCR(Document document) {
-
-        if (document.isOcrNotPossible() != true) {
+        log.debug("Started OCR process for document: {}", document.getDocumentName());
+        if (!document.isOcrNotPossible()) {  // Simplified boolean check
             ITesseract tesseract = new Tesseract();
-            tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");
+            tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");  // Set the Tesseract data path
+            tesseract.setLanguage("deu");  // Set the language to German
+            tesseract.setTessVariable("user_defined_dpi", "300");
 
-            tesseract.setLanguage("de");
+            // Use StringBuilder to accumulate OCR results from multiple pages
+            StringBuilder ocrResultBuilder = new StringBuilder();
 
-            int maxRetries = 3;
-            int attempt = 0;
-            boolean success = false;
+            // Convert byte[] (PDF data) to BufferedImage(s) using PDFBox
+            try (PDDocument pdfDocument = PDDocument.load(new ByteArrayInputStream(document.getPdfData()))) {
+                PDFRenderer pdfRenderer = new PDFRenderer(pdfDocument);
+                int pageCount = pdfDocument.getNumberOfPages();
+                log.info("PDF has {} pages", pageCount);
 
-            while (attempt < maxRetries && !success) {
-                try {
-                    // Convert the byte[] (PDF data) to a BufferedImage
-                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(document.getPdfData()));
-                    if (image == null) {
-                        throw new IOException("Failed to convert document to an image");
-                    }
+                for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+                    BufferedImage image = pdfRenderer.renderImageWithDPI(pageIndex, 300);
 
-                    // Perform OCR on the image
-                    String result = tesseract.doOCR(image);
-                    document.setOcrData(result);
-                    document.setOcrNotPossible(false);
+                    // Retry OCR process up to 3 times
+                    int maxRetries = 3;
+                    int attempt = 0;
+                    boolean success = false;
 
-                } catch (TesseractException | IOException e) {
-                    attempt++;
-                    log.error("OCR failed on attempt {}: {}", attempt, e.getMessage());  // Use logger for error
+                    while (attempt < maxRetries && !success) {
+                        try {
+                            // Perform OCR on the image
+                            String result = tesseract.doOCR(image);
+                            log.info("OCR successful on page {} at attempt {}", pageIndex + 1, attempt + 1);
 
-                    // Optionally add some delay before retrying
-                    if (attempt < maxRetries) {
-                        log.info("Retrying...");  // Use logger
-                    } else {
-                        log.error("Max retries reached. OCR failed.");
-                        document.setOcrNotPossible(true);
+                            // Append the OCR result for the current page to the StringBuilder
+                            ocrResultBuilder.append("Page ").append(pageIndex + 1).append(":\n").append(result).append("\n");
+                            document.setOcrData(ocrResultBuilder.toString());
+                            success = true;  // OCR succeeded for this page
 
+                        } catch (TesseractException e) {
+                            attempt++;
+                            log.error("OCR failed on attempt {}: {}", attempt, e.getMessage());
+
+                            // Retry logic
+                            if (attempt < maxRetries) {
+                                log.info("Retrying OCR...");
+                            } else {
+                                log.error("Max retries reached. OCR failed.");
+                                document.setOcrNotPossible(true);
+                            }
+                        }
                     }
                 }
 
+                return document;
+            } catch (IOException e) {
+
+                throw new RuntimeException(e);
             }
 
 
         }
         return document;
     }
-
 }
-
-
-
-
 

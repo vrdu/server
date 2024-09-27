@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository("projectRepository")
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-    Project findByprojectName(String projectName);
+    Project findByprojectNameAndOwner(String projectName, String owner);
+
     List<Project> findAllByOwner(String owner);
 }

@@ -32,7 +32,6 @@ public class DocumentController {
             @RequestParam("files") MultipartFile[] files,
             @PathVariable String projectName,
             HttpServletRequest request) throws IOException {
-        System.out.println("arrived in backend");
         userService.validateToken(request);
 
         //extract the owner, username
@@ -40,17 +39,20 @@ public class DocumentController {
         String username = parts[0];
         String actualProjectName = parts[1];
         DocumentPostDTO documentPostDTO = new DocumentPostDTO();
-        documentPostDTO.
+        documentPostDTO.setOwner(username);
         documentPostDTO.setProjectName(actualProjectName);
-        System.out.println("mapping ok");
         for (MultipartFile file : files){
             if (file.isEmpty()){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One of the files is empty");
             }
+            documentPostDTO.setDocumentName(file.getOriginalFilename());
             Document document = DTOMapper.INSTANCE.convertDocumentPostDTOToEntity(documentPostDTO);
             document.setPdfData(file.getBytes());
+
             documentService.safeInDB(document);
-            documentService.startOCRProcessAsync(document);
+            //for OCR uncomment the follwoing line:
+            //documentService.startOCRProcessAsync(document);
+
         }
 
         return ResponseEntity.ok("File uploaded successfully");

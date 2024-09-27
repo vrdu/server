@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.io.Serial;
 
 @Entity
-@Table(name = "projects")
+@Table(name = "projects",uniqueConstraints = {@UniqueConstraint(columnNames = {"owner", "projectName"})})
 @Getter
 @Setter
 public class Project {
@@ -24,8 +24,9 @@ public class Project {
     @Column(nullable = false)
     private int anls;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String projectName;
+
     @Column(nullable = false)
     private String owner;
 

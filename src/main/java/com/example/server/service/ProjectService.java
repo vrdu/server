@@ -24,19 +24,19 @@ public class ProjectService {
     public ProjectService(ProjectRepository projectRepository) {
         this.projectRepository = projectRepository;
     }
-    public Project createProject(Project project, String username){
-        checkIfProjectExists(project.getProjectName());
+    public Project createProject(Project project, String owner){
+        checkIfProjectExists(project.getProjectName(),owner);
         project.setAnls(0);
         project.setF1(0);
-        project.setOwner(username);
+        project.setOwner(owner);
         project = projectRepository.save(project);
         projectRepository.flush();
         log.debug("Created Project:{}",project);
         return project;
     }
 
-    public void checkIfProjectExists(String project){
-        Project projectByRepository = projectRepository.findByprojectName(project);
+    public void checkIfProjectExists(String project, String owner){
+        Project projectByRepository = projectRepository.findByprojectNameAndOwner(project, owner);
         if (projectByRepository != null){
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Project with name '" + projectByRepository.getProjectName() + "' already exists.");
         }
