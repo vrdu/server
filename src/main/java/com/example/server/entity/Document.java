@@ -5,13 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serial;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "documents", uniqueConstraints = {@UniqueConstraint(columnNames = {"owner", "projectName", "documentName"})})
 
 @Getter
 @Setter
-public class Document {
+public class Document implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 

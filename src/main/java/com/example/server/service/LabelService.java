@@ -1,0 +1,111 @@
+package com.example.server.service;
+
+import com.example.server.entity.Label;
+import com.example.server.entity.LabelFamily;
+import com.example.server.repository.LabelFamilyRepository;
+import com.example.server.repository.LabelRepository;
+import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+@Transactional
+public class LabelService {
+
+    private final Logger log = LoggerFactory.getLogger(UserService.class);
+    private final LabelRepository labelRepository;
+    private final LabelFamilyRepository labelFamilyRepository;
+
+
+    @Autowired
+    public LabelService(LabelRepository labelRepository, LabelFamilyRepository labelFamilyRepository) {
+        this.labelRepository = labelRepository;
+        this.labelFamilyRepository = labelFamilyRepository;
+    }
+
+    public void updateLabelFamilies(List<LabelFamily> labelFamilies){
+        // Loop through the incoming label families
+        for (LabelFamily newLabelFamily : labelFamilies) {
+
+            // Retrieve the existing label family from the repository (using owner, projectName, and id for uniqueness)
+            Optional<LabelFamily> existingLabelFamilyOpt = labelFamilyRepository
+                    .findByOwnerAndProjectNameAndId(newLabelFamily.getOwner(), newLabelFamily.getProjectName(), newLabelFamily.getId());
+
+            if (existingLabelFamilyOpt.isPresent()) {
+                LabelFamily existingLabelFamily = existingLabelFamilyOpt.get();
+
+                // Compare the existing label family with the new one
+                boolean familyChanged = checkIfFamilyChanged(existingLabelFamily, newLabelFamily);
+
+                if (familyChanged) {
+
+                    updateLabelFamily(existingLabelFamily, newLabelFamily);
+                    labelFamilyRepository.save(existingLabelFamily);
+                }
+
+                for (Label newLabel : newLabelFamily.getLabels()) {
+                    Optional<Label> existingLabelOpt = labelRepository
+                            .findByLabelFamilyIdAndId(existingLabelFamily.getId(), newLabel.getLabelFamily().getId());
+
+                    if (existingLabelOpt.isPresent()) {
+                        Label existingLabel = existingLabelOpt.get();
+
+                        // Check if the label needs to be updated
+                        boolean labelChanged = checkIfLabelChanged(existingLabel, newLabel);
+
+                        if (labelChanged) {
+                            // Update the label if there are changes
+                            updateLabel(existingLabel, newLabel);
+                            labelRepository.save(existingLabel);  // Save the updated label
+                        }
+                    } else {
+                        // If label does not exist, add it
+                        newLabel.setLabelFamily(existingLabelFamily);  // Set the relationship
+                        labelRepository.save(newLabel);  // Save the new label
+                    }
+                }
+            } else {
+                // If label family does not exist, add it
+                labelFamilyRepository.save(newLabelFamily);  // Save the new label family along with labels (cascade)
+            }
+        }
+    }
+
+    // Function to check if a label family has changed
+    private boolean checkIfFamilyChanged(LabelFamily existingLabelFamily, LabelFamily newLabelFamily) {
+        return !existingLabelFamily.getLabelFamilyName().equals(newLabelFamily.getLabelFamilyName()) ||
+                !existingLabelFamily.getLabelFamilyDescription().equals(newLabelFamily.getLabelFamilyDescription()) ||
+                !existingLabelFamily.getIndex().equals(newLabelFamily.getIndex());
+    }
+
+    // Function to update an existing label family with new values
+    private void updateLabelFamily(LabelFamily existingLabelFamily, LabelFamily newLabelFamily) {
+        existingLabelFamily.setLabelFamilyName(newLabelFamily.getLabelFamilyName());
+        existingLabelFamily.setIndex(newLabelFamily.getIndex());
+        existingLabelFamily.setLabelFamilyDescription(newLabelFamily.getLabelFamilyDescription());
+    }
+
+    // Function to check if a label has changed
+    private boolean checkIfLabelChanged(Label existingLabel, Label newLabel) {
+        return !existingLabel.getLabelName().equals(newLabel.getLabelName()) ||
+                !existingLabel.getLabelDescription().equals(newLabel.getLabelDescription()) ||
+                existingLabel.getIndex() != newLabel.getIndex();
+    }
+
+    // Function to update an existing label with new values
+    private void updateLabel(Label existingLabel, Label newLabel) {
+        existingLabel.setLabelName(newLabel.getLabelName());
+        existingLabel.setLabelDescription(newLabel.getLabelDescription());
+        existingLabel.setIndex(newLabel.getIndex());
+    }
+
+
+
+
+
+}

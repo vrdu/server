@@ -1,18 +1,24 @@
 package com.example.server.rest.mapper;
 
 import com.example.server.entity.Document;
+import com.example.server.entity.Label;
+import com.example.server.entity.LabelFamily;
 import com.example.server.entity.Project;
 import com.example.server.entity.User;
 import com.example.server.rest.dto.DocumentPostDTO;
+import com.example.server.rest.dto.LabelFamilyPostDTO;
+import com.example.server.rest.dto.LabelPostDTO;
 import com.example.server.rest.dto.ProjectGetDTO;
 import com.example.server.rest.dto.ProjectPostDTO;
 import com.example.server.rest.dto.UserGetDTO;
 import com.example.server.rest.dto.UserPostDTO;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-09-27T16:21:25+0200",
+    date = "2024-10-03T17:29:33+0200",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.4.1 (Eclipse Adoptium)"
 )
 public class DTOMapperImpl implements DTOMapper {
@@ -86,5 +92,51 @@ public class DTOMapperImpl implements DTOMapper {
         document.setOwner( documentPostDTO.getOwner() );
 
         return document;
+    }
+
+    @Override
+    public Label convertLabelPostDTOToEntity(LabelPostDTO labelPostDTO) {
+        if ( labelPostDTO == null ) {
+            return null;
+        }
+
+        Label label = new Label();
+
+        label.setId( labelPostDTO.getId() );
+        label.setLabelName( labelPostDTO.getLabelName() );
+        label.setLabelDescription( labelPostDTO.getLabelDescription() );
+        label.setIndex( labelPostDTO.getIndex() );
+
+        return label;
+    }
+
+    @Override
+    public LabelFamily convertLabelFamilyPostDTOToEntity(LabelFamilyPostDTO labelFamilyPostDTO) {
+        if ( labelFamilyPostDTO == null ) {
+            return null;
+        }
+
+        LabelFamily labelFamily = new LabelFamily();
+
+        labelFamily.setId( labelFamilyPostDTO.getId() );
+        labelFamily.setIndex( labelFamilyPostDTO.getIndex() );
+        labelFamily.setLabelFamilyName( labelFamilyPostDTO.getLabelFamilyName() );
+        labelFamily.setLabelFamilyDescription( labelFamilyPostDTO.getLabelFamilyDescription() );
+        labelFamily.setLabels( labelPostDTOListToLabelList( labelFamilyPostDTO.getLabels() ) );
+
+        return labelFamily;
+    }
+
+    protected List<Label> labelPostDTOListToLabelList(List<LabelPostDTO> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<Label> list1 = new ArrayList<Label>( list.size() );
+        for ( LabelPostDTO labelPostDTO : list ) {
+            list1.add( convertLabelPostDTOToEntity( labelPostDTO ) );
+        }
+
+        return list1;
     }
 }

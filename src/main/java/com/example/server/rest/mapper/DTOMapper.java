@@ -1,8 +1,6 @@
 package com.example.server.rest.mapper;
 
-import com.example.server.entity.Document;
-import com.example.server.entity.Project;
-import com.example.server.entity.User;
+import com.example.server.entity.*;
 import com.example.server.rest.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -32,6 +30,19 @@ public interface DTOMapper {
     @Mapping(source = "owner", target = "owner")
     Document convertDocumentPostDTOToEntity(DocumentPostDTO documentPostDTO);
 
+
+    @Mapping(source= "id", target= "id")
+    @Mapping(source = "labelName", target = "labelName")
+    @Mapping(source = "labelDescription", target = "labelDescription")
+    @Mapping(source = "index", target = "index")
+    Label convertLabelPostDTOToEntity(LabelPostDTO labelPostDTO);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "index", target = "index")
+    @Mapping(source = "labelFamilyName", target = "labelFamilyName")
+    @Mapping(source = "labelFamilyDescription", target = "labelFamilyDescription")
+    @Mapping(source = "labels", target = "labels")
+    LabelFamily convertLabelFamilyPostDTOToEntity(LabelFamilyPostDTO labelFamilyPostDTO);
 
 
 }

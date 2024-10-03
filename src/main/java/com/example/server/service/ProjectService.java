@@ -36,7 +36,7 @@ public class ProjectService {
     }
 
     public void checkIfProjectExists(String project, String owner){
-        Project projectByRepository = projectRepository.findByprojectNameAndOwner(project, owner);
+        Project projectByRepository = projectRepository.findByProjectNameAndOwner(project, owner);
         if (projectByRepository != null){
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Project with name '" + projectByRepository.getProjectName() + "' already exists.");
         }
