@@ -59,11 +59,14 @@ public class LabelService {
                         boolean labelChanged = checkIfLabelChanged(existingLabel, newLabel);
 
                         if (labelChanged) {
+                            System.out.println(String.format("NewLabel; Description: %s, Name: %s", newLabel.getLabelDescription(), newLabel.getLabelName()));
+
                             // Update the label if there are changes
                             updateLabel(existingLabel, newLabel);
                             labelRepository.save(existingLabel);  // Save the updated label
                         }
                     } else {
+                        System.out.println(String.format("NewLabel; Description: %s, Name: %s", newLabel.getLabelDescription(), newLabel.getLabelName()));
                         // If label does not exist, add it
                         newLabel.setLabelFamily(existingLabelFamily);  // Set the relationship
                         labelRepository.save(newLabel);  // Save the new label

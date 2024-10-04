@@ -37,7 +37,7 @@ public class LabelController {
             @PathVariable String username,
             HttpServletRequest request,
             @RequestBody List<LabelFamilyPostDTO> labelFamilyPostDTOs) throws IOException {
-
+        System.out.println("arrived");
         userService.validateToken(request);
 
         List<LabelFamily> labelFamilies = new ArrayList<>();
@@ -58,6 +58,7 @@ public class LabelController {
             labelFamilies.add(labelFamily);
 
         }
+
         labelService.updateLabelFamilies(labelFamilies);
         return ResponseEntity.ok("File uploaded successfully");
     }

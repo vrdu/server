@@ -7,7 +7,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "label",uniqueConstraints = {@UniqueConstraint(columnNames = { "id", "labelFamily"})})
+@Table(name = "label",uniqueConstraints = {@UniqueConstraint(columnNames = { "id", "labelFamily_id"})})
 public class Label {
 
     @Id
@@ -22,6 +22,6 @@ public class Label {
     private String index;
 
     @ManyToOne
-    @JoinColumn(name = "label_family_id")
+    @JoinColumn(name = "labelFamily_id")
     private LabelFamily labelFamily;
 }
