@@ -10,8 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -31,11 +33,18 @@ public class LabelService {
     public void updateLabelFamilies(List<LabelFamily> labelFamilies){
         // Loop through the incoming label families
         for (LabelFamily newLabelFamily : labelFamilies) {
+            System.out.println(String.format("should have no id: %s", newLabelFamily.getId()));
+            if(newLabelFamily.getLabelFamilyName().isEmpty()){
+                newLabelFamily.setLabelFamilyName(" ");
+            }
+            if(newLabelFamily.getLabelFamilyDescription().isEmpty()){
+                newLabelFamily.setLabelFamilyDescription(" ");
+            }
 
             // Retrieve the existing label family from the repository (using owner, projectName, and id for uniqueness)
             Optional<LabelFamily> existingLabelFamilyOpt = labelFamilyRepository
-                    .findByOwnerAndProjectNameAndId(newLabelFamily.getOwner(), newLabelFamily.getProjectName(), newLabelFamily.getId());
-
+                    .findByOwnerAndProjectNameAndLabelFamilyName(newLabelFamily.getOwner(), newLabelFamily.getProjectName(), newLabelFamily.getLabelFamilyName());
+            //problem: here familyId==null-->never returns existing labelFamilies //solution: change FamilyId to FamilyName and when updating the familyName
             if (existingLabelFamilyOpt.isPresent()) {
                 LabelFamily existingLabelFamily = existingLabelFamilyOpt.get();
 
@@ -43,14 +52,24 @@ public class LabelService {
                 boolean familyChanged = checkIfFamilyChanged(existingLabelFamily, newLabelFamily);
 
                 if (familyChanged) {
+                    System.out.println("familyChangedTrue");
 
                     updateLabelFamily(existingLabelFamily, newLabelFamily);
                     labelFamilyRepository.save(existingLabelFamily);
                 }
 
                 for (Label newLabel : newLabelFamily.getLabels()) {
+                    System.out.println(newLabel.getLabelName());
+                    if(newLabel.getLabelName().isEmpty()){
+                        newLabel.setLabelName(" ");
+                    }
+                    if(newLabel.getLabelDescription().isEmpty()){
+                        newLabel.setLabelDescription(" ");
+                    }
+                    System.out.println(String.format("newLabelId: %s ", newLabel.getLabelId()));
+
                     Optional<Label> existingLabelOpt = labelRepository
-                            .findByLabelFamilyIdAndId(existingLabelFamily.getId(), newLabel.getLabelFamily().getId());
+                            .findByLabelFamilyIdAndLabelId(existingLabelFamily.getId(), newLabel.getLabelId());
 
                     if (existingLabelOpt.isPresent()) {
                         Label existingLabel = existingLabelOpt.get();
@@ -59,20 +78,23 @@ public class LabelService {
                         boolean labelChanged = checkIfLabelChanged(existingLabel, newLabel);
 
                         if (labelChanged) {
-                            System.out.println(String.format("NewLabel; Description: %s, Name: %s", newLabel.getLabelDescription(), newLabel.getLabelName()));
+                            System.out.println(String.format("Update: NewLabel; Description: %s, Name: %s", newLabel.getLabelDescription(), newLabel.getLabelName()));
 
                             // Update the label if there are changes
                             updateLabel(existingLabel, newLabel);
                             labelRepository.save(existingLabel);  // Save the updated label
                         }
                     } else {
-                        System.out.println(String.format("NewLabel; Description: %s, Name: %s", newLabel.getLabelDescription(), newLabel.getLabelName()));
+                        newLabel.setLabelId(generateUniqueId(labelRepository.findAllByLabelFamilyId(newLabelFamily.getId())));
+                        System.out.println(String.format("NewLabel; Description: %s, Name: %s ExistingFamilyName: %s", newLabel.getLabelDescription(), newLabel.getLabelName(), existingLabelFamily.getLabelFamilyName()));
                         // If label does not exist, add it
                         newLabel.setLabelFamily(existingLabelFamily);  // Set the relationship
                         labelRepository.save(newLabel);  // Save the new label
                     }
                 }
             } else {
+                System.out.println("familyDoesNotExist");
+                System.out.println(String.format("Id: %s, Index: %s, description: %s, familyName: %s, owner: %s, projectName: %s", newLabelFamily.getId(),newLabelFamily.getIndex(), newLabelFamily.getLabelFamilyDescription(),newLabelFamily.getLabelFamilyName(),newLabelFamily.getOwner(),newLabelFamily.getProjectName()));
                 // If label family does not exist, add it
                 labelFamilyRepository.save(newLabelFamily);  // Save the new label family along with labels (cascade)
             }
@@ -97,7 +119,7 @@ public class LabelService {
     private boolean checkIfLabelChanged(Label existingLabel, Label newLabel) {
         return !existingLabel.getLabelName().equals(newLabel.getLabelName()) ||
                 !existingLabel.getLabelDescription().equals(newLabel.getLabelDescription()) ||
-                existingLabel.getIndex() != newLabel.getIndex();
+                !existingLabel.getIndex().equals(newLabel.getIndex());
     }
 
     // Function to update an existing label with new values
@@ -106,6 +128,28 @@ public class LabelService {
         existingLabel.setLabelDescription(newLabel.getLabelDescription());
         existingLabel.setIndex(newLabel.getIndex());
     }
+
+    public static Long generateUniqueId(List<Label> labels) {
+
+        Set<Long> existingIds = new HashSet<>();
+        for (Label label : labels) {
+            existingIds.add(label.getLabelId());
+        }
+
+        // Find the smallest available ID
+        Long newId = 1L;
+        while (existingIds.contains(newId)) {
+            System.out.println(newId);
+            newId++;
+        }
+
+        return newId;
+    }
+
+
+
+
+
 
 
 

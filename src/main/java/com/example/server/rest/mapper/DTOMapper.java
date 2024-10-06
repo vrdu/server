@@ -31,13 +31,13 @@ public interface DTOMapper {
     Document convertDocumentPostDTOToEntity(DocumentPostDTO documentPostDTO);
 
 
-    @Mapping(source= "id", target= "id")
+
     @Mapping(source = "labelName", target = "labelName")
     @Mapping(source = "labelDescription", target = "labelDescription")
     @Mapping(source = "index", target = "index")
     Label convertLabelPostDTOToEntity(LabelPostDTO labelPostDTO);
 
-    @Mapping(source = "id", target = "id")
+
     @Mapping(source = "index", target = "index")
     @Mapping(source = "labelFamilyName", target = "labelFamilyName")
     @Mapping(source = "labelFamilyDescription", target = "labelFamilyDescription")

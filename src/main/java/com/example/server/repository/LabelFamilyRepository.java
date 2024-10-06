@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface LabelFamilyRepository extends JpaRepository<LabelFamily, Long> {
     List<LabelFamily> findAllByProjectNameAndOwner(String projectName, String owner);
 
-    Optional<LabelFamily> findByOwnerAndProjectNameAndId(String owner, String projectName, Long id);
+    Optional<LabelFamily> findByOwnerAndProjectNameAndLabelFamilyName(String owner, String projectName, String labelFamilyName);
 }
 
 

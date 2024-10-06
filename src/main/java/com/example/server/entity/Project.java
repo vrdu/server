@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class Project implements Serializable {
+
     @Serial
     private static final long serialVersionUID = 1L;
 

@@ -46,6 +46,7 @@ public class LabelController {
             LabelFamily labelFamily = DTOMapper.INSTANCE.convertLabelFamilyPostDTOToEntity(labelFamilyPostDTO);
             labelFamily.setOwner(username);
             labelFamily.setProjectName(projectName);
+            System.out.println(String.format("LabelController FamilyId: %s", labelFamily.getId()));
 
             List<Label> labels = new ArrayList<>();
             for (LabelPostDTO labelPostDTO : labelFamilyPostDTO.getLabels()) {
