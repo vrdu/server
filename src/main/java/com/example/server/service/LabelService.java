@@ -34,10 +34,11 @@ public class LabelService {
         // Loop through the incoming label families
         for (LabelFamily newLabelFamily : labelFamilies) {
             System.out.println(String.format("should have no id: %s", newLabelFamily.getId()));
-            if(newLabelFamily.getLabelFamilyName().isEmpty()){
+
+            if(newLabelFamily.getLabelFamilyName() == null){
                 newLabelFamily.setLabelFamilyName(" ");
             }
-            if(newLabelFamily.getLabelFamilyDescription().isEmpty()){
+            if(newLabelFamily.getLabelFamilyDescription() == null){
                 newLabelFamily.setLabelFamilyDescription(" ");
             }
 
@@ -60,16 +61,19 @@ public class LabelService {
 
                 for (Label newLabel : newLabelFamily.getLabels()) {
                     System.out.println(newLabel.getLabelName());
-                    if(newLabel.getLabelName().isEmpty()){
+                    if(newLabel.getLabelName() == null){
                         newLabel.setLabelName(" ");
                     }
-                    if(newLabel.getLabelDescription().isEmpty()){
+                    if(newLabel.getLabelDescription() == null){
                         newLabel.setLabelDescription(" ");
                     }
-                    System.out.println(String.format("newLabelId: %s ", newLabel.getLabelId()));
+                    if(newLabel.getIndex() == null){
+                        System.out.println("indexNull");
+                        newLabel.setIndex("0");
+                    }
 
                     Optional<Label> existingLabelOpt = labelRepository
-                            .findByLabelFamilyIdAndLabelId(existingLabelFamily.getId(), newLabel.getLabelId());
+                            .findByLabelFamilyIdAndLabelName(existingLabelFamily.getId(), newLabel.getLabelName());
 
                     if (existingLabelOpt.isPresent()) {
                         Label existingLabel = existingLabelOpt.get();
@@ -78,15 +82,15 @@ public class LabelService {
                         boolean labelChanged = checkIfLabelChanged(existingLabel, newLabel);
 
                         if (labelChanged) {
-                            System.out.println(String.format("Update: NewLabel; Description: %s, Name: %s", newLabel.getLabelDescription(), newLabel.getLabelName()));
+                            System.out.println(String.format("Update: NewLabel; Description: %s, Name: %s Index: %s", newLabel.getLabelDescription(), newLabel.getLabelName(), newLabel.getIndex()));
 
                             // Update the label if there are changes
                             updateLabel(existingLabel, newLabel);
                             labelRepository.save(existingLabel);  // Save the updated label
                         }
                     } else {
-                        newLabel.setLabelId(generateUniqueId(labelRepository.findAllByLabelFamilyId(newLabelFamily.getId())));
-                        System.out.println(String.format("NewLabel; Description: %s, Name: %s ExistingFamilyName: %s", newLabel.getLabelDescription(), newLabel.getLabelName(), existingLabelFamily.getLabelFamilyName()));
+                        System.out.println(String.format("NewLabel; Description: %s, Name: %s ExistingFamilyName: %s Index: %s", newLabel.getLabelDescription(), newLabel.getLabelName(), existingLabelFamily.getLabelFamilyName(), newLabel.getIndex()));
+
                         // If label does not exist, add it
                         newLabel.setLabelFamily(existingLabelFamily);  // Set the relationship
                         labelRepository.save(newLabel);  // Save the new label
@@ -129,22 +133,7 @@ public class LabelService {
         existingLabel.setIndex(newLabel.getIndex());
     }
 
-    public static Long generateUniqueId(List<Label> labels) {
 
-        Set<Long> existingIds = new HashSet<>();
-        for (Label label : labels) {
-            existingIds.add(label.getLabelId());
-        }
-
-        // Find the smallest available ID
-        Long newId = 1L;
-        while (existingIds.contains(newId)) {
-            System.out.println(newId);
-            newId++;
-        }
-
-        return newId;
-    }
 
 
 

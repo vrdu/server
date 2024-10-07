@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface LabelRepository extends JpaRepository<Label, Long> {
 
     List<Label> findAllByLabelFamilyId(Long labelFamilyId);
-    Optional<Label> findByLabelFamilyIdAndLabelId(Long labelFamilyId, Long labelId);
+    Optional<Label> findByLabelFamilyIdAndLabelName(Long labelFamilyId, String labelName);
 
 
 

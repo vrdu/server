@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Entity
 @Getter
 @Setter
-@Table(name = "label",uniqueConstraints = {@UniqueConstraint(columnNames = { "labelId", "labelFamily_id"})})
+@Table(name = "label",uniqueConstraints = {@UniqueConstraint(columnNames = { "labelName", "labelFamily_id"})})
 public class Label implements Serializable {
 
     @Serial
@@ -19,9 +19,6 @@ public class Label implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
-
-    @Column
-    private Long labelId;
 
     @Column
     private String labelName;
