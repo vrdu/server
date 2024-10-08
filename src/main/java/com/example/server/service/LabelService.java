@@ -18,7 +18,6 @@ import java.util.Optional;
 @Service
 @Transactional
 public class LabelService {
-
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     private final LabelRepository labelRepository;
     private final LabelFamilyRepository labelFamilyRepository;
