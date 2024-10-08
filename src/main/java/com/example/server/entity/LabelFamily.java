@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "labelFamily",uniqueConstraints = {@UniqueConstraint(columnNames = {"owner", "labelFamilyName", "labelFamilyName"})})
+@Table(name = "labelFamily",uniqueConstraints = {@UniqueConstraint(columnNames = {"owner", "projectName", "labelFamilyName"})})
 
 public class LabelFamily implements Serializable {
 
@@ -27,6 +27,12 @@ public class LabelFamily implements Serializable {
 
     @Column
     private String labelFamilyName;
+
+    @Transient
+    private String oldLabelFamilyName;
+
+    @Transient
+    private Boolean register;
 
     @Column
     private String projectName;

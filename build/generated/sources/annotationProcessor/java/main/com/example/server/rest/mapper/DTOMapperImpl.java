@@ -18,8 +18,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-06T13:51:00+0200",
-    comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.6 (Amazon.com Inc.)"
+    date = "2024-10-08T10:53:38+0200",
+    comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.4.1 (Eclipse Adoptium)"
 )
 public class DTOMapperImpl implements DTOMapper {
 
@@ -103,6 +103,8 @@ public class DTOMapperImpl implements DTOMapper {
         Label label = new Label();
 
         label.setLabelName( labelPostDTO.getLabelName() );
+        label.setOldLabelName( labelPostDTO.getOldLabelName() );
+        label.setRegister( labelPostDTO.isRegister() );
         label.setLabelDescription( labelPostDTO.getLabelDescription() );
         label.setIndex( labelPostDTO.getIndex() );
 
@@ -119,6 +121,8 @@ public class DTOMapperImpl implements DTOMapper {
 
         labelFamily.setIndex( labelFamilyPostDTO.getIndex() );
         labelFamily.setLabelFamilyName( labelFamilyPostDTO.getLabelFamilyName() );
+        labelFamily.setOldLabelFamilyName( labelFamilyPostDTO.getOldLabelFamilyName() );
+        labelFamily.setRegister( labelFamilyPostDTO.isRegister() );
         labelFamily.setLabelFamilyDescription( labelFamilyPostDTO.getLabelFamilyDescription() );
         labelFamily.setLabels( labelPostDTOListToLabelList( labelFamilyPostDTO.getLabels() ) );
 

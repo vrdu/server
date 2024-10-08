@@ -46,8 +46,6 @@ public class LabelController {
             LabelFamily labelFamily = DTOMapper.INSTANCE.convertLabelFamilyPostDTOToEntity(labelFamilyPostDTO);
             labelFamily.setOwner(username);
             labelFamily.setProjectName(projectName);
-            System.out.println(String.format("LabelController FamilyId: %s", labelFamily.getId()));
-
             List<Label> labels = new ArrayList<>();
             for (LabelPostDTO labelPostDTO : labelFamilyPostDTO.getLabels()) {
                 Label label = DTOMapper.INSTANCE.convertLabelPostDTOToEntity(labelPostDTO);
@@ -61,6 +59,6 @@ public class LabelController {
         }
 
         labelService.updateLabelFamilies(labelFamilies);
-        return ResponseEntity.ok("File uploaded successfully");
+        return ResponseEntity.ok("Label uploaded successfully");
     }
 }

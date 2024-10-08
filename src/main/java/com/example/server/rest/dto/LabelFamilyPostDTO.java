@@ -10,6 +10,8 @@ import java.util.List;
 @Setter
 public class LabelFamilyPostDTO {
     private String labelFamilyName;
+    private String oldLabelFamilyName;
+    private boolean register;
     private String labelFamilyDescription;
     private String index;
     private List<LabelPostDTO> labels;

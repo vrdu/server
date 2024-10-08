@@ -1,6 +1,7 @@
 package com.example.server.entity;
 
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +11,7 @@ import java.io.Serializable;
 @Entity
 @Getter
 @Setter
-@Table(name = "label",uniqueConstraints = {@UniqueConstraint(columnNames = { "labelId", "labelFamily_id"})})
+@Table(name = "label",uniqueConstraints = {@UniqueConstraint(columnNames = { "labelName", "labelFamily_id"})})
 public class Label implements Serializable {
 
     @Serial
@@ -21,9 +22,6 @@ public class Label implements Serializable {
     private Long id;
 
     @Column
-    private Long labelId;
-
-    @Column
     private String labelName;
 
     @Column
@@ -31,6 +29,12 @@ public class Label implements Serializable {
 
     @Column
     private String index;
+
+    @Transient
+    private String oldLabelName;
+
+    @Transient
+    private Boolean register;
 
     @ManyToOne
     @JoinColumn(name = "labelFamily_id")
