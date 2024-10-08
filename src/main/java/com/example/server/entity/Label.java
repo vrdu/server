@@ -29,6 +29,12 @@ public class Label implements Serializable {
     @Column
     private String index;
 
+    @Transient
+    private String oldLabelName;
+
+    @Transient
+    private Boolean register;
+
     @ManyToOne
     @JoinColumn(name = "labelFamily_id")
     private LabelFamily labelFamily;

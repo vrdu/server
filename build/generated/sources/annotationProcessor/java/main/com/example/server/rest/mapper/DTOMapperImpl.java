@@ -18,7 +18,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-07T15:38:15+0200",
+    date = "2024-10-08T21:58:41+0200",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.6 (Amazon.com Inc.)"
 )
 public class DTOMapperImpl implements DTOMapper {
@@ -105,6 +105,8 @@ public class DTOMapperImpl implements DTOMapper {
         label.setLabelName( labelPostDTO.getLabelName() );
         label.setLabelDescription( labelPostDTO.getLabelDescription() );
         label.setIndex( labelPostDTO.getIndex() );
+        label.setOldLabelName( labelPostDTO.getOldLabelName() );
+        label.setRegister( labelPostDTO.isRegister() );
 
         return label;
     }
@@ -121,6 +123,8 @@ public class DTOMapperImpl implements DTOMapper {
         labelFamily.setLabelFamilyName( labelFamilyPostDTO.getLabelFamilyName() );
         labelFamily.setLabelFamilyDescription( labelFamilyPostDTO.getLabelFamilyDescription() );
         labelFamily.setLabels( labelPostDTOListToLabelList( labelFamilyPostDTO.getLabels() ) );
+        labelFamily.setOldLabelFamilyName( labelFamilyPostDTO.getOldLabelFamilyName() );
+        labelFamily.setRegister( labelFamilyPostDTO.isRegister() );
 
         return labelFamily;
     }
