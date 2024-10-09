@@ -10,6 +10,7 @@ public class LabelPostDTO {
     private String labelName;
     private String oldLabelName;
     private boolean register;
+    private Boolean inUse;
     private String labelDescription;
     private String index;
 }

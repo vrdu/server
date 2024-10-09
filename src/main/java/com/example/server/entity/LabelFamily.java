@@ -40,6 +40,12 @@ public class LabelFamily implements Serializable {
     @Column
     private String labelFamilyDescription;
 
+    @Transient
+    private String oldLabelFamilyName;
+
+    @Transient
+    private Boolean register;
+
     @Column
     private String index;
 
