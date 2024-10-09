@@ -52,4 +52,26 @@ public class LabelController {
         labelService.updateLabelFamily(labelFamily);
         return ResponseEntity.ok("File uploaded successfully");
     }
+
+    @PostMapping("/projects/{username}/{projectName}/labels") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<String> uploadLabel(
+            @PathVariable String projectName,
+            @PathVariable String username,
+            HttpServletRequest request,
+            @RequestBody LabelPostDTO labelPostDTO) throws IOException {
+
+        System.out.println("arrived");
+        userService.validateToken(request);
+
+
+        Label label = DTOMapper.INSTANCE.convertLabelPostDTOToEntity(labelPostDTO);
+        label.setFamilyOwner(username);
+        label.setFamilyProjectName(projectName);
+
+
+        labelService.updateLabel(label);
+        return ResponseEntity.ok("File uploaded successfully");
+    }
 }

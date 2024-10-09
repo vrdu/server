@@ -9,8 +9,8 @@ import lombok.Setter;
 public class LabelPostDTO {
     private String labelName;
     private String oldLabelName;
+    private String familyName;
     private boolean register;
-    private Boolean inUse;
     private String labelDescription;
     private String index;
 }

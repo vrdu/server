@@ -18,8 +18,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-09T16:55:08+0200",
-    comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.4.1 (Eclipse Adoptium)"
+    date = "2024-10-09T23:38:04+0200",
+    comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.6 (Amazon.com Inc.)"
 )
 public class DTOMapperImpl implements DTOMapper {
 
@@ -105,6 +105,7 @@ public class DTOMapperImpl implements DTOMapper {
         label.setLabelName( labelPostDTO.getLabelName() );
         label.setOldLabelName( labelPostDTO.getOldLabelName() );
         label.setRegister( labelPostDTO.isRegister() );
+        label.setFamilyName( labelPostDTO.getFamilyName() );
         label.setLabelDescription( labelPostDTO.getLabelDescription() );
         label.setIndex( labelPostDTO.getIndex() );
 

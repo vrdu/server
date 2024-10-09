@@ -35,6 +35,7 @@ public interface DTOMapper {
     @Mapping(source = "labelName", target = "labelName")
     @Mapping(source = "oldLabelName", target = "oldLabelName")
     @Mapping(source = "register", target = "register")
+    @Mapping(source = "familyName", target = "familyName")
     @Mapping(source = "labelDescription", target = "labelDescription")
     @Mapping(source = "index", target = "index")
     Label convertLabelPostDTOToEntity(LabelPostDTO labelPostDTO);
