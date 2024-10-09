@@ -31,6 +31,15 @@ public class Label implements Serializable {
     private String index;
 
     @Transient
+    private String familyOwner;
+
+    @Transient
+    private String familyProjectName;
+
+    @Transient
+    private String familyName;
+
+    @Transient
     private String oldLabelName;
 
     @Transient

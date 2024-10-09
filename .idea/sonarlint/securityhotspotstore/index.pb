@@ -31,8 +31,6 @@ m
 =src/main/java/com/example/server/rest/dto/ProjectPostDTO.java,4\9\494873ea095c1cc2d7dadf070789a8b94de50073
 o
 ?src/main/java/com/example/server/controller/UserController.java,b\6\b69f5545b12ac2edba5a996608209e4073a938d1
-g
-7src/main/java/com/example/server/ServerApplication.java,2\5\25734794e2895aaafdd8a8fc7bda0662cfecbd7d
 n
 >src/main/java/com/example/server/rest/dto/DocumentPostDTO.java,6\f\6fd1a0840ee45b633521e4abfbedf5eaac8617b8
 <

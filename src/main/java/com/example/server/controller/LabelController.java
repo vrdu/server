@@ -36,32 +36,20 @@ public class LabelController {
             @PathVariable String projectName,
             @PathVariable String username,
             HttpServletRequest request,
-            @RequestBody List<LabelFamilyPostDTO> labelFamilyPostDTOs) throws IOException {
+            @RequestBody LabelFamilyPostDTO labelFamilyPostDTO) throws IOException {
         System.out.println("arrived");
         userService.validateToken(request);
 
-        List<LabelFamily> labelFamilies = new ArrayList<>();
 
-        for(LabelFamilyPostDTO labelFamilyPostDTO : labelFamilyPostDTOs){
-            LabelFamily labelFamily = DTOMapper.INSTANCE.convertLabelFamilyPostDTOToEntity(labelFamilyPostDTO);
-            labelFamily.setOwner(username);
-            labelFamily.setProjectName(projectName);
-            System.out.println("Entpacken...");
-            System.out.println(String.format("LabelController FamilyId: %s", labelFamily.getId()));
-            System.out.println(String.format("LabelController FamilyInUse %s", labelFamilyPostDTO.getInUse()));
-            List<Label> labels = new ArrayList<>();
-            for (LabelPostDTO labelPostDTO : labelFamilyPostDTO.getLabels()) {
-                Label label = DTOMapper.INSTANCE.convertLabelPostDTOToEntity(labelPostDTO);
-                label.setLabelFamily(labelFamily);
-                labels.add(label);
-            }
-            labelFamily.setLabels(labels);
+        LabelFamily labelFamily = DTOMapper.INSTANCE.convertLabelFamilyPostDTOToEntity(labelFamilyPostDTO);
+        labelFamily.setOwner(username);
+        labelFamily.setProjectName(projectName);
+        System.out.println("Entpacken...");
+        System.out.println(String.format("LabelController FamilyId: %s", labelFamily.getId()));
+        System.out.println(String.format("LabelController FamilyInUse %s", labelFamilyPostDTO.getInUse()));
 
-            labelFamilies.add(labelFamily);
 
-        }
-
-        labelService.updateLabelFamilies(labelFamilies);
+        labelService.updateLabelFamily(labelFamily);
         return ResponseEntity.ok("File uploaded successfully");
     }
 }
