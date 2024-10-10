@@ -38,17 +38,25 @@ public class LabelService {
             newLabelFamily.setLabelFamilyDescription(" ");
         }
         String usernameToExtractFromDB = newLabelFamily.getLabelFamilyName();
+
         if (!(newLabelFamily.getOldLabelFamilyName() == null)) {
             usernameToExtractFromDB = newLabelFamily.getOldLabelFamilyName();
         }
         // Retrieve the existing label family from the repository (using owner, projectName, and id for uniqueness)
         Optional<LabelFamily> existingLabelFamilyOpt = labelFamilyRepository
                 .findByOwnerAndProjectNameAndLabelFamilyName(newLabelFamily.getOwner(), newLabelFamily.getProjectName(), usernameToExtractFromDB);
+
         if (existingLabelFamilyOpt.isPresent()) {
             LabelFamily existingLabelFamily = existingLabelFamilyOpt.get();
-            System.out.println(String.format("Id: %s, Index: %s, description: %s, familyName: %s, owner: %s, projectName: %s, oldFamilyName: %s", newLabelFamily.getId(), newLabelFamily.getIndex(), newLabelFamily.getLabelFamilyDescription(), newLabelFamily.getLabelFamilyName(), newLabelFamily.getOwner(), newLabelFamily.getProjectName(), newLabelFamily.getOldLabelFamilyName()));
 
-            System.out.println(String.format("newLabelFamilyRegister: %s", newLabelFamily.getRegister()));
+            //check, if creation of FamilyWith same name
+            if (newLabelFamily.getRegister().equals(true)){
+                System.out.println("Tried to make labelFamily with same name");
+                throw new ResponseStatusException(HttpStatus.CONFLICT,"LabelFamily with name '" + newLabelFamily.getLabelFamilyName() + "' already exists.");
+            }
+
+            checkUniqueUpdatedLabelFamilyName(newLabelFamily);
+
             if ((existingLabelFamily.getLabelFamilyName().equals(newLabelFamily.getLabelFamilyName())) && newLabelFamily.getRegister() == true) {
                 System.out.println("Same labelFamilyName");
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "The name of a labelFamily must be unique in a project.");
@@ -83,36 +91,60 @@ public class LabelService {
             if(newLabel.getIndex()==null){
                 newLabel.setIndex("0");
             }
+            System.out.println(String.format("NewLabelName: %s", newLabel.getLabelName()));
             Optional<LabelFamily> ownerFamilyOpt = labelFamilyRepository.findByOwnerAndProjectNameAndLabelFamilyName(label.getFamilyOwner(),label.getFamilyProjectName(),label.getFamilyName());
+
             if (ownerFamilyOpt.isPresent()) {
                 LabelFamily ownerFamily = ownerFamilyOpt.get();
+                System.out.println(String.format("ownerFamilyName: %s, LabelFamilyId: %s", ownerFamily.getLabelFamilyName(), ownerFamily.getId()));
 
-                Optional<Label> existingLabelOpt = labelRepository.findByLabelFamilyIdAndLabelName(ownerFamily.getId(), newLabel.getLabelName());
+                String labelNameFromDB = newLabel.getLabelName();
+
+                if(!(newLabel.getOldLabelName().equals(""))){
+                    labelNameFromDB = newLabel.getOldLabelName();
+                }
+
+                System.out.println(String.format("labelName: %s", labelNameFromDB));
+
+                Optional<Label> existingLabelOpt = labelRepository.findByLabelFamilyIdAndLabelName(ownerFamily.getId(), labelNameFromDB);
 
                 if (existingLabelOpt.isPresent()) {
                     Label existingLabel = existingLabelOpt.get();
-                    System.out.println("EsistingLabel is present.");
-                    if (!(existingLabel.getOldLabelName() == null)) {
-                        // Check if the label needs to be updated
-                        boolean labelChanged = checkIfLabelChanged(existingLabel, newLabel);
-
-                        if (labelChanged) {
-                            System.out.println(String.format("Update: NewLabel; Description: %s, Name: %s", newLabel.getLabelDescription(), newLabel.getLabelName()));
-
-                            // Update the label if there are changes
-                            updateLabel(existingLabel, newLabel);
-                            labelRepository.save(existingLabel);  // Save the updated label
-                        } else {
-                            System.out.println("sameName");
-                        }
+                    System.out.println(String.format("NewLabel: Register: %s",newLabel.getRegister()));
+                    if (newLabel.getRegister()==true){
+                        System.out.println("sameLabelName");
+                        throw new ResponseStatusException(HttpStatus.CONFLICT,"Label with name '" + newLabel.getLabelName() + "' already exists.");
                     }
 
+                    checkIfLabelNameUnique(newLabel, ownerFamily.getId());
+
+                    if ((existingLabel.getLabelName().equals(newLabel.getLabelName())) && newLabel.getRegister() == true) {
+                        System.out.println("Same labelName");
+                        throw new ResponseStatusException(HttpStatus.CONFLICT, "The name of a label must be unique in a project.");
+                    }
+
+
+                    boolean labelChanged = checkIfLabelChanged(existingLabel, newLabel);
+
+                    if (labelChanged) {
+
+                        System.out.println(String.format("Update: NewLabel; Description: %s, Name: %s", newLabel.getLabelDescription(), newLabel.getLabelName()));
+
+                        // Update the label if there are changes
+                        updateLabel(existingLabel, newLabel);
+                        labelRepository.save(existingLabel);  // Save the updated label
+                        }
+
                 } else {
-                    System.out.println(String.format("NewLabel; Description: %s, Name: %s", newLabel.getLabelDescription(), newLabel.getLabelName()));
-                    // If label does not exist, add it
-                    //newLabel.setLabelFamily(existingLabelFamily);  // Set the relationship
+                    System.out.println(String.format("NewLabel; Description: %s, Name: %s, NewLabelLabelFamilyId %s", newLabel.getLabelDescription(), newLabel.getLabelName(), ownerFamily.getId()));
+
+                    newLabel.setLabelFamily(ownerFamily);  // Set the relationship
                     labelRepository.save(newLabel);  // Save the new label
                 }
+            }else{
+
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You can't make a label without a corresponding labelFamily!!");
+
             }
     }
 
@@ -145,6 +177,25 @@ public class LabelService {
         existingLabel.setLabelName(newLabel.getLabelName());
         existingLabel.setLabelDescription(newLabel.getLabelDescription());
         existingLabel.setIndex(newLabel.getIndex());
+    }
+
+    private void checkUniqueUpdatedLabelFamilyName(LabelFamily labelFamily){
+        if (labelFamily.getRegister()== false){
+            Optional <LabelFamily> familyFromRepo = labelFamilyRepository.findByOwnerAndProjectNameAndLabelFamilyName(labelFamily.getOwner(),labelFamily.getProjectName(),labelFamily.getLabelFamilyName());
+            if (familyFromRepo.isPresent()&&!(labelFamily.getLabelFamilyName().equals(labelFamily.getOldLabelFamilyName()))){
+                throw new ResponseStatusException(HttpStatus.CONFLICT,"LabelFamily with name '" + labelFamily.getLabelFamilyName() + "' already exists.");
+            }
+        }
+    }
+    private void checkIfLabelNameUnique(Label label, Long labelFamilyId){
+        if(label.getRegister()==false){
+            Optional <Label> labelFromRepo = labelRepository.findByLabelFamilyIdAndLabelName(labelFamilyId, label.getLabelName());
+            if (labelFromRepo.isPresent()&&!label.getLabelName().equals(label.getOldLabelName())){
+                throw new ResponseStatusException(HttpStatus.CONFLICT,"Label with name '" + label.getLabelName() + "' already exists.");
+
+            }
+        }
+
     }
 
 }

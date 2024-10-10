@@ -3,8 +3,6 @@ i
 9src/main/java/com/example/server/storage/UserStorage.java,4\9\49dd9fa99107270ddd164e0a5340664362b207b9
 ?
 settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
-9
-	README.md,8\e\8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
 7
 gradlew,5\b\5bbfa66edb4db3c7c33c5181f43510990d3307f9
 j
@@ -19,24 +17,16 @@ Q.idea/sonarlint/securityhotspotstore/4/9/49dd9fa99107270ddd164e0a5340664362b207
 Q.idea/sonarlint/securityhotspotstore/0/5/05efc8b1657769a27696d478ded1e95f38737233,2\5\2534b7ffebad46793fc4d77da07aca83b23dd835
 i
 9src/main/java/com/example/server/rest/dto/UserGetDTO.java,b\9\b987045501c321cddd755eea17460d30c831e8f8
-w
-G.idea/sonarlint/issuestore/8/e/8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d,b\4\b4a0b63ce8560bbc5de0f9995c20cc861dc2adb3
-
-Q.idea/sonarlint/securityhotspotstore/8/e/8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d,1\0\10a03f31c4dce92cb371e761ce9429428bb6c176
 
 Q.idea/sonarlint/securityhotspotstore/5/b/5bbfa66edb4db3c7c33c5181f43510990d3307f9,1\e\1e45613b6060de813dc92caeb118e08a2124bc35
 w
 G.idea/sonarlint/issuestore/0/5/05efc8b1657769a27696d478ded1e95f38737233,3\c\3c8c56407c35e5f5ebbd6c7250a79af8128a13a6
 m
 =src/main/java/com/example/server/rest/dto/ProjectPostDTO.java,4\9\494873ea095c1cc2d7dadf070789a8b94de50073
-o
-?src/main/java/com/example/server/controller/UserController.java,b\6\b69f5545b12ac2edba5a996608209e4073a938d1
 n
 >src/main/java/com/example/server/rest/dto/DocumentPostDTO.java,6\f\6fd1a0840ee45b633521e4abfbedf5eaac8617b8
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
-r
-Bsrc/main/java/com/example/server/controller/ProjectController.java,4\9\498a9f1bf2f642fa74cb58daf601349fc0f919e0
 s
 Csrc/main/java/com/example/server/controller/DocumentController.java,f\4\f45f8cb867d6c5667f4f82a6e69eeca95ed404e1
 a
@@ -47,9 +37,13 @@ s
 Csrc/main/java/com/example/server/repository/DocumentRepository.java,c\9\c9237355a58486678b148ccf42fc0876cafbba03
 o
 ?src/main/java/com/example/server/repository/UserRepository.java,d\a\da7da392e403c130a4cead033a59927d471ed96e
-l
-<src/main/java/com/example/server/service/ProjectService.java,2\b\2b9119dce7593c37eec398bf540877b1b005873c
-m
-=src/main/java/com/example/server/service/DocumentService.java,b\0\b06a1ebcdcac85bb6a4f1c70108c5d6b358cc6ff
 r
 Bsrc/main/java/com/example/server/repository/ProjectRepository.java,1\4\1433f95311fb33fadaa22236eaac2aa564f2ce19
+p
+@src/main/java/com/example/server/repository/LabelRepository.java,6\9\691531095074a6a215db2eb42c49c9f55d3a6e22
+q
+Asrc/main/java/com/example/server/rest/dto/LabelFamilyPostDTO.java,7\5\753b0674f5e80a2e02cfa26858c1f101eb67752e
+k
+;src/main/java/com/example/server/rest/dto/LabelPostDTO.java,3\0\30cd95260359218930bc673e612c53e25596113d
+v
+Fsrc/main/java/com/example/server/repository/LabelFamilyRepository.java,e\d\ed0ee0b3f312291c707415218712559364c19750
