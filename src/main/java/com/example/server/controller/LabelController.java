@@ -48,6 +48,25 @@ public class LabelController {
 
         return ResponseEntity.ok("File uploaded successfully");
     }
+    @DeleteMapping("/projects/{username}/{projectName}/label-families") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<String> deleteLabelFamilies(
+            @PathVariable String projectName,
+            @PathVariable String username,
+            HttpServletRequest request,
+            @RequestBody LabelFamilyPostDTO labelFamilyPostDTO) throws IOException {
+        System.out.println("arrived to delete LabelFamily");
+        userService.validateToken(request);
+
+        LabelFamily labelFamily = DTOMapper.INSTANCE.convertLabelFamilyPostDTOToEntity(labelFamilyPostDTO);
+        labelFamily.setOwner(username);
+        labelFamily.setProjectName(projectName);
+
+        labelService.deleteLabelFamily(labelFamily);
+
+        return ResponseEntity.ok("File uploaded successfully");
+    }
 
     @PostMapping("/projects/{username}/{projectName}/labels") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
     @ResponseStatus(HttpStatus.OK)
@@ -58,7 +77,6 @@ public class LabelController {
             HttpServletRequest request,
             @RequestBody LabelPostDTO labelPostDTO) throws IOException {
 
-        System.out.println("arrived");
         userService.validateToken(request);
 
 
@@ -68,6 +86,28 @@ public class LabelController {
 
 
         labelService.updateLabel(label);
+        return ResponseEntity.ok("File uploaded successfully");
+    }
+
+    @DeleteMapping("/projects/{username}/{projectName}/labels") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<String> deleteLabel(
+            @PathVariable String projectName,
+            @PathVariable String username,
+            HttpServletRequest request,
+            @RequestBody LabelPostDTO labelPostDTO) throws IOException {
+        System.out.println("arrived at Endpoint");
+
+        userService.validateToken(request);
+
+
+        Label label = DTOMapper.INSTANCE.convertLabelPostDTOToEntity(labelPostDTO);
+        label.setFamilyOwner(username);
+        label.setFamilyProjectName(projectName);
+
+
+        labelService.deleteLabel(label);
         return ResponseEntity.ok("File uploaded successfully");
     }
 }

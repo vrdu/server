@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -148,31 +149,70 @@ public class LabelService {
             }
     }
 
+    @Transactional
+    public void deleteLabelFamily(LabelFamily labelFamily) {
+        System.out.println("startingDeleting");
+        Optional <LabelFamily> repositoryLabelFamilyOpt = labelFamilyRepository.findByOwnerAndProjectNameAndLabelFamilyName(labelFamily.getOwner(), labelFamily.getProjectName(), labelFamily.getLabelFamilyName());
+        if (repositoryLabelFamilyOpt.isPresent()){
+            LabelFamily repositoryLabelFamily = repositoryLabelFamilyOpt.get();
+
+            // 2. Retrieve all associated Labels using the labelFamilyId
+            List<Label> associatedLabels = labelRepository.findAllByLabelFamilyId(repositoryLabelFamily.getId());
+
+            for (Label label : associatedLabels) {
+                labelRepository.delete(label);
+            }
+
+            labelFamilyRepository.delete(repositoryLabelFamily);
+
+
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Requested Label Family does not exist!");
+
+        }
+    }
+    public void deleteLabel(Label label){
+        System.out.println("arrived in deleteLabel");
+        Optional <LabelFamily> labelFamilyOpt = labelFamilyRepository.findByOwnerAndProjectNameAndLabelFamilyName(label.getFamilyOwner(),label.getFamilyProjectName(),label.getFamilyName());
+        if (labelFamilyOpt.isPresent()){
+            LabelFamily labelFamily = labelFamilyOpt.get();
+
+            Optional <Label> repositoryLabelOpt = labelRepository.findByLabelFamilyIdAndLabelName(labelFamily.getId(),label.getLabelName());
+            if (repositoryLabelOpt.isPresent()){
+                Label repositoryLabel = repositoryLabelOpt.get();
+                labelRepository.delete(repositoryLabel);
+            }
+
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Requested Label does not exist!");
+
+        }
+    }
 
 
 
-    // Function to check if a label family has changed
+    // Helperfunctions
     private boolean checkIfFamilyChanged(LabelFamily existingLabelFamily, LabelFamily newLabelFamily) {
         return !existingLabelFamily.getLabelFamilyName().equals(newLabelFamily.getLabelFamilyName()) ||
                 !existingLabelFamily.getLabelFamilyDescription().equals(newLabelFamily.getLabelFamilyDescription()) ||
                 !existingLabelFamily.getIndex().equals(newLabelFamily.getIndex());
     }
 
-    // Function to update an existing label family with new values
+
     private void updateLabelFamily(LabelFamily existingLabelFamily, LabelFamily newLabelFamily) {
         existingLabelFamily.setLabelFamilyName(newLabelFamily.getLabelFamilyName());
         existingLabelFamily.setIndex(newLabelFamily.getIndex());
         existingLabelFamily.setLabelFamilyDescription(newLabelFamily.getLabelFamilyDescription());
     }
 
-    // Function to check if a label has changed
+
     private boolean checkIfLabelChanged(Label existingLabel, Label newLabel) {
         return !existingLabel.getLabelName().equals(newLabel.getLabelName()) ||
                 !existingLabel.getLabelDescription().equals(newLabel.getLabelDescription()) ||
                 !existingLabel.getIndex().equals(newLabel.getIndex());
     }
 
-    // Function to update an existing label with new values
+
     private void updateLabel(Label existingLabel, Label newLabel) {
         existingLabel.setLabelName(newLabel.getLabelName());
         existingLabel.setLabelDescription(newLabel.getLabelDescription());
