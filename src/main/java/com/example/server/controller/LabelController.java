@@ -3,9 +3,7 @@ package com.example.server.controller;
 import com.example.server.entity.Document;
 import com.example.server.entity.Label;
 import com.example.server.entity.LabelFamily;
-import com.example.server.rest.dto.DocumentPostDTO;
-import com.example.server.rest.dto.LabelFamilyPostDTO;
-import com.example.server.rest.dto.LabelPostDTO;
+import com.example.server.rest.dto.*;
 import com.example.server.rest.mapper.DTOMapper;
 import com.example.server.service.LabelService;
 import com.example.server.service.UserService;
@@ -19,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class LabelController {
@@ -52,6 +51,31 @@ public class LabelController {
         labelService.updateLabelFamily(labelFamily);
         return ResponseEntity.ok("File uploaded successfully");
     }
+    @GetMapping("/projects/{username}/{projectName}/label-families") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<List<LabelFamilyNameGetDTO>> getLabelFamilies(
+            @PathVariable String projectName,
+            @PathVariable String username,
+            HttpServletRequest request) throws IOException {
+
+        userService.validateToken(request);
+
+
+        LabelFamily labelFamily = new LabelFamily();
+        labelFamily.setOwner(username);
+        labelFamily.setProjectName(projectName);
+
+        // Fetch the list of LabelFamily entities
+        List<LabelFamily> labelFamiliesDB = labelService.getLabelFamilies(labelFamily);
+
+// Convert the list of LabelFamily entities to a list of LabelFamilyNameGetDTOs
+        List<LabelFamilyNameGetDTO> labelFamilyNameGetDTOs = labelFamiliesDB.stream()
+                .map(DTOMapper.INSTANCE::convertEntityToLabelFamilyNameGetDTO) // Use the appropriate conversion method
+                .toList();
+
+        return ResponseEntity.ok(labelFamilyNameGetDTOs);
+    }
 
     @PostMapping("/projects/{username}/{projectName}/labels") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
     @ResponseStatus(HttpStatus.OK)
@@ -73,5 +97,33 @@ public class LabelController {
 
         labelService.updateLabel(label);
         return ResponseEntity.ok("File uploaded successfully");
+    }
+
+    @GetMapping("/projects/{username}/{projectName}/{familyName}/labels") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<List<LabelNameGetDTO>> getLabels(
+            @PathVariable String projectName,
+            @PathVariable String username,
+            @PathVariable String familyName,
+            HttpServletRequest request) throws IOException {
+
+        userService.validateToken(request);
+
+
+        LabelFamily labelFamily = new LabelFamily();
+        labelFamily.setOwner(username);
+        labelFamily.setProjectName(projectName);
+        labelFamily.setLabelFamilyName(familyName);
+
+        // Fetch the list of LabelFamily entities
+        List<Label> labelsDB = labelService.getLabels(labelFamily);
+
+// Convert the list of LabelFamily entities to a list of LabelFamilyNameGetDTOs
+        List<LabelNameGetDTO> labelFamilyNameGetDTOs = labelsDB.stream()
+                .map(DTOMapper.INSTANCE::convertEntityToLabelGetDTOTo) // Use the appropriate conversion method
+                .toList();
+
+        return ResponseEntity.ok(labelFamilyNameGetDTOs);
     }
 }

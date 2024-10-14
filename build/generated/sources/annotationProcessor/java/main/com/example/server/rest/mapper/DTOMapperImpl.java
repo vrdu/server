@@ -6,7 +6,9 @@ import com.example.server.entity.LabelFamily;
 import com.example.server.entity.Project;
 import com.example.server.entity.User;
 import com.example.server.rest.dto.DocumentPostDTO;
+import com.example.server.rest.dto.LabelFamilyNameGetDTO;
 import com.example.server.rest.dto.LabelFamilyPostDTO;
+import com.example.server.rest.dto.LabelNameGetDTO;
 import com.example.server.rest.dto.LabelPostDTO;
 import com.example.server.rest.dto.ProjectGetDTO;
 import com.example.server.rest.dto.ProjectPostDTO;
@@ -18,7 +20,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-09T23:38:04+0200",
+    date = "2024-10-14T21:46:41+0200",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.6 (Amazon.com Inc.)"
 )
 public class DTOMapperImpl implements DTOMapper {
@@ -113,6 +115,19 @@ public class DTOMapperImpl implements DTOMapper {
     }
 
     @Override
+    public LabelNameGetDTO convertEntityToLabelGetDTOTo(Label label) {
+        if ( label == null ) {
+            return null;
+        }
+
+        LabelNameGetDTO labelNameGetDTO = new LabelNameGetDTO();
+
+        labelNameGetDTO.setLabelName( label.getLabelName() );
+
+        return labelNameGetDTO;
+    }
+
+    @Override
     public LabelFamily convertLabelFamilyPostDTOToEntity(LabelFamilyPostDTO labelFamilyPostDTO) {
         if ( labelFamilyPostDTO == null ) {
             return null;
@@ -128,6 +143,19 @@ public class DTOMapperImpl implements DTOMapper {
         labelFamily.setLabels( labelPostDTOListToLabelList( labelFamilyPostDTO.getLabels() ) );
 
         return labelFamily;
+    }
+
+    @Override
+    public LabelFamilyNameGetDTO convertEntityToLabelFamilyNameGetDTO(LabelFamily labelFamily) {
+        if ( labelFamily == null ) {
+            return null;
+        }
+
+        LabelFamilyNameGetDTO labelFamilyNameGetDTO = new LabelFamilyNameGetDTO();
+
+        labelFamilyNameGetDTO.setLabelFamilyName( labelFamily.getLabelFamilyName() );
+
+        return labelFamilyNameGetDTO;
     }
 
     protected List<Label> labelPostDTOListToLabelList(List<LabelPostDTO> list) {
