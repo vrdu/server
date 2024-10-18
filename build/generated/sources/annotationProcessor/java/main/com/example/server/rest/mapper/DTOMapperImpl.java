@@ -6,8 +6,10 @@ import com.example.server.entity.LabelFamily;
 import com.example.server.entity.Project;
 import com.example.server.entity.User;
 import com.example.server.rest.dto.DocumentPostDTO;
+import com.example.server.rest.dto.LabelFamilyGetDTO;
 import com.example.server.rest.dto.LabelFamilyNameGetDTO;
 import com.example.server.rest.dto.LabelFamilyPostDTO;
+import com.example.server.rest.dto.LabelGetDTO;
 import com.example.server.rest.dto.LabelNameGetDTO;
 import com.example.server.rest.dto.LabelPostDTO;
 import com.example.server.rest.dto.ProjectGetDTO;
@@ -20,8 +22,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-14T21:46:41+0200",
-    comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.6 (Amazon.com Inc.)"
+    date = "2024-10-16T15:13:30+0200",
+    comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.4.1 (Eclipse Adoptium)"
 )
 public class DTOMapperImpl implements DTOMapper {
 
@@ -128,6 +130,26 @@ public class DTOMapperImpl implements DTOMapper {
     }
 
     @Override
+    public LabelGetDTO convertEntityToLabelGetDTO(Label label) {
+        if ( label == null ) {
+            return null;
+        }
+
+        LabelGetDTO labelGetDTO = new LabelGetDTO();
+
+        labelGetDTO.setLabelName( label.getLabelName() );
+        labelGetDTO.setOldLabelName( label.getOldLabelName() );
+        if ( label.getRegister() != null ) {
+            labelGetDTO.setRegister( label.getRegister() );
+        }
+        labelGetDTO.setFamilyName( label.getFamilyName() );
+        labelGetDTO.setLabelDescription( label.getLabelDescription() );
+        labelGetDTO.setIndex( label.getIndex() );
+
+        return labelGetDTO;
+    }
+
+    @Override
     public LabelFamily convertLabelFamilyPostDTOToEntity(LabelFamilyPostDTO labelFamilyPostDTO) {
         if ( labelFamilyPostDTO == null ) {
             return null;
@@ -143,6 +165,26 @@ public class DTOMapperImpl implements DTOMapper {
         labelFamily.setLabels( labelPostDTOListToLabelList( labelFamilyPostDTO.getLabels() ) );
 
         return labelFamily;
+    }
+
+    @Override
+    public LabelFamilyGetDTO convertEntityToLabelFamilyGetDTO(LabelFamily labelFamily) {
+        if ( labelFamily == null ) {
+            return null;
+        }
+
+        LabelFamilyGetDTO labelFamilyGetDTO = new LabelFamilyGetDTO();
+
+        labelFamilyGetDTO.setIndex( labelFamily.getIndex() );
+        labelFamilyGetDTO.setLabelFamilyName( labelFamily.getLabelFamilyName() );
+        labelFamilyGetDTO.setOldLabelFamilyName( labelFamily.getOldLabelFamilyName() );
+        if ( labelFamily.getRegister() != null ) {
+            labelFamilyGetDTO.setRegister( labelFamily.getRegister() );
+        }
+        labelFamilyGetDTO.setLabelFamilyDescription( labelFamily.getLabelFamilyDescription() );
+        labelFamilyGetDTO.setLabels( labelListToLabelGetDTOList( labelFamily.getLabels() ) );
+
+        return labelFamilyGetDTO;
     }
 
     @Override
@@ -166,6 +208,19 @@ public class DTOMapperImpl implements DTOMapper {
         List<Label> list1 = new ArrayList<Label>( list.size() );
         for ( LabelPostDTO labelPostDTO : list ) {
             list1.add( convertLabelPostDTOToEntity( labelPostDTO ) );
+        }
+
+        return list1;
+    }
+
+    protected List<LabelGetDTO> labelListToLabelGetDTOList(List<Label> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<LabelGetDTO> list1 = new ArrayList<LabelGetDTO>( list.size() );
+        for ( Label label : list ) {
+            list1.add( convertEntityToLabelGetDTO( label ) );
         }
 
         return list1;

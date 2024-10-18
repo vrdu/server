@@ -43,6 +43,14 @@ public interface DTOMapper {
     @Mapping(source = "labelName", target = "labelName")
     LabelNameGetDTO convertEntityToLabelGetDTOTo(Label label);
 
+    @Mapping(source = "labelName", target = "labelName")
+    @Mapping(source = "oldLabelName", target = "oldLabelName")
+    @Mapping(source = "register", target = "register")
+    @Mapping(source = "familyName", target = "familyName")
+    @Mapping(source = "labelDescription", target = "labelDescription")
+    @Mapping(source = "index", target = "index")
+    LabelGetDTO convertEntityToLabelGetDTO(Label label);
+
 
     @Mapping(source = "index", target = "index")
     @Mapping(source = "labelFamilyName", target = "labelFamilyName")
@@ -51,6 +59,14 @@ public interface DTOMapper {
     @Mapping(source = "labelFamilyDescription", target = "labelFamilyDescription")
     @Mapping(source = "labels", target = "labels")
     LabelFamily convertLabelFamilyPostDTOToEntity(LabelFamilyPostDTO labelFamilyPostDTO);
+
+    @Mapping(source = "index", target = "index")
+    @Mapping(source = "labelFamilyName", target = "labelFamilyName")
+    @Mapping(source = "oldLabelFamilyName", target = "oldLabelFamilyName")
+    @Mapping(source = "register", target = "register")
+    @Mapping(source = "labelFamilyDescription", target = "labelFamilyDescription")
+    @Mapping(source = "labels", target = "labels")
+    LabelFamilyGetDTO convertEntityToLabelFamilyGetDTO(LabelFamily labelFamily);
 
 
     @Mapping(source = "labelFamilyName", target = "labelFamilyName")

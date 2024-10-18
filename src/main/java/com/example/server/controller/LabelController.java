@@ -28,7 +28,9 @@ public class LabelController {
         this.userService = userService;
         this.labelService = labelService;
     }
-    @PostMapping("/projects/{username}/{projectName}/label-families") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+
+    @PostMapping("/projects/{username}/{projectName}/label-families")
+    //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<String> uploadLabelFamilies(
@@ -49,8 +51,11 @@ public class LabelController {
 
 
         labelService.updateLabelFamily(labelFamily);
+
         return ResponseEntity.ok("File uploaded successfully");
     }
+
+/*
     @GetMapping("/projects/{username}/{projectName}/label-families") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -75,6 +80,46 @@ public class LabelController {
                 .toList();
 
         return ResponseEntity.ok(labelFamilyNameGetDTOs);
+    }*/
+    @GetMapping("/projects/{username}/{projectName}/label-families") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<LabelFamilyGetDTO> getLabelFamilies(
+            @PathVariable String projectName,
+            @PathVariable String username,
+            HttpServletRequest request) throws IOException {
+
+        userService.validateToken(request);
+        LabelFamily labelFamily = new LabelFamily();
+        labelFamily.setOwner(username);
+        labelFamily.setProjectName(projectName);
+
+
+        List<LabelFamily> labelFamiliesDatabase = labelService.getLabelFamilies(labelFamily);
+        List<LabelFamilyGetDTO> labelFamiliesGetDTO = new ArrayList<>();
+
+
+        for (LabelFamily labelFamilyLoop : labelFamiliesDatabase) {
+            // Use the mapLabelFamily function to map the labelFamily to labelFamilyGetDTO
+            LabelFamilyGetDTO labelFamilyGetDTO = DTOMapper.INSTANCE.convertEntityToLabelFamilyGetDTO(labelFamilyLoop);
+
+            // Transform the labels[] in the labelFamily to labelGetDTOs
+            List<LabelGetDTO> labelGetDTOs = new ArrayList<>();
+            for (Label label : labelFamilyLoop.getLabels()) {  // Use labelFamilyLoop here
+                LabelGetDTO labelGetDTO = DTOMapper.INSTANCE.convertEntityToLabelGetDTO(label); // Map each label to labelGetDTO
+                labelGetDTOs.add(labelGetDTO);
+            }
+
+            // Set the transformed labels in the labelFamilyGetDTO
+            labelFamilyGetDTO.setLabels(labelGetDTOs);
+
+            // Add the transformed labelFamilyGetDTO to the result list
+            labelFamiliesGetDTO.add(labelFamilyGetDTO);
+        }
+
+
+
+        return labelFamiliesGetDTO;
     }
 
     @PostMapping("/projects/{username}/{projectName}/labels") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &

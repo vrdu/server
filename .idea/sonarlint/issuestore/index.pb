@@ -23,8 +23,6 @@ m
 =src/main/java/com/example/server/rest/dto/ProjectPostDTO.java,4\9\494873ea095c1cc2d7dadf070789a8b94de50073
 i
 9src/main/java/com/example/server/rest/dto/UserGetDTO.java,b\9\b987045501c321cddd755eea17460d30c831e8f8
-n
->src/main/java/com/example/server/rest/dto/DocumentPostDTO.java,6\f\6fd1a0840ee45b633521e4abfbedf5eaac8617b8
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 a
@@ -39,11 +37,5 @@ o
 ?src/main/java/com/example/server/repository/UserRepository.java,d\a\da7da392e403c130a4cead033a59927d471ed96e
 r
 Bsrc/main/java/com/example/server/repository/ProjectRepository.java,1\4\1433f95311fb33fadaa22236eaac2aa564f2ce19
-q
-Asrc/main/java/com/example/server/rest/dto/LabelFamilyPostDTO.java,7\5\753b0674f5e80a2e02cfa26858c1f101eb67752e
-k
-;src/main/java/com/example/server/rest/dto/LabelPostDTO.java,3\0\30cd95260359218930bc673e612c53e25596113d
 v
 Fsrc/main/java/com/example/server/repository/LabelFamilyRepository.java,e\d\ed0ee0b3f312291c707415218712559364c19750
-r
-Bsrc/main/java/com/example/server/controller/ProjectController.java,4\9\498a9f1bf2f642fa74cb58daf601349fc0f919e0
