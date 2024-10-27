@@ -21,12 +21,8 @@ i
 Q.idea/sonarlint/securityhotspotstore/5/b/5bbfa66edb4db3c7c33c5181f43510990d3307f9,1\e\1e45613b6060de813dc92caeb118e08a2124bc35
 w
 G.idea/sonarlint/issuestore/0/5/05efc8b1657769a27696d478ded1e95f38737233,3\c\3c8c56407c35e5f5ebbd6c7250a79af8128a13a6
-m
-=src/main/java/com/example/server/rest/dto/ProjectPostDTO.java,4\9\494873ea095c1cc2d7dadf070789a8b94de50073
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
-s
-Csrc/main/java/com/example/server/controller/DocumentController.java,f\4\f45f8cb867d6c5667f4f82a6e69eeca95ed404e1
 a
 1src/main/java/com/example/server/entity/User.java,7\0\70076aeff37b0138bcf35b982df69d28cef53d13
 l
@@ -35,7 +31,19 @@ s
 Csrc/main/java/com/example/server/repository/DocumentRepository.java,c\9\c9237355a58486678b148ccf42fc0876cafbba03
 o
 ?src/main/java/com/example/server/repository/UserRepository.java,d\a\da7da392e403c130a4cead033a59927d471ed96e
-r
-Bsrc/main/java/com/example/server/repository/ProjectRepository.java,1\4\1433f95311fb33fadaa22236eaac2aa564f2ce19
-v
-Fsrc/main/java/com/example/server/repository/LabelFamilyRepository.java,e\d\ed0ee0b3f312291c707415218712559364c19750
+g
+7src/main/java/com/example/server/ServerApplication.java,2\5\25734794e2895aaafdd8a8fc7bda0662cfecbd7d
+b
+2src/main/java/com/example/server/entity/Label.java,5\5\5516c45e59b55bda737a613aedd6427a277df98d
+k
+;src/main/java/com/example/server/rest/mapper/DTOMapper.java,8\6\86fd1a7b6230dc64336d9c08738fc69d013b1bf0
+n
+>src/main/java/com/example/server/rest/dto/DocumentPostDTO.java,6\f\6fd1a0840ee45b633521e4abfbedf5eaac8617b8
+q
+Asrc/main/java/com/example/server/rest/dto/LabelFamilyPostDTO.java,7\5\753b0674f5e80a2e02cfa26858c1f101eb67752e
+p
+@src/main/java/com/example/server/rest/dto/LabelFamilyGetDTO.java,6\1\61b5f442e12a84bbd7059d565798c6b73677c3fc
+k
+;src/main/java/com/example/server/rest/dto/LabelPostDTO.java,3\0\30cd95260359218930bc673e612c53e25596113d
+m
+=src/main/java/com/example/server/rest/dto/ProjectPostDTO.java,4\9\494873ea095c1cc2d7dadf070789a8b94de50073

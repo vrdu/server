@@ -32,4 +32,7 @@ public class Project implements Serializable {
     @Column(nullable = false)
     private String owner;
 
+    @Column(nullable = false)
+    private boolean toImport;
+
 }

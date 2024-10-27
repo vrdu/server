@@ -38,16 +38,11 @@ public class LabelController {
             @PathVariable String username,
             HttpServletRequest request,
             @RequestBody LabelFamilyPostDTO labelFamilyPostDTO) throws IOException {
-        System.out.println("arrived");
         userService.validateToken(request);
-
 
         LabelFamily labelFamily = DTOMapper.INSTANCE.convertLabelFamilyPostDTOToEntity(labelFamilyPostDTO);
         labelFamily.setOwner(username);
         labelFamily.setProjectName(projectName);
-        System.out.println("Entpacken...");
-        System.out.println(String.format("LabelController FamilyId: %s", labelFamily.getId()));
-        System.out.println(String.format("LabelController FamilyInUse %s", labelFamilyPostDTO.getInUse()));
 
 
         labelService.updateLabelFamily(labelFamily);

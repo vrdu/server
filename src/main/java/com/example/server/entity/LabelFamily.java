@@ -43,6 +43,9 @@ public class LabelFamily implements Serializable {
     @Column
     private String index;
 
+    @Column(nullable = false)
+    private boolean toImport;
+
     @OneToMany(mappedBy = "labelFamily", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Label> labels;
 }
