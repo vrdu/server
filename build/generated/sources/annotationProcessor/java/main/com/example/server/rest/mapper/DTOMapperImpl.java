@@ -9,11 +9,13 @@ import com.example.server.rest.dto.DocumentPostDTO;
 import com.example.server.rest.dto.LabelFamilyGetDTO;
 import com.example.server.rest.dto.LabelFamilyNameGetDTO;
 import com.example.server.rest.dto.LabelFamilyPostDTO;
+import com.example.server.rest.dto.LabelFamilyUpdatePostDTO;
 import com.example.server.rest.dto.LabelGetDTO;
 import com.example.server.rest.dto.LabelNameGetDTO;
 import com.example.server.rest.dto.LabelPostDTO;
 import com.example.server.rest.dto.ProjectGetDTO;
 import com.example.server.rest.dto.ProjectPostDTO;
+import com.example.server.rest.dto.ProjectUpdatePostDTO;
 import com.example.server.rest.dto.UserGetDTO;
 import com.example.server.rest.dto.UserPostDTO;
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-18T21:13:15+0200",
+    date = "2024-10-27T23:11:49+0100",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.6 (Amazon.com Inc.)"
 )
 public class DTOMapperImpl implements DTOMapper {
@@ -64,6 +66,20 @@ public class DTOMapperImpl implements DTOMapper {
         Project project = new Project();
 
         project.setProjectName( projectPostDTO.getProjectName() );
+
+        return project;
+    }
+
+    @Override
+    public Project convertProjectUpdatePostDTOToEntity(ProjectUpdatePostDTO projectUpdatePostDTO) {
+        if ( projectUpdatePostDTO == null ) {
+            return null;
+        }
+
+        Project project = new Project();
+
+        project.setToImport( projectUpdatePostDTO.isToImport() );
+        project.setProjectName( projectUpdatePostDTO.getProjectName() );
 
         return project;
     }
@@ -163,6 +179,21 @@ public class DTOMapperImpl implements DTOMapper {
         labelFamily.setRegister( labelFamilyPostDTO.isRegister() );
         labelFamily.setLabelFamilyDescription( labelFamilyPostDTO.getLabelFamilyDescription() );
         labelFamily.setLabels( labelPostDTOListToLabelList( labelFamilyPostDTO.getLabels() ) );
+
+        return labelFamily;
+    }
+
+    @Override
+    public LabelFamily convertLabelFamilyUpdatePostDTOToEntity(LabelFamilyUpdatePostDTO labelFamilyUpdatePostDTO) {
+        if ( labelFamilyUpdatePostDTO == null ) {
+            return null;
+        }
+
+        LabelFamily labelFamily = new LabelFamily();
+
+        labelFamily.setLabelFamilyName( labelFamilyUpdatePostDTO.getLabelFamilyName() );
+        labelFamily.setProjectName( labelFamilyUpdatePostDTO.getProjectName() );
+        labelFamily.setToImport( labelFamilyUpdatePostDTO.isToImport() );
 
         return labelFamily;
     }

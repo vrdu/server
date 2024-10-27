@@ -18,8 +18,14 @@ public interface DTOMapper {
     UserGetDTO convertEntityToUserGetDTO(User user);
 
 
+
     @Mapping(source = "projectName", target = "projectName")
     Project convertProjectPostDTOToEntity(ProjectPostDTO projectPostDTO);
+
+
+    @Mapping(source = "toImport", target = "toImport")
+    @Mapping(source = "projectName", target = "projectName")
+    Project convertProjectUpdatePostDTOToEntity(ProjectUpdatePostDTO projectUpdatePostDTO);
     @Mapping(source = "projectName", target = "projectName")
     @Mapping(source = "f1", target = "f1")
     @Mapping(source = "anls", target = "anls")
@@ -59,6 +65,12 @@ public interface DTOMapper {
     @Mapping(source = "labelFamilyDescription", target = "labelFamilyDescription")
     @Mapping(source = "labels", target = "labels")
     LabelFamily convertLabelFamilyPostDTOToEntity(LabelFamilyPostDTO labelFamilyPostDTO);
+
+
+    @Mapping(source = "labelFamilyName", target = "labelFamilyName")
+    @Mapping(source = "projectName", target = "projectName")
+    @Mapping(source = "toImport", target = "toImport")
+    LabelFamily convertLabelFamilyUpdatePostDTOToEntity(LabelFamilyUpdatePostDTO labelFamilyUpdatePostDTO);
 
     @Mapping(source = "index", target = "index")
     @Mapping(source = "labelFamilyName", target = "labelFamilyName")

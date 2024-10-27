@@ -2,13 +2,11 @@ package com.example.server.rest.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import java.util.List;
 
 @Getter
 @Setter
-public class ProjectUpdatePostDTO {
+public class LabelFamilyUpdatePostDTO {
+    private String labelFamilyName;
     private String projectName;
     private boolean toImport;
-    private List<LabelFamilyUpdatePostDTO> labelFamilies;
-
 }

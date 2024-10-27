@@ -78,6 +78,45 @@ public class LabelService {
             labelFamilyRepository.save(newLabelFamily);  // Save the new label family along with labels (cascade)
         }
     }
+        public void postLabelFamilies(List<LabelFamily> familiesToAdd, LabelFamily labelFamilyToAddTo){
+            // Assume entity is your object
+            System.out.println("The type of the entity is: " + familiesToAdd.getClass().getName());
+            System.out.println("The type of the entity is: " + familiesToAdd.get(0));
+
+            for(LabelFamily labelFamily : familiesToAdd){
+            System.out.println(String.format("trying to post labelFamily %s", labelFamily.getLabelFamilyName()));
+            Optional<LabelFamily> labelFamilyToAddDBOpt = labelFamilyRepository.findByOwnerAndProjectNameAndLabelFamilyName(labelFamily.getOwner(),labelFamily.getProjectName(),labelFamily.getLabelFamilyName());
+            if (labelFamilyToAddDBOpt.isPresent()){
+                System.out.println("labelFamily Present");
+                LabelFamily labelFamilyToAddDB = labelFamilyToAddDBOpt.get();
+                List<LabelFamily> labelFamiliesProject = labelFamilyRepository.findAllByProjectNameAndOwner(labelFamilyToAddTo.getProjectName(),labelFamilyToAddTo.getOwner());
+                boolean labelFamilyAlreadyExists = false;
+
+                for (LabelFamily labelFamilyProject : labelFamiliesProject){
+                    if (labelFamilyProject.getLabelFamilyName().equals(labelFamilyToAddDB.getLabelFamilyName()) && labelFamilyProject.getLabelFamilyDescription().equals(labelFamilyToAddDB.getLabelFamilyDescription())) {
+                        labelFamilyAlreadyExists = true;
+                        System.out.println("samelabelFamilyFound");
+                        break;
+                    }
+
+                    if (labelFamilyProject.getLabelFamilyName().equals(labelFamilyToAddDB.getLabelFamilyName()) && !labelFamilyProject.getLabelFamilyDescription().equals(labelFamilyToAddDB.getLabelFamilyDescription())){
+
+                        labelFamilyToAddDB.setLabelFamilyName(labelFamilyProject.getLabelFamilyName()+ labelFamilyToAddDB.getLabelFamilyName());
+                        labelFamilyToAddDB.setProjectName(labelFamilyToAddTo.getProjectName());
+                        labelFamilyRepository.save(labelFamilyToAddDB);
+                        System.out.println("sameName, but different Description");
+                        labelFamilyAlreadyExists = true;
+                        break;
+                    }
+                }
+                if (!labelFamilyAlreadyExists){
+                    labelFamilyToAddDB.setProjectName(labelFamilyToAddTo.getProjectName());
+                    System.out.println("adding in the end");
+                    labelFamilyRepository.save(labelFamilyToAddDB);
+                }
+            }
+        }
+        }
 
         public void updateLabel(Label label){
 

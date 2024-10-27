@@ -9,4 +9,14 @@ public class ProjectGetDTO {
     private String projectName;
     private int f1;
     private int anls;
+
+    @Override
+    public String toString() {
+        return "ProjectGetDTO{" +
+                "projectName='" + projectName + '\'' +
+                ", f1=" + f1 +
+                ", anls=" + anls +
+                '}';
+
+    }
 }
