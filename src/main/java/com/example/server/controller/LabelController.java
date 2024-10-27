@@ -113,7 +113,7 @@ public class LabelController {
         }
 
 
-
+        System.out.println(String.format("returned labelFamilies in getLabelFamiles: %s", labelFamiliesGetDTO));
         return labelFamiliesGetDTO;
     }
 
