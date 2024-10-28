@@ -11,4 +11,12 @@ public class ProjectUpdatePostDTO {
     private boolean toImport;
     private List<LabelFamilyUpdatePostDTO> labelFamilies;
 
+    @Override
+    public String toString() {
+        return "ProjectUpdatePostDTO{" +
+                "projectName='" + projectName + '\'' +
+                ", toImport=" + toImport +
+                ", labelFamilies=" + labelFamilies +
+                '}';
+    }
 }

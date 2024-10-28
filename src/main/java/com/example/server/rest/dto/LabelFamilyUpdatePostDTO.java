@@ -9,4 +9,12 @@ public class LabelFamilyUpdatePostDTO {
     private String labelFamilyName;
     private String projectName;
     private boolean toImport;
+    @Override
+    public String toString() {
+        return "LabelFamilyUpdatePostDTO{" +
+                "labelFamilyName='" + labelFamilyName + '\'' +
+                ", projectName='" + projectName + '\'' +
+                ", toImport=" + toImport +
+                '}';
+    }
 }

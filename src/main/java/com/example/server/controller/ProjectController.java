@@ -57,33 +57,32 @@ public class ProjectController {
     @PostMapping("/projects/{username}/{projectName}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<LabelFamilyGetDTO> postProjectsByUsername(@RequestBody List<ProjectUpdatePostDTO> projectUpdatePostDTOList, @PathVariable String username,@PathVariable String projectName, HttpServletRequest request) {
+    public ResponseEntity<String> postProjectsByUsername(@RequestBody List<ProjectUpdatePostDTO> projectUpdatePostDTOList, @PathVariable String username,@PathVariable String projectName, HttpServletRequest request) {
         userService.validateToken(request);
-        System.out.println("Arrived in /projects/{username}/{projectName}");
+        System.out.println("Received projectUpdatePostDTOList: " + projectUpdatePostDTOList);
         List <LabelFamilyUpdatePostDTO> labelFamilyUpdatePostDTOS = new ArrayList<>();
         List <LabelFamily> labelFamiliesRequest = new ArrayList<>();
         // parse representation
         // Iterate over each ProjectUpdatePostDTO in the list
         for (ProjectUpdatePostDTO projectUpdatePostDTOLoop : projectUpdatePostDTOList) {
             // Assuming there's a method `getLabelFamilies` to retrieve the list of LabelFamilyUpdatePostDTO
-            System.out.println("outerLoop");
-            List<LabelFamilyUpdatePostDTO> labelFamilyUpdatePostDTOs = projectUpdatePostDTOLoop.getLabelFamilies();
-
-            for (LabelFamilyUpdatePostDTO labelFamilyUpdatePostDTOLoop : labelFamilyUpdatePostDTOs) {
+            for (LabelFamilyUpdatePostDTO labelFamilyUpdatePostDTOLoop : projectUpdatePostDTOLoop.getLabelFamilies()) {
                 LabelFamily labelFamily = DTOMapper.INSTANCE.convertLabelFamilyUpdatePostDTOToEntity(labelFamilyUpdatePostDTOLoop);
+                labelFamily.setProjectName(projectUpdatePostDTOLoop.getProjectName());
                 labelFamily.setOwner(username);
                 labelFamiliesRequest.add(labelFamily);
-                System.out.println("added" + labelFamily.getLabelFamilyName());
             }
         }
+
 
         // fetch from database
         LabelFamily labelFamily = new LabelFamily();
         labelFamily.setOwner(username);
         labelFamily.setProjectName(projectName);
-        System.out.println("before call");
         labelService.postLabelFamilies(labelFamiliesRequest, labelFamily);
-        System.out.println("after call");
+
+        LabelFamily labelFamilyFetch = new LabelFamily();
+        labelFamilyFetch.
         List<LabelFamily> labelFamiliesDatabase = labelService.getLabelFamilies(labelFamily);
         List<LabelFamilyGetDTO> labelFamiliesGetDTO = new ArrayList<>();
 
@@ -107,7 +106,7 @@ public class ProjectController {
         }
 
         System.out.println("Returns something in /projects/{username}/{projectName}");
-        return labelFamiliesGetDTO;
+        return ResponseEntity.ok("Update successful.");
     }
 
 

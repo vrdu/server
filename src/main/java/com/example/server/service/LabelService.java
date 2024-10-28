@@ -4,6 +4,7 @@ import com.example.server.entity.Label;
 import com.example.server.entity.LabelFamily;
 import com.example.server.repository.LabelFamilyRepository;
 import com.example.server.repository.LabelRepository;
+import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +24,8 @@ public class LabelService {
     private final LabelRepository labelRepository;
     private final LabelFamilyRepository labelFamilyRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     public LabelService(LabelRepository labelRepository, LabelFamilyRepository labelFamilyRepository) {
@@ -79,40 +83,57 @@ public class LabelService {
         }
     }
         public void postLabelFamilies(List<LabelFamily> familiesToAdd, LabelFamily labelFamilyToAddTo){
-            // Assume entity is your object
-            System.out.println("The type of the entity is: " + familiesToAdd.getClass().getName());
-            System.out.println("The type of the entity is: " + familiesToAdd.get(0));
+
+            System.out.println("projectName of labelFamilyToAddTo: " + labelFamilyToAddTo.getProjectName());
 
             for(LabelFamily labelFamily : familiesToAdd){
             System.out.println(String.format("trying to post labelFamily %s", labelFamily.getLabelFamilyName()));
             Optional<LabelFamily> labelFamilyToAddDBOpt = labelFamilyRepository.findByOwnerAndProjectNameAndLabelFamilyName(labelFamily.getOwner(),labelFamily.getProjectName(),labelFamily.getLabelFamilyName());
             if (labelFamilyToAddDBOpt.isPresent()){
-                System.out.println("labelFamily Present");
                 LabelFamily labelFamilyToAddDB = labelFamilyToAddDBOpt.get();
+                LabelFamily deepCopyLabelFamily = createDeepCopy(labelFamilyToAddDB);
+                System.out.println("deepCopy: Description: " + deepCopyLabelFamily.getLabelFamilyDescription()+ "mFamilyName: "+ deepCopyLabelFamily.getLabelFamilyName() + " ProjectName: " + deepCopyLabelFamily.getProjectName());
                 List<LabelFamily> labelFamiliesProject = labelFamilyRepository.findAllByProjectNameAndOwner(labelFamilyToAddTo.getProjectName(),labelFamilyToAddTo.getOwner());
+
                 boolean labelFamilyAlreadyExists = false;
 
                 for (LabelFamily labelFamilyProject : labelFamiliesProject){
-                    if (labelFamilyProject.getLabelFamilyName().equals(labelFamilyToAddDB.getLabelFamilyName()) && labelFamilyProject.getLabelFamilyDescription().equals(labelFamilyToAddDB.getLabelFamilyDescription())) {
+                    if (labelFamilyProject.getLabelFamilyName().equals(deepCopyLabelFamily.getLabelFamilyName()) && labelFamilyProject.getLabelFamilyDescription().equals(deepCopyLabelFamily.getLabelFamilyDescription())) {
                         labelFamilyAlreadyExists = true;
                         System.out.println("samelabelFamilyFound");
                         break;
                     }
 
-                    if (labelFamilyProject.getLabelFamilyName().equals(labelFamilyToAddDB.getLabelFamilyName()) && !labelFamilyProject.getLabelFamilyDescription().equals(labelFamilyToAddDB.getLabelFamilyDescription())){
+                    if (labelFamilyProject.getLabelFamilyName().equals(deepCopyLabelFamily.getLabelFamilyName()) && !labelFamilyProject.getLabelFamilyDescription().equals(deepCopyLabelFamily.getLabelFamilyDescription())){
 
-                        labelFamilyToAddDB.setLabelFamilyName(labelFamilyProject.getLabelFamilyName()+ labelFamilyToAddDB.getLabelFamilyName());
-                        labelFamilyToAddDB.setProjectName(labelFamilyToAddTo.getProjectName());
-                        labelFamilyRepository.save(labelFamilyToAddDB);
-                        System.out.println("sameName, but different Description");
+                        deepCopyLabelFamily.setLabelFamilyName(labelFamilyProject.getProjectName()+ "_" +deepCopyLabelFamily.getLabelFamilyName());
+                        deepCopyLabelFamily.setProjectName(labelFamilyToAddTo.getProjectName());
+                        labelFamilyRepository.save(deepCopyLabelFamily);
+                        //labelFamilyRepository.save(labelFamilyToAddDB);
                         labelFamilyAlreadyExists = true;
                         break;
                     }
                 }
+
                 if (!labelFamilyAlreadyExists){
-                    labelFamilyToAddDB.setProjectName(labelFamilyToAddTo.getProjectName());
-                    System.out.println("adding in the end");
-                    labelFamilyRepository.save(labelFamilyToAddDB);
+                    deepCopyLabelFamily.setProjectName(labelFamilyToAddTo.getProjectName());
+                    System.out.println("deepCopy: Description: " + deepCopyLabelFamily.getLabelFamilyDescription()+ " FamilyName: "+ deepCopyLabelFamily.getLabelFamilyName() + " ProjectName: " + deepCopyLabelFamily.getProjectName());
+                    System.out.println("labelFamilyToAdd: Description: " + labelFamilyToAddDB.getLabelFamilyDescription()+ " FamilyName: "+ labelFamilyToAddDB.getLabelFamilyName() + " ProjectName: " + labelFamilyToAddDB.getProjectName());
+                    labelFamilyRepository.save(deepCopyLabelFamily);
+                    labelFamilyRepository.flush();
+                    Optional<LabelFamily> labelFamilyForIdOpt =  labelFamilyRepository.findByOwnerAndProjectNameAndLabelFamilyName(deepCopyLabelFamily.getOwner(), deepCopyLabelFamily.getProjectName(), deepCopyLabelFamily.getLabelFamilyName());
+                    if (labelFamilyForIdOpt.isPresent()){
+                        LabelFamily labelFamilyForId = labelFamilyForIdOpt.get();
+                        List <Label> labelsToCopy = labelRepository.findAllByLabelFamilyId(labelFamilyToAddDB.getId());
+                        List <Label> labelsDeepCopy = new ArrayList<>();
+                        for (Label label : labelsToCopy){
+                            Label copiedLabel = deepCopyLabel(label, labelFamilyToAddTo.getProjectName(),labelFamilyForId);
+                            labelsDeepCopy.add(copiedLabel);
+                        }
+                        labelRepository.saveAll(labelsDeepCopy);
+                        labelRepository.flush();
+                    }
+
                 }
             }
         }
@@ -242,6 +263,27 @@ public class LabelService {
 
 
     // Helperfunctions
+    private Label deepCopyLabel(Label labelToCopy, String projectName, LabelFamily labelFamily){
+        Label copy = new Label();
+        copy.setLabelName(labelToCopy.getLabelName());
+        copy.setLabelDescription(labelToCopy.getLabelDescription());
+        copy.setFamilyOwner(labelToCopy.getFamilyOwner());
+        copy.setFamilyProjectName(projectName);
+        copy.setFamilyName(labelToCopy.getFamilyName());
+        copy.setLabelFamily(labelFamily);
+        return copy;
+    }
+
+    private LabelFamily createDeepCopy(LabelFamily original) {
+        LabelFamily copy = new LabelFamily();
+        copy.setLabelFamilyName(original.getLabelFamilyName());
+        copy.setProjectName(original.getProjectName());
+        copy.setOwner(original.getOwner());
+        copy.setLabelFamilyDescription(original.getLabelFamilyDescription());
+        return copy;
+    }
+
+
     private boolean checkIfFamilyChanged(LabelFamily existingLabelFamily, LabelFamily newLabelFamily) {
         return !existingLabelFamily.getLabelFamilyName().equals(newLabelFamily.getLabelFamilyName()) ||
                 !existingLabelFamily.getLabelFamilyDescription().equals(newLabelFamily.getLabelFamilyDescription()) ||
