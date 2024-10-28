@@ -82,6 +82,7 @@ public class LabelService {
             labelFamilyRepository.save(newLabelFamily);  // Save the new label family along with labels (cascade)
         }
     }
+
         public void postLabelFamilies(List<LabelFamily> familiesToAdd, LabelFamily labelFamilyToAddTo){
 
             System.out.println("projectName of labelFamilyToAddTo: " + labelFamilyToAddTo.getProjectName());

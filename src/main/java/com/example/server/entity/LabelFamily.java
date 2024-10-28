@@ -48,4 +48,20 @@ public class LabelFamily implements Serializable {
 
     @OneToMany(mappedBy = "labelFamily", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Label> labels;
+    @Override
+    public String toString() {
+        return "LabelFamily{" +
+                "id=" + id +
+                ", owner='" + owner + '\'' +
+                ", labelFamilyName='" + labelFamilyName + '\'' +
+                ", oldLabelFamilyName='" + oldLabelFamilyName + '\'' +
+                ", register=" + register +
+                ", projectName='" + projectName + '\'' +
+                ", labelFamilyDescription='" + labelFamilyDescription + '\'' +
+                ", index='" + index + '\'' +
+                ", toImport=" + toImport +
+                ", labels=" + (labels != null ? labels.size() : "null") +
+                '}';
+    }
+
 }

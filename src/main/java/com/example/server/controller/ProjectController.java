@@ -57,14 +57,19 @@ public class ProjectController {
     @PostMapping("/projects/{username}/{projectName}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<String> postProjectsByUsername(@RequestBody List<ProjectUpdatePostDTO> projectUpdatePostDTOList, @PathVariable String username,@PathVariable String projectName, HttpServletRequest request) {
+    public ResponseEntity<List<LabelFamilyGetDTO>>  postProjectsByUsername(@RequestBody List<ProjectUpdatePostDTO> projectUpdatePostDTOList, @PathVariable String username,@PathVariable String projectName, HttpServletRequest request) {
         userService.validateToken(request);
         System.out.println("Received projectUpdatePostDTOList: " + projectUpdatePostDTOList);
-        List <LabelFamilyUpdatePostDTO> labelFamilyUpdatePostDTOS = new ArrayList<>();
+        List <Project> projectsRequest = new ArrayList<>();
         List <LabelFamily> labelFamiliesRequest = new ArrayList<>();
         // parse representation
         // Iterate over each ProjectUpdatePostDTO in the list
         for (ProjectUpdatePostDTO projectUpdatePostDTOLoop : projectUpdatePostDTOList) {
+            if (projectUpdatePostDTOLoop.isToImport()){
+                Project project = DTOMapper.INSTANCE.convertProjectUpdatePostDTOToEntity(projectUpdatePostDTOLoop);
+                project.setOwner(username);
+                projectsRequest.add(project);
+            }
             // Assuming there's a method `getLabelFamilies` to retrieve the list of LabelFamilyUpdatePostDTO
             for (LabelFamilyUpdatePostDTO labelFamilyUpdatePostDTOLoop : projectUpdatePostDTOLoop.getLabelFamilies()) {
                 LabelFamily labelFamily = DTOMapper.INSTANCE.convertLabelFamilyUpdatePostDTOToEntity(labelFamilyUpdatePostDTOLoop);
@@ -74,39 +79,45 @@ public class ProjectController {
             }
         }
 
+        Project project = new Project();
+        project.setOwner(username);
+        project.setProjectName(projectName);
 
-        // fetch from database
         LabelFamily labelFamily = new LabelFamily();
         labelFamily.setOwner(username);
         labelFamily.setProjectName(projectName);
+        projectService.postProjects(projectsRequest, project);
         labelService.postLabelFamilies(labelFamiliesRequest, labelFamily);
-
+        // fetch from database
         LabelFamily labelFamilyFetch = new LabelFamily();
-        labelFamilyFetch.
-        List<LabelFamily> labelFamiliesDatabase = labelService.getLabelFamilies(labelFamily);
-        List<LabelFamilyGetDTO> labelFamiliesGetDTO = new ArrayList<>();
+        labelFamilyFetch.setOwner(username);
+        labelFamilyFetch.setProjectName(projectName);
+        List<LabelFamily> labelFamiliesDatabase = labelService.getLabelFamilies(labelFamilyFetch);
 
+        List<LabelFamilyGetDTO> labelFamiliesGetDTOs = new ArrayList<>();
 
+        System.out.println("labelFamilyDatabese: " +labelFamiliesDatabase);
         for (LabelFamily labelFamilyLoop : labelFamiliesDatabase) {
+            System.out.println("labelFamilyLoop: " + labelFamilyLoop);
             // Use the mapLabelFamily function to map the labelFamily to labelFamilyGetDTO
             LabelFamilyGetDTO labelFamilyGetDTO = DTOMapper.INSTANCE.convertEntityToLabelFamilyGetDTO(labelFamilyLoop);
 
             // Transform the labels[] in the labelFamily to labelGetDTOs
             List<LabelGetDTO> labelGetDTOs = new ArrayList<>();
-            for (Label label : labelFamilyLoop.getLabels()) {  // Use labelFamilyLoop here
+            List<Label> labelsDatabase = labelService.getLabels(labelFamilyLoop);
+            for (Label label : labelsDatabase) {  // Use labelFamilyLoop here
                 LabelGetDTO labelGetDTO = DTOMapper.INSTANCE.convertEntityToLabelGetDTO(label); // Map each label to labelGetDTO
                 labelGetDTOs.add(labelGetDTO);
-            }
 
+            }
             // Set the transformed labels in the labelFamilyGetDTO
             labelFamilyGetDTO.setLabels(labelGetDTOs);
 
             // Add the transformed labelFamilyGetDTO to the result list
-            labelFamiliesGetDTO.add(labelFamilyGetDTO);
+            labelFamiliesGetDTOs.add(labelFamilyGetDTO);
         }
 
-        System.out.println("Returns something in /projects/{username}/{projectName}");
-        return ResponseEntity.ok("Update successful.");
+        return ResponseEntity.ok(labelFamiliesGetDTOs);
     }
 
 
