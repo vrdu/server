@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -42,32 +43,53 @@ public class ProjectService {
         log.debug("Created Project:{}",project);
         return project;
     }
-    public void postProjects(List<Project> projects, Project projectToUpdate){
+    public void postProjects(Project projectToImport, Project projectToUpdate){
 
-        for (Project projectToImport : projects){
-            Project projectFromRepositoryToImport = projectRepository.findByProjectNameAndOwner(projectToImport.getProjectName(),projectToImport.getOwner());
-            Project projectFromRepositoryToImportCopy = deepCopyProject(projectFromRepositoryToImport);
-            List<LabelFamily> labelFamiliesToImport;
-            labelFamiliesToImport = labelFamilyRepository.findAllByProjectNameAndOwner(projectFromRepositoryToImportCopy.getProjectName(), projectToUpdate.getOwner());
 
-            for (LabelFamily labelFamilyToImport : labelFamiliesToImport){
-                    LabelFamily labelFamilyToImportCopy = createDeepCopy(labelFamilyToImport);
-                    labelFamilyToImportCopy.setProjectName(projectToUpdate.getProjectName());
+        Project projectFromRepositoryToImport = projectRepository.findByProjectNameAndOwner(projectToImport.getProjectName(),projectToImport.getOwner());
+        Project projectFromRepositoryToImportCopy = deepCopyProject(projectFromRepositoryToImport);
 
+        List<LabelFamily> labelFamiliesToImport;
+        labelFamiliesToImport = labelFamilyRepository.findAllByProjectNameAndOwner(projectToImport.getProjectName(), projectToImport.getOwner());
+
+        for (LabelFamily labelFamilyToImport : labelFamiliesToImport){
+
+                LabelFamily labelFamilyToImportCopy = createDeepCopy(labelFamilyToImport);
+                labelFamilyToImportCopy.setProjectName(projectToUpdate.getProjectName());
+                Optional <LabelFamily> labelFamilyInRepoWithSameName = labelFamilyRepository.findByOwnerAndProjectNameAndLabelFamilyName(projectToImport.getOwner(), projectToUpdate.getProjectName(), labelFamilyToImportCopy.getLabelFamilyName());
+                if (labelFamilyInRepoWithSameName.isPresent()){
+                    labelFamilyToImportCopy.setLabelFamilyName(projectFromRepositoryToImportCopy.getProjectName()+"_"+ labelFamilyToImportCopy.getLabelFamilyName());
+
+                }else{
+                    labelFamilyToImportCopy.setLabelFamilyName(labelFamilyToImportCopy.getLabelFamilyName());
+
+                }
+                labelFamilyRepository.save(labelFamilyToImportCopy);
+                labelFamilyRepository.flush();
+
+                //if error, move this up, maybe labelFamilyToImportCopy is not available here anymore...
+                Optional<LabelFamily> labelFamilyToGetIdFromOpt =labelFamilyRepository.findByOwnerAndProjectNameAndLabelFamilyName(labelFamilyToImportCopy.getOwner(), projectToImport.getProjectName(), labelFamilyToImport.getLabelFamilyName());
+                if (labelFamilyToGetIdFromOpt.isPresent()){
+                    System.out.println("labelFamilyPresent");
+                    LabelFamily labelFamilyToGetIdFrom = labelFamilyToGetIdFromOpt.get();
                     List<Label> labelsToImport;
-                    labelsToImport = labelRepository.findAllByLabelFamilyId(labelFamilyToImportCopy.getId());
+                    labelsToImport = labelRepository.findAllByLabelFamilyId(labelFamilyToGetIdFrom.getId());
 
                     for (Label labelToImport : labelsToImport){
+                        System.out.println("here");
                         Label labelToImportCopy = deepCopyLabel(labelToImport, projectToUpdate.getProjectName(), labelFamilyToImportCopy);
                         labelToImportCopy.setFamilyProjectName(projectToUpdate.getProjectName());
                         labelRepository.save(labelToImportCopy);
+                        labelRepository.flush();
+                        System.out.println("there");
                     }
+                }
 
-                    labelFamilyRepository.save(labelFamilyToImportCopy);
-            }
-            projectFromRepositoryToImportCopy.setProjectName(projectToUpdate.getProjectName());
-            projectRepository.save(projectFromRepositoryToImportCopy);
+
+
         }
+
+
     }
     public void checkIfProjectExists(String project, String owner){
         Project projectByRepository = projectRepository.findByProjectNameAndOwner(project, owner);
@@ -103,6 +125,7 @@ public class ProjectService {
     private Project deepCopyProject(Project original){
         Project copy = new Project();
         copy.setOwner(original.getOwner());
+        copy.setProjectName(original.getProjectName());
 
         return copy;
     }

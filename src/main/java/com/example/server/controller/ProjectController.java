@@ -60,34 +60,31 @@ public class ProjectController {
     public ResponseEntity<List<LabelFamilyGetDTO>>  postProjectsByUsername(@RequestBody List<ProjectUpdatePostDTO> projectUpdatePostDTOList, @PathVariable String username,@PathVariable String projectName, HttpServletRequest request) {
         userService.validateToken(request);
         System.out.println("Received projectUpdatePostDTOList: " + projectUpdatePostDTOList);
-        List <Project> projectsRequest = new ArrayList<>();
-        List <LabelFamily> labelFamiliesRequest = new ArrayList<>();
-        // parse representation
-        // Iterate over each ProjectUpdatePostDTO in the list
+        Project project2 = new Project();
+        project2.setOwner(username);
+        project2.setProjectName(projectName);
+
+        LabelFamily labelFamily2 = new LabelFamily();
+        labelFamily2.setOwner(username);
+        labelFamily2.setProjectName(projectName);
         for (ProjectUpdatePostDTO projectUpdatePostDTOLoop : projectUpdatePostDTOList) {
             if (projectUpdatePostDTOLoop.isToImport()){
                 Project project = DTOMapper.INSTANCE.convertProjectUpdatePostDTOToEntity(projectUpdatePostDTOLoop);
                 project.setOwner(username);
-                projectsRequest.add(project);
+                projectService.postProjects(project, project2);
+            }else{
+                for (LabelFamilyUpdatePostDTO labelFamilyUpdatePostDTOLoop : projectUpdatePostDTOLoop.getLabelFamilies()) {
+                    LabelFamily labelFamily = DTOMapper.INSTANCE.convertLabelFamilyUpdatePostDTOToEntity(labelFamilyUpdatePostDTOLoop);
+                    labelFamily.setProjectName(projectUpdatePostDTOLoop.getProjectName());
+                    labelFamily.setOwner(username);
+                    labelService.postLabelFamilies(labelFamily, labelFamily2);
+                }
             }
-            // Assuming there's a method `getLabelFamilies` to retrieve the list of LabelFamilyUpdatePostDTO
-            for (LabelFamilyUpdatePostDTO labelFamilyUpdatePostDTOLoop : projectUpdatePostDTOLoop.getLabelFamilies()) {
-                LabelFamily labelFamily = DTOMapper.INSTANCE.convertLabelFamilyUpdatePostDTOToEntity(labelFamilyUpdatePostDTOLoop);
-                labelFamily.setProjectName(projectUpdatePostDTOLoop.getProjectName());
-                labelFamily.setOwner(username);
-                labelFamiliesRequest.add(labelFamily);
-            }
+
+
         }
 
-        Project project = new Project();
-        project.setOwner(username);
-        project.setProjectName(projectName);
 
-        LabelFamily labelFamily = new LabelFamily();
-        labelFamily.setOwner(username);
-        labelFamily.setProjectName(projectName);
-        projectService.postProjects(projectsRequest, project);
-        labelService.postLabelFamilies(labelFamiliesRequest, labelFamily);
         // fetch from database
         LabelFamily labelFamilyFetch = new LabelFamily();
         labelFamilyFetch.setOwner(username);

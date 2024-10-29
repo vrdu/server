@@ -83,11 +83,11 @@ public class LabelService {
         }
     }
 
-        public void postLabelFamilies(List<LabelFamily> familiesToAdd, LabelFamily labelFamilyToAddTo){
+        public void postLabelFamilies(LabelFamily labelFamily, LabelFamily labelFamilyToAddTo){
 
             System.out.println("projectName of labelFamilyToAddTo: " + labelFamilyToAddTo.getProjectName());
 
-            for(LabelFamily labelFamily : familiesToAdd){
+
             System.out.println(String.format("trying to post labelFamily %s", labelFamily.getLabelFamilyName()));
             Optional<LabelFamily> labelFamilyToAddDBOpt = labelFamilyRepository.findByOwnerAndProjectNameAndLabelFamilyName(labelFamily.getOwner(),labelFamily.getProjectName(),labelFamily.getLabelFamilyName());
             if (labelFamilyToAddDBOpt.isPresent()){
@@ -137,7 +137,7 @@ public class LabelService {
 
                 }
             }
-        }
+
         }
 
         public void updateLabel(Label label){
