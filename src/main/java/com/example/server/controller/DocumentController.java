@@ -2,6 +2,7 @@ package com.example.server.controller;
 
 import com.example.server.entity.Document;
 import com.example.server.rest.dto.DocumentDeleteDTO;
+import com.example.server.rest.dto.DocumentGetCompleteDTO;
 import com.example.server.rest.dto.DocumentGetDTO;
 import com.example.server.rest.dto.DocumentPostDTO;
 import com.example.server.rest.mapper.DTOMapper;
@@ -107,5 +108,22 @@ public class DocumentController {
 
 
         return ResponseEntity.ok(documentGetDTOS);
+    }
+
+    @GetMapping("/projects/{username}/{projectName}/annotate") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<DocumentGetCompleteDTO> getFileToAnnotate(
+            @RequestBody String documentName,
+            @PathVariable String projectName,
+            @PathVariable String username,
+            HttpServletRequest request) throws IOException {
+
+        userService.validateToken(request);
+
+        Document document = documentService.getAnnotationDocuments(username, projectName, documentName);
+        DocumentGetCompleteDTO documentGetCompleteDTO = DTOMapper.INSTANCE.convertEntityToDocumentGetCompleteDTO(document);
+
+        return ResponseEntity.ok(documentGetCompleteDTO);
     }
 }

@@ -42,6 +42,12 @@ public class Document implements Serializable {
     @Column(nullable = true)
     private String extractionResult;
 
+    @Column(nullable = false)
+    private String annotation;
+
+    @Column(nullable = false)
+    private String prompt;
+
     @Column(nullable =false)
     private boolean instruction;
 

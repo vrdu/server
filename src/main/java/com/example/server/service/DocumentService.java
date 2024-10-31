@@ -66,7 +66,28 @@ public class DocumentService {
         List <Document> documentsDB = documentRepository.findAllByProjectNameAndOwner(projectName, username);
         return documentsDB;
     }
+    public Document getAnnotationDocuments(String username, String projectName, String documentName){
+        Optional <Document> documentDBOpt = documentRepository.findByOwnerAndProjectNameAndDocumentName(username,projectName,documentName);
+        if (documentDBOpt.isPresent()){
+            Document documentDB = documentDBOpt.get();
+            if(!documentDB.isCurrentlyInOCR()){
+                if (!documentDB.isOcrNotPossible()){
+                    if(!documentDB.getOcrData().isEmpty()){
+                        return documentDB;
+                    }else{
+                        throw new RuntimeException("You are to fast, OCR did not even start. Please wait until it is finished.");
+                    }
+                }else{
+                    throw new RuntimeException("OCR is not possible. Please try to delete and upload it again.");
+                }
+            }else{
+                throw new RuntimeException("Wait until the OCR is finished.");
 
+            }
+        }else{
+            throw new RuntimeException("Something went wrong the document does not exist.");
+        }
+    }
     public void deleteDocument(Document documentToDelete){
         System.out.println("DocumentName: " + documentToDelete.getDocumentName());
         System.out.println("Owner: "+ documentToDelete.getOwner());
