@@ -5,6 +5,8 @@ import com.example.server.entity.Label;
 import com.example.server.entity.LabelFamily;
 import com.example.server.entity.Project;
 import com.example.server.entity.User;
+import com.example.server.rest.dto.DocumentDeleteDTO;
+import com.example.server.rest.dto.DocumentGetDTO;
 import com.example.server.rest.dto.DocumentPostDTO;
 import com.example.server.rest.dto.LabelFamilyGetDTO;
 import com.example.server.rest.dto.LabelFamilyNameGetDTO;
@@ -24,8 +26,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-28T21:13:10+0100",
-    comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.6 (Amazon.com Inc.)"
+    date = "2024-10-31T18:37:34+0100",
+    comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.4.1 (Eclipse Adoptium)"
 )
 public class DTOMapperImpl implements DTOMapper {
 
@@ -112,6 +114,34 @@ public class DTOMapperImpl implements DTOMapper {
         document.setOwner( documentPostDTO.getOwner() );
 
         return document;
+    }
+
+    @Override
+    public Document convertDocumentDeleteDTOToEntity(DocumentDeleteDTO documentDeleteDTO) {
+        if ( documentDeleteDTO == null ) {
+            return null;
+        }
+
+        Document document = new Document();
+
+        document.setProjectName( documentDeleteDTO.getProjectName() );
+        document.setDocumentName( documentDeleteDTO.getDocumentName() );
+        document.setOwner( documentDeleteDTO.getOwner() );
+
+        return document;
+    }
+
+    @Override
+    public DocumentGetDTO convertEntityToDocumentGetDTO(Document document) {
+        if ( document == null ) {
+            return null;
+        }
+
+        DocumentGetDTO documentGetDTO = new DocumentGetDTO();
+
+        documentGetDTO.setName( document.getDocumentName() );
+
+        return documentGetDTO;
     }
 
     @Override

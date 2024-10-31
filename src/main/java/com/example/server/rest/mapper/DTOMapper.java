@@ -5,6 +5,9 @@ import com.example.server.rest.dto.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+
+import javax.print.Doc;
+
 @Mapper
 public interface DTOMapper {
     DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
@@ -36,7 +39,13 @@ public interface DTOMapper {
     @Mapping(source = "owner", target = "owner")
     Document convertDocumentPostDTOToEntity(DocumentPostDTO documentPostDTO);
 
+    @Mapping(source = "projectName", target = "projectName")
+    @Mapping(source = "documentName", target = "documentName")
+    @Mapping(source = "owner", target = "owner")
+    Document convertDocumentDeleteDTOToEntity(DocumentDeleteDTO documentDeleteDTO);
 
+    @Mapping(source = "documentName", target = "name")
+    DocumentGetDTO convertEntityToDocumentGetDTO(Document document);
 
     @Mapping(source = "labelName", target = "labelName")
     @Mapping(source = "oldLabelName", target = "oldLabelName")

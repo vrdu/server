@@ -22,6 +22,7 @@ import javax.print.Doc;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -59,16 +60,37 @@ public class DocumentService {
             return false;
         }
 
-
     }
 
+    public List<Document> getDocuments(String username, String  projectName){
+        List <Document> documentsDB = documentRepository.findAllByProjectNameAndOwner(projectName, username);
+        return documentsDB;
+    }
+
+    public void deleteDocument(Document documentToDelete){
+        System.out.println("DocumentName: " + documentToDelete.getDocumentName());
+        System.out.println("Owner: "+ documentToDelete.getOwner());
+        System.out.println("ProjectName: "+ documentToDelete.getProjectName());
+        Optional <Document> documentToDeleteDBOpt = documentRepository.findByOwnerAndProjectNameAndDocumentName(documentToDelete.getOwner(),
+                                                                                                                documentToDelete.getProjectName(),
+                                                                                                                documentToDelete.getDocumentName());
+        if (documentToDeleteDBOpt.isPresent()){
+            Document documentToDeleteDB = documentToDeleteDBOpt.get();
+            documentRepository.delete(documentToDeleteDB);
+        }else{
+            throw new RuntimeException("This document could not be deleted, because it did not exist.");
+
+        }
+    }
     @Async
     public CompletableFuture<Void> startOCRProcessAsync(Document document) {
         Document ocrResult = performOCR(document);
         ocrResult.setCurrentlyInOCR(false);
-        documentRepository.save(ocrResult);
-        documentRepository.flush();
-        log.debug("OCR process completed for document: {}", document.getDocumentName());
+        Optional <Document> documentFromDBOpt = documentRepository.findByOwnerAndProjectNameAndDocumentName(ocrResult.getOwner(),ocrResult.getProjectName(),ocrResult.getDocumentName());
+        if (documentFromDBOpt.isPresent()){
+            documentRepository.save(ocrResult);
+            documentRepository.flush();
+        }
 
         return CompletableFuture.completedFuture(null);
     }

@@ -21,8 +21,6 @@ w
 G.idea/sonarlint/issuestore/0/5/05efc8b1657769a27696d478ded1e95f38737233,3\c\3c8c56407c35e5f5ebbd6c7250a79af8128a13a6
 i
 9src/main/java/com/example/server/rest/dto/UserGetDTO.java,b\9\b987045501c321cddd755eea17460d30c831e8f8
-<
-build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 a
 1src/main/java/com/example/server/entity/User.java,7\0\70076aeff37b0138bcf35b982df69d28cef53d13
 l
@@ -31,8 +29,6 @@ s
 Csrc/main/java/com/example/server/repository/DocumentRepository.java,c\9\c9237355a58486678b148ccf42fc0876cafbba03
 o
 ?src/main/java/com/example/server/repository/UserRepository.java,d\a\da7da392e403c130a4cead033a59927d471ed96e
-n
->src/main/java/com/example/server/rest/dto/DocumentPostDTO.java,6\f\6fd1a0840ee45b633521e4abfbedf5eaac8617b8
 q
 Asrc/main/java/com/example/server/rest/dto/LabelFamilyPostDTO.java,7\5\753b0674f5e80a2e02cfa26858c1f101eb67752e
 p

@@ -1,6 +1,8 @@
 package com.example.server.controller;
 
 import com.example.server.entity.Document;
+import com.example.server.rest.dto.DocumentDeleteDTO;
+import com.example.server.rest.dto.DocumentGetDTO;
 import com.example.server.rest.dto.DocumentPostDTO;
 import com.example.server.rest.mapper.DTOMapper;
 import com.example.server.service.DocumentService;
@@ -13,7 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.print.Doc;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class DocumentController {
@@ -51,10 +56,56 @@ public class DocumentController {
 
             documentService.safeInDB(document);
             //for OCR uncomment the follwoing line:
-            //documentService.startOCRProcessAsync(document);
+            documentService.startOCRProcessAsync(document);
 
         }
 
         return ResponseEntity.ok("File uploaded successfully");
+    }
+
+    @DeleteMapping("/projects/{username}/{projectName}/delete") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<String> deleteFile(
+            @RequestBody String fileName,
+            @PathVariable String projectName,
+            @PathVariable String username,
+            HttpServletRequest request) throws IOException {
+            System.out.println("arrriva");
+            userService.validateToken(request);
+
+            DocumentDeleteDTO documentDeleteDTO = new DocumentDeleteDTO();
+            documentDeleteDTO.setOwner(username);
+            documentDeleteDTO.setProjectName(projectName);
+            fileName = fileName.replaceAll("^\"|\"$", "");
+            documentDeleteDTO.setDocumentName(fileName);
+
+            Document document = DTOMapper.INSTANCE.convertDocumentDeleteDTOToEntity(documentDeleteDTO);
+            documentService.deleteDocument(document);
+
+
+
+        return ResponseEntity.ok("File uploaded successfully");
+    }
+
+    @GetMapping("/projects/{username}/{projectName}/documents") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<List<DocumentGetDTO>> getFile(
+            @PathVariable String projectName,
+            @PathVariable String username,
+            HttpServletRequest request) throws IOException {
+
+        userService.validateToken(request);
+
+        List <Document> documents = documentService.getDocuments(username, projectName);
+        List <DocumentGetDTO> documentGetDTOS = new ArrayList<>();
+        for (Document document : documents){
+            DocumentGetDTO documentGetDTO = DTOMapper.INSTANCE.convertEntityToDocumentGetDTO(document);
+            documentGetDTOS.add(documentGetDTO);
+        }
+
+
+        return ResponseEntity.ok(documentGetDTOS);
     }
 }
