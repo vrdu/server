@@ -122,6 +122,7 @@ public class DocumentController {
         Document document = documentService.getAnnotationDocuments(username, projectName, documentName);
         DocumentGetCompleteDTO documentGetCompleteDTO = DTOMapper.INSTANCE.convertEntityToDocumentGetCompleteDTO(document);
         documentGetCompleteDTO.setBase64PdfData(Base64.getEncoder().encodeToString(document.getPdfData()));
+        documentGetCompleteDTO.setBoxes(document.getOcrBoxes());
         return ResponseEntity.ok(documentGetCompleteDTO);
     }
 }

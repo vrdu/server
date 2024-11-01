@@ -49,7 +49,6 @@ public interface DTOMapper {
 
     @Mapping(source = "documentName", target = "name")
     @Mapping(source = "annotation", target = "annotation")
-    @Mapping(source = "ocrData", target = "ocrData")
     DocumentGetCompleteDTO convertEntityToDocumentGetCompleteDTO(Document document);
     @Mapping(source = "labelName", target = "labelName")
     @Mapping(source = "oldLabelName", target = "oldLabelName")
