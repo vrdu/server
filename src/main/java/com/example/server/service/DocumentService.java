@@ -6,7 +6,6 @@ import com.example.server.repository.DocumentRepository;
 import jakarta.transaction.Transactional;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
 import net.sourceforge.tess4j.Word;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -25,11 +24,9 @@ import java.io.IOException;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 @Service
 @Transactional
@@ -120,7 +117,80 @@ public class DocumentService {
         return CompletableFuture.completedFuture(null);
     }
 
+    public Document performOCRForPrompt(Document document) {
+        log.debug("Started OCR process for document: {}", document.getDocumentName());
 
+        if (!document.isOcrNotPossible()) {
+            ITesseract tesseract = new Tesseract();
+            tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");
+            tesseract.setLanguage("deu");
+            tesseract.setTessVariable("user_defined_dpi", "300");
+
+            StringBuilder ocrResultBuilder = new StringBuilder();
+            List<BoundingBox> boundingBoxes = new ArrayList<>();
+
+            try (PDDocument pdfDocument = PDDocument.load(new ByteArrayInputStream(document.getPdfData()))) {
+                PDFRenderer pdfRenderer = new PDFRenderer(pdfDocument);
+                int pageCount = pdfDocument.getNumberOfPages();
+                log.info("PDF has {} pages", pageCount);
+
+                for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+                    BufferedImage image = pdfRenderer.renderImageWithDPI(pageIndex, 300);
+
+                    int maxRetries = 3;
+                    int attempt = 0;
+                    boolean success = false;
+
+                    while (attempt < maxRetries && !success) {
+                        try {
+                            // Perform OCR and get the full text with line and paragraph preservation
+                            String result = tesseract.doOCR(image);
+                            result = result.replaceAll("\\r\\n|\\r|\\n", "\n").replaceAll("(?m)^[ \\t]*\\n", "\n\n");
+
+                            // Extract words and their bounding boxes
+                            List<Word> words = tesseract.getWords(image, ITessAPI.TessPageIteratorLevel.RIL_WORD);
+                            StringBuilder pageResult = new StringBuilder();
+
+                            for (Word word : words) {
+                                pageResult.append(word.getText()).append(" ");
+                                BoundingBox box = new BoundingBox(word.getBoundingBox(), word.getText(), pageIndex);
+                                boundingBoxes.add(box);
+                            }
+
+                            // Append the OCR result and preserve newlines for page, line, and paragraph breaks
+                            ocrResultBuilder.append("Page ").append(pageIndex + 1).append(":\n")
+                                    .append(result).append("\n\n");
+
+                            log.info("OCR successful on page {} at attempt {}", pageIndex + 1, attempt + 1);
+                            success = true;
+                        } catch (Exception e) {
+                            attempt++;
+                            log.error("OCR failed on attempt {}: {}", attempt, e.getMessage());
+
+                            if (attempt < maxRetries) {
+                                log.info("Retrying OCR...");
+                            } else {
+                                log.error("Max retries reached. OCR failed.");
+                                document.setOcrNotPossible(true);
+                            }
+                        }
+                    }
+                }
+
+                // Store the complete OCR result and the bounding boxes
+                document.setOcrData(ocrResultBuilder.toString());
+                document.setOcrBoxes(boundingBoxes);
+
+                return document;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return document;
+    }
+
+
+/* with correct boxes implementation
     public Document performOCRForPrompt(Document document) {
         log.debug("Started OCR process for document: {}", document.getDocumentName());
 
@@ -152,7 +222,7 @@ public class DocumentService {
 
                             for (Word word : words) {
                                 pageResult.append(word.getText()).append(" ");
-                                BoundingBox box = new BoundingBox(word.getBoundingBox());
+                                BoundingBox box = new BoundingBox(word.getBoundingBox(), word.getText());
                                 boundingBoxes.add(box);
                             }
 
@@ -188,7 +258,7 @@ public class DocumentService {
         return document;
     }
 
-
+*/
 /*
     public Document performOCRForPrompt(Document document) {
         log.debug("Started OCR process for document: {}", document.getDocumentName());

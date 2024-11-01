@@ -39,9 +39,8 @@ public class Document implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String ocrData;
 
-    @Lob
+
     @ElementCollection
-    @Column(columnDefinition = "TEXT")
     private List<BoundingBox> ocrBoxes;
 
     @Lob
