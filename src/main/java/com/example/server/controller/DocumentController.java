@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.print.Doc;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -39,7 +40,6 @@ public class DocumentController {
             @PathVariable String projectName,
             HttpServletRequest request) throws IOException {
         userService.validateToken(request);
-
         //extract the owner, username
         String[] parts = projectName.split("&");
         String username = parts[0];
@@ -72,7 +72,6 @@ public class DocumentController {
             @PathVariable String projectName,
             @PathVariable String username,
             HttpServletRequest request) throws IOException {
-            System.out.println("arrriva");
             userService.validateToken(request);
 
             DocumentDeleteDTO documentDeleteDTO = new DocumentDeleteDTO();
@@ -110,20 +109,19 @@ public class DocumentController {
         return ResponseEntity.ok(documentGetDTOS);
     }
 
-    @GetMapping("/projects/{username}/{projectName}/annotate") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @GetMapping("/projects/{username}/{projectName}/{documentName}/annotate") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<DocumentGetCompleteDTO> getFileToAnnotate(
-            @RequestBody String documentName,
+            @PathVariable String documentName,
             @PathVariable String projectName,
             @PathVariable String username,
             HttpServletRequest request) throws IOException {
 
         userService.validateToken(request);
-
         Document document = documentService.getAnnotationDocuments(username, projectName, documentName);
         DocumentGetCompleteDTO documentGetCompleteDTO = DTOMapper.INSTANCE.convertEntityToDocumentGetCompleteDTO(document);
-
+        documentGetCompleteDTO.setBase64PdfData(Base64.getEncoder().encodeToString(document.getPdfData()));
         return ResponseEntity.ok(documentGetCompleteDTO);
     }
 }

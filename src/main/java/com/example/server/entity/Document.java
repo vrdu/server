@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "documents", uniqueConstraints = {@UniqueConstraint(columnNames = {"owner", "projectName", "documentName"})})
@@ -39,13 +40,22 @@ public class Document implements Serializable {
     private String ocrData;
 
     @Lob
+    @ElementCollection
+    @Column(columnDefinition = "TEXT")
+    private List<BoundingBox> ocrBoxes;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String ocrDataAnnotation;
+
+    @Lob
     @Column(nullable = true)
     private String extractionResult;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String annotation;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String prompt;
 
     @Column(nullable =false)

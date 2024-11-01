@@ -7,9 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DocumentGetCompleteDTO {
-    private String documentName;
+    private String name;
     private String annotation;
     private String ocrData;
+    private String base64PdfData;
 
 
 }
