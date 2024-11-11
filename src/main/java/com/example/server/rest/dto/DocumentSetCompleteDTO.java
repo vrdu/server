@@ -1,12 +1,5 @@
 package com.example.server.rest.dto;
 
-
-import com.example.server.entity.BoundingBox;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
-
 import com.example.server.entity.BoundingBox;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class DocumentGetCompleteDTO {
+public class DocumentSetCompleteDTO {
     private String name;
     private List<HighlightDTO> highlights;
     private List<BoundingBox> boxes;

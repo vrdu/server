@@ -1,10 +1,8 @@
 package com.example.server.controller;
 
 import com.example.server.entity.Document;
-import com.example.server.rest.dto.DocumentDeleteDTO;
-import com.example.server.rest.dto.DocumentGetCompleteDTO;
-import com.example.server.rest.dto.DocumentGetDTO;
-import com.example.server.rest.dto.DocumentPostDTO;
+import com.example.server.repository.DocumentRepository;
+import com.example.server.rest.dto.*;
 import com.example.server.rest.mapper.DTOMapper;
 import com.example.server.service.DocumentService;
 import com.example.server.service.ProjectService;
@@ -19,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.print.Doc;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -109,7 +108,7 @@ public class DocumentController {
         return ResponseEntity.ok(documentGetDTOS);
     }
 
-    @GetMapping("/projects/{username}/{projectName}/{documentName}/annotate") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @GetMapping("/projects/{username}/{projectName}/{documentName}/annotate")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<DocumentGetCompleteDTO> getFileToAnnotate(
@@ -120,9 +119,28 @@ public class DocumentController {
 
         userService.validateToken(request);
         Document document = documentService.getAnnotationDocuments(username, projectName, documentName);
-        DocumentGetCompleteDTO documentGetCompleteDTO = DTOMapper.INSTANCE.convertEntityToDocumentGetCompleteDTO(document);
+
+        DocumentGetCompleteDTO documentGetCompleteDTO = documentService.convertEntityToDocumentGetCompleteDTO(document);
         documentGetCompleteDTO.setBase64PdfData(Base64.getEncoder().encodeToString(document.getPdfData()));
-        documentGetCompleteDTO.setBoxes(document.getOcrBoxes());
+        //documentGetCompleteDTO.setBoxes(document.getOcrBoxes());
         return ResponseEntity.ok(documentGetCompleteDTO);
     }
+
+    @PostMapping("/projects/{username}/{projectName}/{documentName}/annotations")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<String> setAnnotationsToFile(
+            @PathVariable String documentName,
+            @PathVariable String projectName,
+            @PathVariable String username,
+            @RequestBody DocumentSetCompleteDTO documentSetCompleteDTO,
+            HttpServletRequest request) throws IOException {
+
+        userService.validateToken(request);
+        System.out.println(documentSetCompleteDTO.toString());
+        documentService.convertDocumentSetCompleteDTOToEntity(documentSetCompleteDTO,  documentName,  projectName,  username);
+
+        return ResponseEntity.ok("Annotations saved successfully!");
+    }
+
 }

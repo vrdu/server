@@ -47,9 +47,8 @@ public interface DTOMapper {
     @Mapping(source = "documentName", target = "name")
     DocumentGetDTO convertEntityToDocumentGetDTO(Document document);
 
-    @Mapping(source = "documentName", target = "name")
-    @Mapping(source = "annotation", target = "annotation")
-    DocumentGetCompleteDTO convertEntityToDocumentGetCompleteDTO(Document document);
+
+
     @Mapping(source = "labelName", target = "labelName")
     @Mapping(source = "oldLabelName", target = "oldLabelName")
     @Mapping(source = "register", target = "register")

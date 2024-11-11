@@ -6,7 +6,6 @@ import com.example.server.entity.LabelFamily;
 import com.example.server.entity.Project;
 import com.example.server.entity.User;
 import com.example.server.rest.dto.DocumentDeleteDTO;
-import com.example.server.rest.dto.DocumentGetCompleteDTO;
 import com.example.server.rest.dto.DocumentGetDTO;
 import com.example.server.rest.dto.DocumentPostDTO;
 import com.example.server.rest.dto.LabelFamilyGetDTO;
@@ -27,7 +26,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-11-06T17:48:49+0100",
+    date = "2024-11-11T14:05:40+0100",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.6 (Amazon.com Inc.)"
 )
 public class DTOMapperImpl implements DTOMapper {
@@ -143,20 +142,6 @@ public class DTOMapperImpl implements DTOMapper {
         documentGetDTO.setName( document.getDocumentName() );
 
         return documentGetDTO;
-    }
-
-    @Override
-    public DocumentGetCompleteDTO convertEntityToDocumentGetCompleteDTO(Document document) {
-        if ( document == null ) {
-            return null;
-        }
-
-        DocumentGetCompleteDTO documentGetCompleteDTO = new DocumentGetCompleteDTO();
-
-        documentGetCompleteDTO.setName( document.getDocumentName() );
-        documentGetCompleteDTO.setAnnotation( document.getAnnotation() );
-
-        return documentGetCompleteDTO;
     }
 
     @Override

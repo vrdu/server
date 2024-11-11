@@ -102,7 +102,9 @@ public class LabelController {
             List<LabelGetDTO> labelGetDTOs = new ArrayList<>();
             for (Label label : labelFamilyLoop.getLabels()) {  // Use labelFamilyLoop here
                 LabelGetDTO labelGetDTO = DTOMapper.INSTANCE.convertEntityToLabelGetDTO(label); // Map each label to labelGetDTO
+                labelGetDTO.setFamilyName(labelFamilyGetDTO.getLabelFamilyName());
                 labelGetDTOs.add(labelGetDTO);
+                System.out.println(labelGetDTO.getFamilyName());
             }
 
             // Set the transformed labels in the labelFamilyGetDTO

@@ -1,8 +1,15 @@
 package com.example.server.service;
 
+import com.example.server.entity.Annotation;
 import com.example.server.entity.BoundingBox;
 import com.example.server.entity.Document;
 import com.example.server.repository.DocumentRepository;
+import com.example.server.rest.dto.DocumentGetCompleteDTO;
+import com.example.server.rest.dto.DocumentSetCompleteDTO;
+import com.example.server.rest.dto.HighlightDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
@@ -26,6 +33,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -192,6 +200,113 @@ public class DocumentService {
     }
 
 
+
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Transactional
+    public void convertDocumentSetCompleteDTOToEntity(DocumentSetCompleteDTO documentSetCompleteDTO, String documentName, String projectName, String username) {
+
+        // Fetch the existing document by unique constraints (documentName, projectName, owner)
+        Optional<Document> existingDocumentOpt = documentRepository.findByOwnerAndProjectNameAndDocumentName(username, projectName, documentName);
+        System.out.println("documentName: " + documentName + " projectName: " + projectName + " username: "+ username);
+        if (existingDocumentOpt.isEmpty()) {
+            throw new RuntimeException("Document not found for updating annotations.");
+        }
+
+        Document existingDocument = existingDocumentOpt.get();
+
+        // Convert each highlight into an Annotation and update the existing document's annotations
+        List<Annotation> annotations = documentSetCompleteDTO.getHighlights().stream()
+                .map(highlight -> {
+                    try {
+                        String jsonData = objectMapper.writeValueAsString(highlight); // Serialize each highlight to JSON
+                        Annotation annotation = new Annotation();
+                        annotation.setAnnotationId(generateUniqueAnnotationId()); // Generate unique ID
+                        annotation.setJsonData(jsonData);
+                        return annotation;
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException("Failed to save annotations", e);
+                    }
+                })
+                .collect(Collectors.toList());
+
+        // Set the new annotations on the existing document
+        existingDocument.setAnnotations(annotations);
+
+        // Save the updated document
+        documentRepository.save(existingDocument);
+        documentRepository.flush();
+    }
+
+    public DocumentGetCompleteDTO convertEntityToDocumentGetCompleteDTO(Document document) {
+        DocumentGetCompleteDTO dto = new DocumentGetCompleteDTO();
+        dto.setName(document.getDocumentName());
+
+
+        // Deserialize each Annotation's jsonData to a HighlightDTO
+        List<HighlightDTO> highlights = document.getAnnotations().stream()
+                .map(annotation -> {
+                    try {
+                        return objectMapper.readValue(annotation.getJsonData(), HighlightDTO.class);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException("Failed to get the annotations.");
+
+                    }
+                })
+                .collect(Collectors.toList());
+
+        dto.setHighlights(highlights);
+        return dto;
+    }
+
+    private static int generateUniqueAnnotationId() {
+        return (int) (Math.random() * 1_000_000);
+
+    }
+
+    /* First approach:
+    public void setAnnotations(Document document, DocumentSetCompleteDTO documentSetCompleteDTO){
+        boolean documentExists = checkDuplicates(document.getDocumentName(), document.getProjectName(), document.getOwner());
+        if (documentExists) {
+            List <String> stringAnnotations = documentSetCompleteDTO.getAnnotation();
+            List <Annotation> listAnnotations = new ArrayList<>();
+            for (String annotationString : stringAnnotations){
+                Annotation annotation = new Annotation();
+                annotation.setJsonData(annotationString);
+                listAnnotations.add(annotation);
+            }
+            document.setAnnotations(listAnnotations);
+            documentRepository.save(document);
+            documentRepository.flush();
+        } else {
+            safeInDB(document);
+            setAnnotations(document, documentSetCompleteDTO);
+        }
+    }
+    public List <String> getAnnotations(List <Annotation> annotationsToParse){
+        List <String> annotationsAsString = new ArrayList<>();
+        for (Annotation annotation : annotationsToParse){
+            annotationsAsString.add(annotation.getJsonData());
+        }
+        return  annotationsAsString;
+    }
+
+    private  static String mapJsonToString(Object json) {
+        try {
+            return objectMapper.writeValueAsString(json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert JSON to string", e);
+        }
+    }
+    private static JsonNode mapStringToJson(String jsonString) {
+        try {
+            return objectMapper.readTree(jsonString);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert string to JSON", e);
+        }
+    }
+*/
 /* with correct boxes implementation
     public Document performOCRForPrompt(Document document) {
         log.debug("Started OCR process for document: {}", document.getDocumentName());
