@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface DocumentRepository extends JpaRepository<Document, Long> {
 
     List<Document> findAllByProjectNameAndOwner(String projectName, String owner);
+    List<Document> findAllByProjectNameAndOwnerAndInstructionFalse(String projectName, String owner);
+
     Optional<Document> findByOwnerAndProjectNameAndDocumentName(String owner, String projectName, String documentName);
 
 

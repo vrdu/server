@@ -1,7 +1,6 @@
 package com.example.server.controller;
 
 import com.example.server.entity.Document;
-import com.example.server.repository.DocumentRepository;
 import com.example.server.rest.dto.*;
 import com.example.server.rest.mapper.DTOMapper;
 import com.example.server.service.DocumentService;
@@ -14,10 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.print.Doc;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -31,21 +28,21 @@ public class DocumentController {
         this.documentService = documentService;
         this.userService = userService;
     }
-    @PostMapping("/projects/{projectName}/upload") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @PostMapping("/projects/{username}/{projectName}/upload") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<String> uploadFile(
             @RequestParam("files") MultipartFile[] files,
             @PathVariable String projectName,
+            @PathVariable String username,
             HttpServletRequest request) throws IOException {
+        System.out.println("before validation");
         userService.validateToken(request);
-        //extract the owner, username
-        String[] parts = projectName.split("&");
-        String username = parts[0];
-        String actualProjectName = parts[1];
+        System.out.println("after validation");
         DocumentPostDTO documentPostDTO = new DocumentPostDTO();
         documentPostDTO.setOwner(username);
-        documentPostDTO.setProjectName(actualProjectName);
+        documentPostDTO.setProjectName(projectName);
+        System.out.println("before accessing each single file...");
         for (MultipartFile file : files){
             if (file.isEmpty()){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One of the files is empty");
@@ -107,6 +104,39 @@ public class DocumentController {
 
         return ResponseEntity.ok(documentGetDTOS);
     }
+    @PostMapping("/projects/{username}/{projectName}/uploadExtract")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<String> uploadFileExtraction(
+            @RequestParam("files") MultipartFile[] files,
+            @PathVariable String projectName,
+            @PathVariable String username,
+            HttpServletRequest request) throws IOException {
+        userService.validateToken(request);
+
+
+        DocumentPostDTO documentPostDTO = new DocumentPostDTO();
+        documentPostDTO.setOwner(username);
+        documentPostDTO.setProjectName(projectName);
+        for (MultipartFile file : files){
+            if (file.isEmpty()){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One of the files is empty");
+            }
+            documentPostDTO.setDocumentName(file.getOriginalFilename());
+            Document document = DTOMapper.INSTANCE.convertDocumentPostDTOToEntity(documentPostDTO);
+            document.setPdfData(file.getBytes());
+
+            documentService.safeInDB(document);
+            //for OCR uncomment the follwoing line:
+            documentService.startOCRProcessAsync(document);
+
+        }
+
+        return ResponseEntity.ok("File uploaded successfully");
+    }
+
+    //make an extraction Instance with all the instructionNames
+    //Start the prompting process
 
     @GetMapping("/projects/{username}/{projectName}/{documentName}/annotate")
     @ResponseStatus(HttpStatus.OK)
@@ -142,5 +172,21 @@ public class DocumentController {
 
         return ResponseEntity.ok("Annotations saved successfully!");
     }
+    @PostMapping("/projects/{username}/{projectName}/startExtraction")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<String> setAnnotationsToFile(
+            @PathVariable String documentName,
+            @PathVariable String projectName,
+            @RequestBody ExtractionGetDTO extractionDTO,
+            HttpServletRequest request) throws IOException {
+
+        userService.validateToken(request);
+        //System.out.println(documentSetCompleteDTO.toString());
+        //documentService.convertDocumentSetCompleteDTOToEntity(documentSetCompleteDTO,  documentName,  projectName,  username);
+
+        return ResponseEntity.ok("Annotations saved successfully!");
+    }
+
 
 }
