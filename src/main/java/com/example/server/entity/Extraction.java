@@ -26,6 +26,9 @@ public class Extraction {
     @Column(nullable = false)
     private String extractionName;
 
-    @OneToMany(mappedBy = "extractions", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(nullable = false)
+    private boolean extractionInProgress;
+
+    @OneToMany(mappedBy = "extraction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SingleExtraction> extractions;
 }

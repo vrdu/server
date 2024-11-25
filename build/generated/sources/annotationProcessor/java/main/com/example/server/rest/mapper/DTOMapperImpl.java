@@ -1,6 +1,7 @@
 package com.example.server.rest.mapper;
 
 import com.example.server.entity.Document;
+import com.example.server.entity.Extraction;
 import com.example.server.entity.Label;
 import com.example.server.entity.LabelFamily;
 import com.example.server.entity.Project;
@@ -8,6 +9,7 @@ import com.example.server.entity.User;
 import com.example.server.rest.dto.DocumentDeleteDTO;
 import com.example.server.rest.dto.DocumentGetDTO;
 import com.example.server.rest.dto.DocumentPostDTO;
+import com.example.server.rest.dto.ExtractionGetDTO;
 import com.example.server.rest.dto.LabelFamilyGetDTO;
 import com.example.server.rest.dto.LabelFamilyNameGetDTO;
 import com.example.server.rest.dto.LabelFamilyPostDTO;
@@ -26,7 +28,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-11-13T09:01:23+0100",
+    date = "2024-11-25T13:29:11+0100",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.4.1 (Eclipse Adoptium)"
 )
 public class DTOMapperImpl implements DTOMapper {
@@ -259,6 +261,19 @@ public class DTOMapperImpl implements DTOMapper {
         labelFamilyNameGetDTO.setLabelFamilyName( labelFamily.getLabelFamilyName() );
 
         return labelFamilyNameGetDTO;
+    }
+
+    @Override
+    public ExtractionGetDTO convertEntityToExtractionGetDTO(Extraction extraction) {
+        if ( extraction == null ) {
+            return null;
+        }
+
+        ExtractionGetDTO extractionGetDTO = new ExtractionGetDTO();
+
+        extractionGetDTO.setExtractionName( extraction.getExtractionName() );
+
+        return extractionGetDTO;
     }
 
     protected List<Label> labelPostDTOListToLabelList(List<LabelPostDTO> list) {

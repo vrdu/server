@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Entity
 @Getter
 @Setter
-@Table(name = "singleExtraction",uniqueConstraints = {@UniqueConstraint(columnNames = { "labelName", "labelFamily_id"})})
+@Table(name = "singleExtraction",uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
 public class SingleExtraction implements Serializable {
 
     @Serial
@@ -24,7 +24,7 @@ public class SingleExtraction implements Serializable {
     private String extractionName;
 
     @ManyToOne
-    @JoinColumn(name = "extraction")
+    @JoinColumn(name = "extraction_id")
     private Extraction extraction;
 }
 

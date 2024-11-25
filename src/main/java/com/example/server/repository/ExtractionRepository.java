@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository("documentRepository")
+@Repository("extractionRepository")
 public interface ExtractionRepository extends JpaRepository<Extraction, Long> {
     List<Extraction> findAllByOwnerAndProjectName(String owner, String projectName);
 
