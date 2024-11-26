@@ -8,7 +8,6 @@ import com.example.server.rest.dto.DocumentGetCompleteDTO;
 import com.example.server.rest.dto.DocumentSetCompleteDTO;
 import com.example.server.rest.dto.HighlightDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import net.sourceforge.tess4j.ITesseract;
@@ -198,9 +197,6 @@ public class DocumentService {
         }
         return document;
     }
-
-
-
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 

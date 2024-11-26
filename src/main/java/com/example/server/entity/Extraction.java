@@ -29,6 +29,23 @@ public class Extraction {
     @Column(nullable = false)
     private boolean extractionInProgress;
 
+    //We are in the document level, not the extractions of a document!
     @OneToMany(mappedBy = "extraction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SingleExtraction> extractions;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Document.Status status = Document.Status.PENDING;
+
+    public void setStatus(Status status) {
+    }
+
+    public enum Status {
+        PENDING,
+        PROMPT_GENERATION_IN_PROGRESS,
+        PROMPT_COMPLETE,
+        EXTRACTION_IN_PROGRESS,
+        EXTRACTION_COMPLETE,
+        FAILED
+    }
 }

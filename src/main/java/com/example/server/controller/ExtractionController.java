@@ -57,21 +57,26 @@ public class ExtractionController {
     @PostMapping("/projects/{username}/{projectName}/extractions")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<List<ExtractionPostDTO>> postExtractions(
+    public ResponseEntity<String> postExtractions(
             @PathVariable String projectName,
             @PathVariable String username,
+            @RequestBody ExtractionPostDTO extractionPostDTO,
             HttpServletRequest request) throws IOException {
 
         userService.validateToken(request);
-
-        //prompt genereation
-        //making prompt instance
-        //Waiting for LLM
-        //evtl. reporting the current state
+        Extraction extraction;
+        extraction = DTOMapper.INSTANCE.convertExtractionPostDTOToEntity(extractionPostDTO);
+        extractionService.addExtraction(extraction);
 
 
-        return null;
+
+
+        return ResponseEntity.ok("Extraction started successfully");
     }
+    //prompt genereation
+    //making prompt instance
+    //Waiting for LLM
+    //evtl. reporting the current state
 
     @GetMapping("/projects/{username}/{projectName}/{documentName}/oneExtraction")
     @ResponseStatus(HttpStatus.OK)

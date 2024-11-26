@@ -60,12 +60,25 @@ public class Document implements Serializable {
     @Column(nullable = true)
     private String prompt;
 
-    @Column(nullable =false)
+    @Column(nullable = false)
     private boolean instruction;
 
-    @Column(nullable =false)
+    @Column(nullable = false)
     private boolean ocrNotPossible;
 
-    @Column(nullable =false)
+    @Column(nullable = false)
     private boolean currentlyInOCR;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status = Status.PENDING;
+
+    public enum Status {
+        PENDING,
+        PROMPT_GENERATION_IN_PROGRESS,
+        PROMPT_COMPLETE,
+        EXTRACTION_IN_PROGRESS,
+        EXTRACTION_COMPLETE,
+        FAILED
+    }
 }

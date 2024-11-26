@@ -44,10 +44,6 @@ Q.idea/sonarlint/securityhotspotstore/6/1/61b5f442e12a84bbd7059d565798c6b73677c3
 Å
 Q.idea/sonarlint/securityhotspotstore/2/b/2b9119dce7593c37eec398bf540877b1b005873c,f\3\f3690de39f23b9a4d0fb2ae13fa4ddba017e04ec
 w
-G.idea/sonarlint/issuestore/6/f/6fd1a0840ee45b633521e4abfbedf5eaac8617b8,3\b\3bf5cd765eb22a846f114f3058c4de6206a52ee2
-Å
-Q.idea/sonarlint/securityhotspotstore/6/f/6fd1a0840ee45b633521e4abfbedf5eaac8617b8,8\2\82f1d6651fda317b4203e5dc7b6e5ecf8c59dae2
-w
 G.idea/sonarlint/issuestore/3/0/30cd95260359218930bc673e612c53e25596113d,9\d\9de84502eae7f6a13cb8d8a62dab57eeb77371c7
 w
 G.idea/sonarlint/issuestore/6/1/61b5f442e12a84bbd7059d565798c6b73677c3fc,f\1\f1ba354f10eeede02f6a8f18e161f49fcf4e0761
@@ -148,11 +144,7 @@ Fsrc/main/java/com/example/server/repository/LabelFamilyRepository.java,e\d\ed0
 p
 @src/main/java/com/example/server/repository/LabelRepository.java,6\9\691531095074a6a215db2eb42c49c9f55d3a6e22
 o
-?src/main/java/com/example/server/service/ExtractionService.java,d\d\dd0e3af301eda5062068dfa754098fbb6bb94f36
-o
 ?src/main/java/com/example/server/rest/dto/ExtractionGetDTO.java,d\5\d5d7d7668ea0538a03d848442b889b0b19fff78e
-k
-;src/main/java/com/example/server/rest/mapper/DTOMapper.java,8\6\86fd1a7b6230dc64336d9c08738fc69d013b1bf0
 w
 Gsrc/main/java/com/example/server/rest/dto/DocumentAndExtractionDTO.java,9\b\9bc0994738a14be52f1c906a700cdf8c4f88d6c0
 i
@@ -161,7 +153,3 @@ s
 Csrc/main/java/com/example/server/repository/DocumentRepository.java,c\9\c9237355a58486678b148ccf42fc0876cafbba03
 b
 2src/main/java/com/example/server/entity/Label.java,5\5\5516c45e59b55bda737a613aedd6427a277df98d
-u
-Esrc/main/java/com/example/server/repository/ExtractionRepository.java,b\9\b9161ea674857570f181ed9c1f47db8213fa6ae8
-s
-Csrc/main/java/com/example/server/controller/DocumentController.java,f\4\f45f8cb867d6c5667f4f82a6e69eeca95ed404e1

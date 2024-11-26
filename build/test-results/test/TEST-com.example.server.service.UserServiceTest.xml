@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.server.service.UserServiceTest" tests="6" skipped="0" failures="1" errors="0" timestamp="2024-11-26T09:03:51" hostname="ELIAS_LAPTOP" time="1.377">
+  <properties/>
+  <testcase name="testLoginUser_EmailNotRegistered()" classname="com.example.server.service.UserServiceTest" time="1.336"/>
+  <testcase name="validateToken()" classname="com.example.server.service.UserServiceTest" time="0.002"/>
+  <testcase name="testLoginUser_Successful()" classname="com.example.server.service.UserServiceTest" time="0.016"/>
+  <testcase name="createUser()" classname="com.example.server.service.UserServiceTest" time="0.002"/>
+  <testcase name="testLoginUser_WrongPassword()" classname="com.example.server.service.UserServiceTest" time="0.012">
+    <failure message="org.opentest4j.AssertionFailedError: Expected org.springframework.web.server.ResponseStatusException to be thrown, but nothing was thrown." type="org.opentest4j.AssertionFailedError">org.opentest4j.AssertionFailedError: Expected org.springframework.web.server.ResponseStatusException to be thrown, but nothing was thrown.
+	at app//org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:152)
+	at app//org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:73)
+	at app//org.junit.jupiter.api.AssertThrows.assertThrows(AssertThrows.java:35)
+	at app//org.junit.jupiter.api.Assertions.assertThrows(Assertions.java:3115)
+	at app//com.example.server.service.UserServiceTest.testLoginUser_WrongPassword(UserServiceTest.java:63)
+	at java.base@17.0.4.1/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base@17.0.4.1/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base@17.0.4.1/java.util.ArrayList.forEach(ArrayList.java:1511)
+</failure>
+  </testcase>
+  <testcase name="generateToken()" classname="com.example.server.service.UserServiceTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
