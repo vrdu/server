@@ -70,7 +70,7 @@ public class ExtractionController {
         //evtl. reporting the current state
 
 
-
+        return null;
     }
 
     @GetMapping("/projects/{username}/{projectName}/{documentName}/oneExtraction")
