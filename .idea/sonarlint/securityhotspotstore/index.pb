@@ -1,8 +1,6 @@
 
 i
 9src/main/java/com/example/server/storage/UserStorage.java,4\9\49dd9fa99107270ddd164e0a5340664362b207b9
-?
-settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
 7
 gradlew,5\b\5bbfa66edb4db3c7c33c5181f43510990d3307f9
 j
@@ -67,8 +65,6 @@ n
 Q.idea/sonarlint/securityhotspotstore/a/2/a2eed76729459747acb9e19ca1e49b4eddc77d14,0\c\0c861c255ead8ebd9438b038bf21bd212a8d837d
 Å
 Q.idea/sonarlint/securityhotspotstore/1/4/1433f95311fb33fadaa22236eaac2aa564f2ce19,e\1\e1af65cfcdbd090d23d10425a96e06e7d6045bad
-Å
-Q.idea/sonarlint/securityhotspotstore/b/6/b69f5545b12ac2edba5a996608209e4073a938d1,1\4\14eece3658af08a22e045bb6fd49af7266816824
 w
 G.idea/sonarlint/issuestore/a/2/a2eed76729459747acb9e19ca1e49b4eddc77d14,5\1\513f15b72da8d22de39167d27e0d8b8095feb207
 w
@@ -92,8 +88,6 @@ G.idea/sonarlint/issuestore/f/3/f3690de39f23b9a4d0fb2ae13fa4ddba017e04ec,a\6\a6
 Å
 Q.idea/sonarlint/securityhotspotstore/8/0/8087b1e177fcbc827c145690e117285bcd37b22d,b\5\b5e6389ff68820a9460eaaff837abf11fcb45495
 Å
-Q.idea/sonarlint/securityhotspotstore/8/2/82f1d6651fda317b4203e5dc7b6e5ecf8c59dae2,a\a\aa24aed367a8637f8b6c5fb0f5dc9c85f35ad630
-Å
 Q.idea/sonarlint/securityhotspotstore/8/3/830cf03c156f84f33069f62084cfaae9de105fe2,8\1\8180537d571be7988f09db733a1bb3515d5ecc5c
 w
 G.idea/sonarlint/issuestore/d/5/d528c8f9c936dd810b00a18be816f276888b913d,7\c\7c55d9362b3d8a38ccb8c2f67827a1dc68bd3c81
@@ -101,8 +95,6 @@ w
 G.idea/sonarlint/issuestore/8/0/8087b1e177fcbc827c145690e117285bcd37b22d,2\b\2bac0d38560e2b86ae22513487b17721adf9ac89
 w
 G.idea/sonarlint/issuestore/8/3/830cf03c156f84f33069f62084cfaae9de105fe2,9\0\9021f4b19d487eea52082b91c4d174f08b46613b
-w
-G.idea/sonarlint/issuestore/8/2/82f1d6651fda317b4203e5dc7b6e5ecf8c59dae2,1\5\158c4b6858edb09cc47d87ad9b3c18bf4e31bb7b
 Å
 Q.idea/sonarlint/securityhotspotstore/e/1/e1aa9022f45168f518a1f6bec6c5f2472c1b4922,e\5\e595165d735758583700d761befe6aff09c13518
 Å
@@ -111,20 +103,14 @@ w
 G.idea/sonarlint/issuestore/1/4/1433f95311fb33fadaa22236eaac2aa564f2ce19,5\c\5c7850f6f1f95dc2975dc93558d9f92018443689
 Å
 Q.idea/sonarlint/securityhotspotstore/e/8/e8cb65a3b6ae0c431af2ba23ce0ca8e77b6b7e78,c\9\c977ee25149f7ad2389fcae790d3054f094170ab
-w
-G.idea/sonarlint/issuestore/3/b/3bf5cd765eb22a846f114f3058c4de6206a52ee2,c\a\cae63c25985467e15a3f381baf1ed24f160e4c62
 Å
 Q.idea/sonarlint/securityhotspotstore/f/1/f1ba354f10eeede02f6a8f18e161f49fcf4e0761,1\4\14509616771cad898f949a4f6fb152e713174cd8
 Å
 Q.idea/sonarlint/securityhotspotstore/f/3/f3690de39f23b9a4d0fb2ae13fa4ddba017e04ec,e\c\ec44531e7367a84c7a30bd6309d7f21510cdff4f
 Å
-Q.idea/sonarlint/securityhotspotstore/3/b/3bf5cd765eb22a846f114f3058c4de6206a52ee2,f\b\fb4a03cb13335b4df4d9b48c50eecd6a012cf124
-Å
 Q.idea/sonarlint/securityhotspotstore/9/d/9de84502eae7f6a13cb8d8a62dab57eeb77371c7,0\f\0f1d87debadd68c21f3537830cab52f2e94a0b23
 h
 8src/main/java/com/example/server/entity/BoundingBox.java,3\f\3f0b11f32e9e250105da09420f5b75b17eb5eb76
-g
-7src/main/java/com/example/server/ServerApplication.java,2\5\25734794e2895aaafdd8a8fc7bda0662cfecbd7d
 r
 Bsrc/main/java/com/example/server/controller/ProjectController.java,4\9\498a9f1bf2f642fa74cb58daf601349fc0f919e0
 u
@@ -143,8 +129,6 @@ v
 Fsrc/main/java/com/example/server/repository/LabelFamilyRepository.java,e\d\ed0ee0b3f312291c707415218712559364c19750
 p
 @src/main/java/com/example/server/repository/LabelRepository.java,6\9\691531095074a6a215db2eb42c49c9f55d3a6e22
-s
-Csrc/main/java/com/example/server/repository/DocumentRepository.java,c\9\c9237355a58486678b148ccf42fc0876cafbba03
 o
 ?src/main/java/com/example/server/rest/dto/ExtractionGetDTO.java,d\5\d5d7d7668ea0538a03d848442b889b0b19fff78e
 w

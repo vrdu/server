@@ -10,6 +10,7 @@ import com.example.server.rest.dto.DocumentDeleteDTO;
 import com.example.server.rest.dto.DocumentGetDTO;
 import com.example.server.rest.dto.DocumentPostDTO;
 import com.example.server.rest.dto.ExtractionGetDTO;
+import com.example.server.rest.dto.ExtractionPostDTO;
 import com.example.server.rest.dto.LabelFamilyGetDTO;
 import com.example.server.rest.dto.LabelFamilyNameGetDTO;
 import com.example.server.rest.dto.LabelFamilyPostDTO;
@@ -28,7 +29,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-11-26T11:07:30+0100",
+    date = "2024-11-27T17:15:17+0100",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.4.1 (Eclipse Adoptium)"
 )
 public class DTOMapperImpl implements DTOMapper {
@@ -274,6 +275,21 @@ public class DTOMapperImpl implements DTOMapper {
         extractionGetDTO.setExtractionName( extraction.getExtractionName() );
 
         return extractionGetDTO;
+    }
+
+    @Override
+    public Extraction convertExtractionPostDTOToEntity(ExtractionPostDTO extractionPostDTO) {
+        if ( extractionPostDTO == null ) {
+            return null;
+        }
+
+        Extraction extraction = new Extraction();
+
+        extraction.setId( (long) extractionPostDTO.getId() );
+        extraction.setProjectName( extractionPostDTO.getProjectName() );
+        extraction.setExtractionName( extractionPostDTO.getExtractionName() );
+
+        return extraction;
     }
 
     protected List<Label> labelPostDTOListToLabelList(List<LabelPostDTO> list) {

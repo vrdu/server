@@ -1,42 +1,44 @@
 package com.example.server.Orchestrator;
 
+import com.example.server.controller.LLMController;
 import com.example.server.entity.Document;
 import com.example.server.manager.ExtractionManager;
 import com.example.server.repository.DocumentRepository;
+import com.google.cloud.vertexai.api.GenerateContentResponse;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
+
 @Component
-public class PromptOrchestrator {
+public class LLMOrchestrator {
+
     private final ExtractionManager extractionManager;
     private final ExecutorService executor;
     private final DocumentRepository documentRepository;
-    private final LLMOrchestrator llmOrchestrator;
-    private final Semaphore semaphore = new Semaphore(4); // Control worker availability
+    private final Semaphore semaphore = new Semaphore(8); // Control worker availability
+    private final LLMController llmController = new LLMController();
 
     @Autowired
-    public PromptOrchestrator(ExtractionManager extractionManager, DocumentRepository documentRepository, LLMOrchestrator llmOrchestrator) {
+    public LLMOrchestrator(ExtractionManager extractionManager, DocumentRepository documentRepository) {
         this.extractionManager = extractionManager;
         this.documentRepository = documentRepository;
-        this.llmOrchestrator = llmOrchestrator;
         this.executor = Executors.newFixedThreadPool(4);
     }
-
-    public void startPromptGenerationOrchestration() {
+    public void startPromptingOrchestration() {
         while (true) {
             try {
-                Map<Triple<String, String, String>, List<String>> extraction = extractionManager.getOldestExtraction();
+                Map<Triple<String, String, String>, List<String>> promptMap = extractionManager.getNextPromptingExtraction();
 
-                if (extraction != null) {
-                    promptOrchestrator(extraction, 5);
+                if (promptMap != null) {
+                    promptingOrchestrator(promptMap);
                 } else {
                     // No extractions available, wait and retry
                     Thread.sleep(10000); // 10 seconds
@@ -48,13 +50,11 @@ public class PromptOrchestrator {
             }
         }
     }
-    private void promptOrchestrator(Map<Triple<String, String, String>, List<String>> extraction, int nrInstructions) {
+
+    private void promptingOrchestrator(Map<Triple<String, String, String>, List<String>> extraction) {
 
         Triple<String, String, String> key = extraction.keySet().iterator().next();
         List<String> documentNames = extraction.get(key);
-        Pageable pageable = PageRequest.of(0, nrInstructions);
-
-        List<Document> instructionDocuments = documentRepository.findAllByProjectNameAndOwnerAndInstructionTrue(key.getMiddle(), key.getLeft(), pageable);
 
         List<Document> currentBatch = new ArrayList<>();
         List<String> pendingDocuments = new ArrayList<>(documentNames);
@@ -72,15 +72,12 @@ public class PromptOrchestrator {
                 if (documentOpt.isPresent()) {
                     Document document = documentOpt.get();
 
-                    if (document.getStatus() == Document.Status.PENDING || document.getStatus() == Document.Status.PROMPT_GENERATION_IN_PROGRESS) {
-                        if (document.isCurrentlyInOCR()) {
-                            // Skip and retry fetching later
-                            continue;
-                        } else {
+                    if (document.getStatus() == Document.Status.PROMPT_COMPLETE || document.getStatus() == Document.Status.EXTRACTION_IN_PROGRESS) {
+
                             // Add to the current batch
                             currentBatch.add(document);
                             iterator.remove();
-                        }
+
                     } else {
                         // Already processed, remove from pendingDocuments
                         iterator.remove();
@@ -97,7 +94,13 @@ public class PromptOrchestrator {
                     List<Document> batchToProcess = new ArrayList<>(currentBatch);
                     executor.submit(() -> {
                         try {
-                            makePrompts(key.getLeft(), key.getMiddle(), batchToProcess, instructionDocuments);
+                            try {
+                                promptLLM(batchToProcess);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
                         } finally {
                             semaphore.release(); // Release worker after processing
                         }
@@ -118,29 +121,41 @@ public class PromptOrchestrator {
                 }
             }
         }
-        extractionManager.addToPromptingQueue(extraction);
-        llmOrchestrator.startPromptingOrchestration();
     }
-    private void makePrompts(String owner, String projectName, List<Document> extractionDocuments, List<Document> instructionDocuments) {
-        String generatingPrompt = "";
-        for (Document extractionDocument : extractionDocuments) {
-            generatingPrompt += "This is the opening instruction\n";
-            generatingPrompt += "Label part from instructionDocument[0]\n";
-            generatingPrompt += "Now are a couple of instruciton documents following\n";
-            for (Document instructionDocument : instructionDocuments) {
-                generatingPrompt += "For this document:\n";
-                generatingPrompt += instructionDocument.getOcrData();
-                generatingPrompt += "\n";
-                generatingPrompt += "This would be the solution\n";
-                generatingPrompt += instructionDocument.getExtractionResult();
-                generatingPrompt += "\n";
+    private void promptLLM(List <Document> prompts) throws IOException, InterruptedException {
+        String projectId = "key";
+        String region = "europe-west6";
+        int maxRetries = 5;
+
+        for (Document promptDocument : prompts) {
+            promptDocument.setStatus(Document.Status.PROMPT_GENERATION_IN_PROGRESS);
+            documentRepository.save(promptDocument);
+            documentRepository.flush();
+
+            boolean success = false;
+            int attempts = 0;
+
+            while (!success && attempts < maxRetries) {
+                try {
+                    attempts++;
+                    GenerateContentResponse responseEntity = llmController.generateContent(promptDocument.getPrompt(), projectId, region);
+                    promptDocument.setPrompt(responseEntity.toString());
+                    promptDocument.setStatus(Document.Status.PROMPT_COMPLETE);
+                    documentRepository.save(promptDocument);
+                    documentRepository.flush();
+                    success = true; // Mark success if no exception occurs
+                } catch (Exception e) {
+                    if (attempts >= maxRetries) {
+                        promptDocument.setStatus(Document.Status.FAILED);
+                        documentRepository.save(promptDocument);
+                        documentRepository.flush();
+                        System.err.println("Failed to generate prompt after " + maxRetries + " attempts for document: " + promptDocument.getId());
+                    } else {
+                        System.err.println("Retrying... (" + attempts + "/" + maxRetries + ")");
+                        wait(1000);
+                    }
+                }
             }
-            generatingPrompt += "This would be your document, where you have to extract the information\n";
-            extractionDocument.getOcrData();
-            extractionDocument.setPrompt(generatingPrompt);
-            extractionDocument.setStatus(Document.Status.PROMPT_COMPLETE);
-            documentRepository.save(extractionDocument);
         }
     }
-
 }

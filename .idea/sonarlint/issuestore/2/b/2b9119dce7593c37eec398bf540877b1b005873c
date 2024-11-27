@@ -1,9 +1,0 @@
-
-{
-java:S1488-"`Immediately return this expression instead of assigning it to the temporary variable "projects".(éßĞãøÿÿÿÿ
-G
-java:S3416"1Update this logger to use "ProjectService.class".(ğ›û
-Q
-java:S1128";Remove this unused import 'com.example.server.entity.User'.(ÍÕùÎ
-Y
-java:S1128"DRemove this unused import 'jakarta.servlet.http.HttpServletRequest'.(õ3

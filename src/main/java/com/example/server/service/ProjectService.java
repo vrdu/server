@@ -76,12 +76,11 @@ public class ProjectService {
                     labelsToImport = labelRepository.findAllByLabelFamilyId(labelFamilyToGetIdFrom.getId());
 
                     for (Label labelToImport : labelsToImport){
-                        System.out.println("here");
                         Label labelToImportCopy = deepCopyLabel(labelToImport, projectToUpdate.getProjectName(), labelFamilyToImportCopy);
                         labelToImportCopy.setFamilyProjectName(projectToUpdate.getProjectName());
                         labelRepository.save(labelToImportCopy);
                         labelRepository.flush();
-                        System.out.println("there");
+
                     }
                 }
 

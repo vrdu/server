@@ -3,16 +3,17 @@ package com.example.server.manager;
 
 import java.util.*;
 
+import com.example.server.Orchestrator.PromptOrchestrator;
 import com.example.server.entity.Extraction;
 import com.example.server.entity.SingleExtraction;
 import com.example.server.repository.ExtractionRepository;
 import org.apache.commons.lang3.tuple.Triple;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.example.server.entity.Extraction.Status.PENDING;
-import static com.example.server.entity.Extraction.Status.PROMPT_GENERATION_IN_PROGRESS;
+import static com.example.server.entity.Extraction.Status.*;
 
 @Component
 public class ExtractionManager {
@@ -20,12 +21,18 @@ public class ExtractionManager {
     private final Queue<Map<Triple<String, String, String>,List<String>>> promptGenerationQueue;
     private final Queue<Map<Triple<String, String, String>, List<String>>> promptingQueue;
     private final ExtractionRepository extractionRepository;
-    private ExtractionManager(Queue<Map<Triple<String, String, String>, List<String>>> promptingQueue, ExtractionRepository extractionRepository) {
+    private final PromptOrchestrator promptOrchestrator;
+
+    @Autowired
+    private ExtractionManager(Queue<Map<Triple<String, String, String>, List<String>>> promptingQueue, ExtractionRepository extractionRepository, PromptOrchestrator promptOrchestrator) {
         this.promptingQueue = promptingQueue;
+        this.promptOrchestrator = promptOrchestrator;
         this.promptGenerationQueue = new LinkedList<>();
         this.extractionRepository = extractionRepository;
 
         loadUnfinishedExtractions();
+        loadPendingExtractions();
+
     }
 
     private void loadUnfinishedExtractions() {
@@ -46,6 +53,7 @@ public class ExtractionManager {
 
             synchronized (this) {
                 promptGenerationQueue.add(extractionMap);
+                promptOrchestrator.startPromptGenerationOrchestration();
             }
         }
     }
@@ -63,10 +71,46 @@ public class ExtractionManager {
         promptGenerationQueue.add(extraction);
     }
 
-    private synchronized Map<Triple<String, String, String>, List<String>> getOldestExtraction() {
+    public synchronized Map<Triple<String, String, String>, List<String>> getOldestExtraction() {
         return promptGenerationQueue.poll(); // Remove and return the first map in the queue
     }
-    public synchronized boolean hasExtractions() {
-        return !promptGenerationQueue.isEmpty();
+
+    //if crash, then add all the not finished prompted prompts back to the queue
+    private void loadPendingExtractions() {
+        List<Extraction> pendingExtractions = extractionRepository.findByStatusIn(List.of(PROMPT_COMPLETE, EXTRACTION_IN_PROGRESS));
+
+        for (Extraction extraction : pendingExtractions) {
+            Triple<String, String, String> key = Triple.of(
+                    extraction.getOwner(),
+                    extraction.getProjectName(),
+                    extraction.getId().toString()
+            );
+            List<String> extractionNames = new ArrayList<>();
+            for (SingleExtraction singleExtraction : extraction.getExtractions()) {
+                extractionNames.add(singleExtraction.getExtractionName());
+            }
+            Map<Triple<String, String, String>, List<String>> extractionMap = new ConcurrentHashMap<>();
+            extractionMap.put(key, extractionNames);
+
+            synchronized (this) {
+                promptingQueue.add(extractionMap);
+            }
+        }
     }
+
+    public synchronized void addToPromptingQueue(Map<Triple<String, String, String>, List<String>> extractionMap) {
+        Triple<String, String, String> key = extractionMap.keySet().iterator().next();
+
+        if (promptingQueue.stream().anyMatch(map -> map.containsKey(key))) {
+            throw new IllegalStateException("Extraction already exists in prompting queue: " + key);
+        }
+
+        promptingQueue.add(extractionMap);
+    }
+
+    public synchronized Map<Triple<String, String, String>, List<String>> getNextPromptingExtraction() {
+        return promptingQueue.poll();
+    }
+
+
 }
