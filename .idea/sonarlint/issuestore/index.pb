@@ -12,11 +12,7 @@ G.idea/sonarlint/issuestore/5/b/5bbfa66edb4db3c7c33c5181f43510990d3307f9,f\7\f7
 Å
 Q.idea/sonarlint/securityhotspotstore/4/9/49dd9fa99107270ddd164e0a5340664362b207b9,6\4\645694231dfb61dc9d924b5a889ab372f6596652
 Å
-Q.idea/sonarlint/securityhotspotstore/0/5/05efc8b1657769a27696d478ded1e95f38737233,2\5\2534b7ffebad46793fc4d77da07aca83b23dd835
-Å
 Q.idea/sonarlint/securityhotspotstore/5/b/5bbfa66edb4db3c7c33c5181f43510990d3307f9,1\e\1e45613b6060de813dc92caeb118e08a2124bc35
-w
-G.idea/sonarlint/issuestore/0/5/05efc8b1657769a27696d478ded1e95f38737233,3\c\3c8c56407c35e5f5ebbd6c7250a79af8128a13a6
 i
 9src/main/java/com/example/server/rest/dto/UserGetDTO.java,b\9\b987045501c321cddd755eea17460d30c831e8f8
 l
@@ -57,8 +53,6 @@ s
 Csrc/main/java/com/example/server/rest/dto/ProjectUpdatePostDTO.java,9\1\91c1815f1ba27bdf95fa3745d858ca9bd854df83
 w
 Gsrc/main/java/com/example/server/rest/dto/LabelFamilyUpdatePostDTO.java,2\b\2b0ce3b9f09cb0f48295c2e22d1cf0b78a326775
-j
-:src/main/java/com/example/server/service/LabelService.java,a\9\a95027e5f37413d88eb4d38daaf2ee0065263764
 n
 >src/main/java/com/example/server/rest/dto/DocumentPostDTO.java,6\f\6fd1a0840ee45b633521e4abfbedf5eaac8617b8
 Å
@@ -137,3 +131,9 @@ i
 9src/main/java/com/example/server/rest/dto/ContentDTO.java,1\1\11b6a92daca37928520481fa1678c5cca435c602
 b
 2src/main/java/com/example/server/entity/Label.java,5\5\5516c45e59b55bda737a613aedd6427a277df98d
+p
+@src/main/java/com/example/server/rest/dto/ExtractionPostDTO.java,3\8\384ccd021e6ccf20214f58149ee0a8a16e99e85d
+s
+Csrc/main/java/com/example/server/controller/DocumentController.java,f\4\f45f8cb867d6c5667f4f82a6e69eeca95ed404e1
+u
+Esrc/main/java/com/example/server/controller/ExtractionController.java,b\f\bf82d7bbc7502778595ada5d6182c080a3a9cd0e

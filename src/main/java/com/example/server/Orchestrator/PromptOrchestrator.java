@@ -19,14 +19,12 @@ public class PromptOrchestrator {
     private final ExtractionManager extractionManager;
     private final ExecutorService executor;
     private final DocumentRepository documentRepository;
-    private final LLMOrchestrator llmOrchestrator;
     private final Semaphore semaphore = new Semaphore(4); // Control worker availability
 
     @Autowired
     public PromptOrchestrator(ExtractionManager extractionManager, DocumentRepository documentRepository, LLMOrchestrator llmOrchestrator) {
         this.extractionManager = extractionManager;
         this.documentRepository = documentRepository;
-        this.llmOrchestrator = llmOrchestrator;
         this.executor = Executors.newFixedThreadPool(4);
     }
 
@@ -119,7 +117,7 @@ public class PromptOrchestrator {
             }
         }
         extractionManager.addToPromptingQueue(extraction);
-        llmOrchestrator.startPromptingOrchestration();
+
     }
     private void makePrompts(String owner, String projectName, List<Document> extractionDocuments, List<Document> instructionDocuments) {
         String generatingPrompt = "";

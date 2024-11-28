@@ -1,5 +1,7 @@
 package com.example.server.service;
 
+import com.example.server.Orchestrator.LLMOrchestrator;
+import com.example.server.Orchestrator.PromptOrchestrator;
 import com.example.server.entity.Document;
 import com.example.server.entity.Extraction;
 import com.example.server.entity.SingleExtraction;
@@ -16,11 +18,15 @@ public class ExtractionService {
     private final ExtractionRepository extractionRepository;
     private final DocumentRepository documentRepository;
     private final ExtractionManager extractionManager;
+    private final LLMOrchestrator llmOrchestrator;
+    private final PromptOrchestrator promptOrchestrator;
 
-    public ExtractionService(ExtractionRepository extractionRepository, DocumentRepository documentRepository, ExtractionManager extractionManager) {
+    public ExtractionService(ExtractionRepository extractionRepository, DocumentRepository documentRepository, ExtractionManager extractionManager, LLMOrchestrator llmOrchestrator, PromptOrchestrator promptOrchestrator) {
         this.extractionRepository = extractionRepository;
         this.documentRepository = documentRepository;
         this.extractionManager = extractionManager;
+        this.llmOrchestrator = llmOrchestrator;
+        this.promptOrchestrator = promptOrchestrator;
     }
 
 
@@ -41,6 +47,9 @@ public class ExtractionService {
             }
             extractionManager.addExtraction(extraction.getOwner(), extraction.getProjectName(), extraction.getExtractionName(), extractionNames);
             extractionRepository.save(extractionFromDB);
+            extractionRepository.flush();
+            promptOrchestrator.startPromptGenerationOrchestration();
+            llmOrchestrator.startPromptingOrchestration();
         }
     }
 

@@ -41,7 +41,7 @@ class ProjectServiceTest {
     @InjectMocks
     private ProjectService projectService;
 
-    Project testProject;
+    private Project testProject;
 
     @BeforeEach
     void setUp() {
@@ -52,15 +52,13 @@ class ProjectServiceTest {
 
     @AfterEach
     void tearDown() {
-        Mockito.reset(projectRepository);
+        Mockito.reset(projectRepository, labelFamilyRepository);
     }
 
     @Test
     void createProject_Success() {
 
         String owner = "testUser";
-
-
 
         when(projectRepository.findByProjectNameAndOwner("Test Project", owner)).thenReturn(null);
         when(projectRepository.save(any(Project.class))).thenAnswer(invocation -> {

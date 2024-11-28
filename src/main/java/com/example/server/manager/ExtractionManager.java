@@ -9,6 +9,7 @@ import com.example.server.entity.SingleExtraction;
 import com.example.server.repository.ExtractionRepository;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,13 +22,14 @@ public class ExtractionManager {
     private final Queue<Map<Triple<String, String, String>,List<String>>> promptGenerationQueue;
     private final Queue<Map<Triple<String, String, String>, List<String>>> promptingQueue;
     private final ExtractionRepository extractionRepository;
-    private final PromptOrchestrator promptOrchestrator;
+
 
     @Autowired
-    private ExtractionManager(Queue<Map<Triple<String, String, String>, List<String>>> promptingQueue, ExtractionRepository extractionRepository, PromptOrchestrator promptOrchestrator) {
+    private ExtractionManager(@Qualifier("promptingQueue")Queue<Map<Triple<String, String, String>, List<String>>> promptingQueue,
+                              @Qualifier("promptGenerationQueue")Queue<Map<Triple<String, String, String>, List<String>>> promptGenerationQueue,
+                              ExtractionRepository extractionRepository) {
         this.promptingQueue = promptingQueue;
-        this.promptOrchestrator = promptOrchestrator;
-        this.promptGenerationQueue = new LinkedList<>();
+        this.promptGenerationQueue = promptGenerationQueue;
         this.extractionRepository = extractionRepository;
 
         loadUnfinishedExtractions();
@@ -53,7 +55,6 @@ public class ExtractionManager {
 
             synchronized (this) {
                 promptGenerationQueue.add(extractionMap);
-                promptOrchestrator.startPromptGenerationOrchestration();
             }
         }
     }

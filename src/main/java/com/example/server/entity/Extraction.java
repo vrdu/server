@@ -35,7 +35,7 @@ public class Extraction {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Document.Status status = Document.Status.PENDING;
+    private Extraction.Status status = Extraction.Status.PENDING;
 
     public void setStatus(Status status) {
     }

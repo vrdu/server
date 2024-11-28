@@ -23,7 +23,6 @@ public class LabelService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     private final LabelRepository labelRepository;
     private final LabelFamilyRepository labelFamilyRepository;
-
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -50,6 +49,7 @@ public class LabelService {
         // Retrieve the existing label family from the repository (using owner, projectName, and id for uniqueness)
         Optional<LabelFamily> existingLabelFamilyOpt = labelFamilyRepository
                 .findByOwnerAndProjectNameAndLabelFamilyName(newLabelFamily.getOwner(), newLabelFamily.getProjectName(), usernameToExtractFromDB);
+
 
         if (existingLabelFamilyOpt.isPresent()) {
             LabelFamily existingLabelFamily = existingLabelFamilyOpt.get();
@@ -79,6 +79,7 @@ public class LabelService {
             System.out.println("familyDoesNotExist");
             System.out.println(String.format("Id: %s, Index: %s, description: %s, familyName: %s, owner: %s, projectName: %s, oldFamilyName: %s", newLabelFamily.getId(), newLabelFamily.getIndex(), newLabelFamily.getLabelFamilyDescription(), newLabelFamily.getLabelFamilyName(), newLabelFamily.getOwner(), newLabelFamily.getProjectName(), newLabelFamily.getOldLabelFamilyName()));
             // If label family does not exist, add it
+            System.out.println("This is the newLabelFamily:" + newLabelFamily.toString());
             labelFamilyRepository.save(newLabelFamily);  // Save the new label family along with labels (cascade)
         }
     }
@@ -210,6 +211,7 @@ public class LabelService {
             }
     }
     public List<LabelFamily> getLabelFamilies(LabelFamily labelFamily){
+        System.out.println(labelFamily.toString());
         return labelFamilyRepository.findAllByProjectNameAndOwner(labelFamily.getProjectName(), labelFamily.getOwner());
     }
 
