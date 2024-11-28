@@ -1,8 +1,0 @@
-
-o
-java:S62045"RReplace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'(ª™¨¹8½¶ÐŸ­2
-U	java:S106>"9Replace this use of System.out or System.err by a logger.(…áœ£8†è¨”®2
-Z	java:S106`"9Replace this use of System.out or System.err by a logger.(¼ß¾‘úÿÿÿÿ8Žè¨”®2
-Z	java:S106b"9Replace this use of System.out or System.err by a logger.(£À²¯ýÿÿÿÿ8Žè¨”®2
-U
-java:S1068"3Remove this unused "documentService" private field.(ÕëçÎøÿÿÿÿ8Á¶ÐŸ­2

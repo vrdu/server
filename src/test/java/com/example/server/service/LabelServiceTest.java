@@ -67,7 +67,25 @@ class LabelServiceTest {
                 newLabelFamily.getOwner(),
                 newLabelFamily.getProjectName(),
                 "NewTestFamilyName");
-    }
+    }/*
+    @Test
+    void testUpdateLabelFamily_NewLabelFamilyNewName() {
+        newLabelFamily.setOldLabelFamilyName(null);
+        newLabelFamily.setRegister(false);
+        when(labelFamilyRepository.findByOwnerAndProjectNameAndLabelFamilyName(
+                eq(newLabelFamily.getOwner()),
+                eq(newLabelFamily.getProjectName()),
+                anyString() // Use matcher for labelFamilyName
+        )).thenReturn(Optional.of(newLabelFamily));
+        newLabelFamily.setLabelFamilyName("NewTestFamilyName");
+        labelService.updateLabelFamily(newLabelFamily);
+
+        verify(labelFamilyRepository, times(1)).save(newLabelFamily);
+        verify(labelFamilyRepository).findByOwnerAndProjectNameAndLabelFamilyName(
+                newLabelFamily.getOwner(),
+                newLabelFamily.getProjectName(),
+                "NewTestFamilyName");
+    }*/
     @Test
     void testUpdateLabelFamily_NewLabelFamilyNewLabelFamilyNameIsNull() {
         newLabelFamily.setOldLabelFamilyName(null);

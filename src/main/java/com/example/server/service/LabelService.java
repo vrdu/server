@@ -49,7 +49,7 @@ public class LabelService {
         // Retrieve the existing label family from the repository (using owner, projectName, and id for uniqueness)
         Optional<LabelFamily> existingLabelFamilyOpt = labelFamilyRepository
                 .findByOwnerAndProjectNameAndLabelFamilyName(newLabelFamily.getOwner(), newLabelFamily.getProjectName(), usernameToExtractFromDB);
-
+        System.out.println("LabelFamilyFromDB: " + existingLabelFamilyOpt.isPresent());
 
         if (existingLabelFamilyOpt.isPresent()) {
             LabelFamily existingLabelFamily = existingLabelFamilyOpt.get();
