@@ -68,9 +68,6 @@ public class ExtractionController {
         extraction = DTOMapper.INSTANCE.convertExtractionPostDTOToEntity(extractionPostDTO);
         extractionService.addExtraction(extraction);
 
-
-
-
         return ResponseEntity.ok("Extraction started successfully");
     }
     //prompt genereation
