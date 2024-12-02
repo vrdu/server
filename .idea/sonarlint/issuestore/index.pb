@@ -115,8 +115,6 @@ g
 7src/main/java/com/example/server/entity/Annotation.java,8\7\879eb00dac2dc0186e3023a0789c9e236710d21e
 m
 =src/main/java/com/example/server/rest/dto/DocumentGetDTO.java,6\a\6a8758192ae9908c24bad1a037250e33465ee2a1
-p
-@src/main/java/com/example/server/controller/LabelController.java,7\c\7c9a5c55ca6f03acad2fcea7c3702954fc6ea8e8
 v
 Fsrc/main/java/com/example/server/repository/LabelFamilyRepository.java,e\d\ed0ee0b3f312291c707415218712559364c19750
 p
@@ -131,8 +129,6 @@ b
 2src/main/java/com/example/server/entity/Label.java,5\5\5516c45e59b55bda737a613aedd6427a277df98d
 p
 @src/main/java/com/example/server/rest/dto/ExtractionPostDTO.java,3\8\384ccd021e6ccf20214f58149ee0a8a16e99e85d
-s
-Csrc/main/java/com/example/server/controller/DocumentController.java,f\4\f45f8cb867d6c5667f4f82a6e69eeca95ed404e1
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 ?
@@ -167,8 +163,6 @@ u
 Esrc/main/java/com/example/server/Orchestrator/PromptOrchestrator.java,3\d\3d842894712606e2a27518e2f99c75ffcb04967f
 h
 8src/main/java/com/example/server/config/QueueConfig.java,8\e\8e82c912cb28de2fa7612f0a10c1b672659f3c74
-m
-=src/main/java/com/example/server/service/DocumentService.java,b\0\b06a1ebcdcac85bb6a4f1c70108c5d6b358cc6ff
 p
 @src/test/java/com/example/server/service/ProjectServiceTest.java,3\3\33abe9d0a1a26524afbedef3634759b9e73d660f
 j

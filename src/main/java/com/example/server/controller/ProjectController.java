@@ -103,6 +103,7 @@ public class ProjectController {
             List<LabelGetDTO> labelGetDTOs = new ArrayList<>();
             List<Label> labelsDatabase = labelService.getLabels(labelFamilyLoop);
             for (Label label : labelsDatabase) {  // Use labelFamilyLoop here
+                System.out.println("hi");
                 LabelGetDTO labelGetDTO = DTOMapper.INSTANCE.convertEntityToLabelGetDTO(label); // Map each label to labelGetDTO
                 labelGetDTOs.add(labelGetDTO);
 

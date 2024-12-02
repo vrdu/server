@@ -36,14 +36,12 @@ public class DocumentController {
             @PathVariable String projectName,
             @PathVariable String username,
             HttpServletRequest request) throws IOException {
-        System.out.println("before validation");
         userService.validateToken(request);
-        System.out.println("after validation");
         DocumentPostDTO documentPostDTO = new DocumentPostDTO();
         documentPostDTO.setOwner(username);
         documentPostDTO.setProjectName(projectName);
-        System.out.println("before accessing each single file...");
         for (MultipartFile file : files){
+            System.out.println("file Empty: " + file.isEmpty());
             if (file.isEmpty()){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One of the files is empty");
             }

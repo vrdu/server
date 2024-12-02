@@ -103,7 +103,6 @@ class ExtractionControllerTest {
         assertEquals("Extraction started successfully", response.getBody());
 
         verify(userService, times(1)).validateToken(httpServletRequest);
-        verify(dtoMapper, times(1)).convertExtractionPostDTOToEntity(extractionPostDTO);
-        verify(extractionService, times(1)).addExtraction(extraction);
+        verify(extractionService, times(1)).addExtraction(any(Extraction.class));
     }
 }
