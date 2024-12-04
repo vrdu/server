@@ -261,6 +261,18 @@ public class DocumentService {
 
     }
 
+    public void setAsInstruction(String documentName, String projectName, String username) {
+        Optional<Document> documentDBOpt = documentRepository.findByOwnerAndProjectNameAndDocumentName(username, projectName, documentName);
+        if (documentDBOpt.isPresent()) {
+            Document documentDB = documentDBOpt.get();
+            documentDB.setInstruction(true);
+            documentRepository.save(documentDB);
+            documentRepository.flush();
+        } else {
+            throw new RuntimeException("Document not found for setting as instruction.");
+        }
+    }
+
     /* First approach:
     public void setAnnotations(Document document, DocumentSetCompleteDTO documentSetCompleteDTO){
         boolean documentExists = checkDuplicates(document.getDocumentName(), document.getProjectName(), document.getOwner());

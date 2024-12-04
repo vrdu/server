@@ -29,6 +29,14 @@ public class Extraction {
     @Column(nullable = false)
     private boolean extractionInProgress;
 
+    @Column(nullable = false)
+    private float f1;
+
+    @Column(nullable = false)
+    private float anls;
+
+
+
     //We are in the document level, not the extractions of a document!
     @OneToMany(mappedBy = "extraction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SingleExtraction> extractions;

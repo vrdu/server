@@ -8,11 +8,16 @@ import com.example.server.entity.SingleExtraction;
 import com.example.server.manager.ExtractionManager;
 import com.example.server.repository.DocumentRepository;
 import com.example.server.repository.ExtractionRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Service
+@Transactional
 public class ExtractionService {
 
     private final ExtractionRepository extractionRepository;
@@ -21,6 +26,7 @@ public class ExtractionService {
     private final LLMOrchestrator llmOrchestrator;
     private final PromptOrchestrator promptOrchestrator;
 
+    @Autowired
     public ExtractionService(ExtractionRepository extractionRepository, DocumentRepository documentRepository, ExtractionManager extractionManager, LLMOrchestrator llmOrchestrator, PromptOrchestrator promptOrchestrator) {
         this.extractionRepository = extractionRepository;
         this.documentRepository = documentRepository;
@@ -52,7 +58,20 @@ public class ExtractionService {
             llmOrchestrator.startPromptingOrchestration();
         }
     }
-
+    public  Extraction getExtraction(String owner,String projectName, String extractionName){
+        Optional<Extraction> extraction = extractionRepository.findByOwnerAndProjectNameAndExtractionName(owner,projectName, extractionName);
+        if (extraction.isPresent()){
+            return extraction.get();
+        }
+        throw new RuntimeException("Extraction not found");
+    }
+    public List <String> extractExtractionDocuments(List <SingleExtraction> extractions){
+        List <String> documentNames = new ArrayList<>();
+        for (SingleExtraction singleExtraction : extractions){
+                documentNames.add(singleExtraction.getExtractionName());
+            }
+        return documentNames;
+    }
 
     public List <Document> getExtractionDocuments(String owner,String projectName) {
         List <Document> extractionDocuments = new ArrayList<>(documentRepository.findAllByProjectNameAndOwnerAndInstructionFalse(owner, projectName));

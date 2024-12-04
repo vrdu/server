@@ -170,6 +170,18 @@ public class DocumentController {
 
         return ResponseEntity.ok("Annotations saved successfully!");
     }
+    @PostMapping("/projects/{username}/{projectName}/{documentName}/setAnnotate")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<String> setAsInstruction(
+            @PathVariable String documentName,
+            @PathVariable String projectName,
+            @PathVariable String username,
+            HttpServletRequest request) throws IOException {
+        userService.validateToken(request);
+        documentService.setAsInstruction(documentName, projectName, username);
+        return ResponseEntity.ok("Annotations saved successfully!");
+    }
     @PostMapping("/projects/{username}/{projectName}/startExtraction")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
