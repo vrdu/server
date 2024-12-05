@@ -112,7 +112,7 @@ public class DocumentService {
     }
     @Async
     public CompletableFuture<Void> startOCRProcessAsync(Document document) {
-
+        System.out.println("Started OCR process for document: " + document.getDocumentName());
         Document ocrResult = performOCRForPrompt(document);
         ocrResult.setCurrentlyInOCR(false);
         Optional <Document> documentFromDBOpt = documentRepository.findByOwnerAndProjectNameAndDocumentName(ocrResult.getOwner(),ocrResult.getProjectName(),ocrResult.getDocumentName());
@@ -132,7 +132,7 @@ public class DocumentService {
             tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");/*LAPTOP*/
 
             /*tesseract.setDatapath("E:\\program files\\tessdata"); PC*/
-            tesseract.setLanguage("deu");
+            tesseract.setLanguage("eng");
             tesseract.setTessVariable("user_defined_dpi", "300");
 
             StringBuilder ocrResultBuilder = new StringBuilder();

@@ -143,8 +143,6 @@ r
 Bsrc/main/java/com/example/server/Orchestrator/LLMOrchestrator.java,3\f\3fe9d42b5410ec54960ed1240f0afefa8147a05a
 l
 <src/test/java/com/example/server/ServerApplicationTests.java,d\1\d179c4983b5aa63b0cffe6fb8e64c0377dacb5f5
-s
-Csrc/main/java/com/example/server/repository/DocumentRepository.java,c\9\c9237355a58486678b148ccf42fc0876cafbba03
 u
 Esrc/main/java/com/example/server/Orchestrator/PromptOrchestrator.java,3\d\3d842894712606e2a27518e2f99c75ffcb04967f
 o
@@ -163,3 +161,13 @@ v
 Fsrc/test/java/com/example/server/controller/ProjectControllerTest.java,d\9\d9f85ac1dce4bf74477c3e397be1b76917907121
 n
 >src/test/java/com/example/server/service/LabelServiceTest.java,b\1\b1c5254300d2b7ced890d6bb584bda19183934c5
+y
+Isrc/test/java/com/example/server/controller/ExtractionControllerTest.java,4\b\4b0ab31c7898623b86ba45f49c088c5bd8a5c3b5
+h
+8src/main/java/com/example/server/config/QueueConfig.java,8\e\8e82c912cb28de2fa7612f0a10c1b672659f3c74
+r
+Bsrc/main/java/com/example/server/controller/ProjectController.java,4\9\498a9f1bf2f642fa74cb58daf601349fc0f919e0
+p
+@src/main/java/com/example/server/controller/LabelController.java,7\c\7c9a5c55ca6f03acad2fcea7c3702954fc6ea8e8
+t
+Dsrc/test/java/com/example/server/controller/LabelControllerTest.java,2\a\2a30a661dd5e7eee612560675c007c6040dd00f0

@@ -34,22 +34,32 @@ public class ExtractionController {
             @PathVariable String username,
             @PathVariable String projectName,
             HttpServletRequest request) throws IOException {
-        userService.validateToken(request);
-        List<Document> extractionDocuments = extractionService.getExtractionDocuments(username, projectName);
-        List <Extraction> extractions = extractionService.getExtractions(username, projectName);
-        List <DocumentGetDTO> documentGetDTOS = new ArrayList<>();
-        List <ExtractionGetDTO> extractionGetDTOS = new ArrayList<>();
-        for ( Document document : extractionDocuments){
-            documentGetDTOS.add(DTOMapper.INSTANCE.convertEntityToDocumentGetDTO(document));
+        try {
+            userService.validateToken(request);
+            List<Document> extractionDocuments = extractionService.getExtractionDocuments(username, projectName);
+            List<Extraction> extractions = extractionService.getExtractions(username, projectName);
+            List<DocumentGetDTO> documentGetDTOS = new ArrayList<>();
+            List<ExtractionGetDTO> extractionGetDTOS = new ArrayList<>();
+            for (Document document : extractionDocuments) {
+                documentGetDTOS.add(DTOMapper.INSTANCE.convertEntityToDocumentGetDTO(document));
+            }
+            for (Extraction extraction : extractions) {
+                extractionGetDTOS.add(DTOMapper.INSTANCE.convertEntityToExtractionGetDTO(extraction));
+            }
+            //DocumentAndExtractionDTO documentAndExtractionDTO =
+            DocumentAndExtractionDTO documentAndExtractionDTO = new DocumentAndExtractionDTO();
+            documentAndExtractionDTO.setExtractions(extractionGetDTOS);
+            documentAndExtractionDTO.setDocuments(documentGetDTOS);
+            return ResponseEntity.ok(documentAndExtractionDTO);
+        }catch (Exception e) {
+                // Log the exception
+                System.err.println("An error occurred: " + e.getMessage());
+                e.printStackTrace();
+
+                // Return an appropriate error response
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(null); // Or use a custom error DTO
         }
-        for ( Extraction extraction : extractions){
-            extractionGetDTOS.add(DTOMapper.INSTANCE.convertEntityToExtractionGetDTO(extraction));
-        }
-        //DocumentAndExtractionDTO documentAndExtractionDTO =
-        DocumentAndExtractionDTO documentAndExtractionDTO = new DocumentAndExtractionDTO();
-        documentAndExtractionDTO.setExtractions(extractionGetDTOS);
-        documentAndExtractionDTO.setDocuments(documentGetDTOS);
-        return ResponseEntity.ok(documentAndExtractionDTO);
     }
     @GetMapping("/projects/{username}/{projectName}/{extractionName}/documentsAndReport")
     @ResponseStatus(HttpStatus.OK)

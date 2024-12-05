@@ -40,6 +40,7 @@ public class DocumentController {
         DocumentPostDTO documentPostDTO = new DocumentPostDTO();
         documentPostDTO.setOwner(username);
         documentPostDTO.setProjectName(projectName);
+
         for (MultipartFile file : files){
             System.out.println("file Empty: " + file.isEmpty());
             if (file.isEmpty()){
