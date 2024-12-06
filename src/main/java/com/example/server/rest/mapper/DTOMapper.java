@@ -98,5 +98,9 @@ public interface DTOMapper {
     @Mapping(source = "extractionName", target = "extractionName")
     ExtractionGetDTO convertEntityToExtractionGetDTO(Extraction extraction);
 
+    @Mapping(source = "extractionName", target = "extractionName")
     Extraction convertExtractionPostDTOToEntity(ExtractionPostDTO extractionPostDTO);
+
+    @Mapping(source = "name", target = "documentName")
+    Document convertCustomFileDTOToEntity(CustomFileDTO customFileDTO);
 }

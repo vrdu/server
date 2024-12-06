@@ -2,6 +2,7 @@ package com.example.server.controller;
 
 import com.example.server.entity.Document;
 import com.example.server.entity.Extraction;
+import com.example.server.entity.SingleExtraction;
 import com.example.server.rest.dto.*;
 import com.example.server.rest.mapper.DTOMapper;
 import com.example.server.service.ExtractionService;
@@ -35,6 +36,7 @@ public class ExtractionController {
             @PathVariable String projectName,
             HttpServletRequest request) throws IOException {
         try {
+            System.out.println("documents and extractions");
             userService.validateToken(request);
             List<Document> extractionDocuments = extractionService.getExtractionDocuments(username, projectName);
             List<Extraction> extractions = extractionService.getExtractions(username, projectName);
@@ -52,13 +54,18 @@ public class ExtractionController {
             documentAndExtractionDTO.setDocuments(documentGetDTOS);
             return ResponseEntity.ok(documentAndExtractionDTO);
         }catch (Exception e) {
-                // Log the exception
-                System.err.println("An error occurred: " + e.getMessage());
-                e.printStackTrace();
+            if (e.getMessage() != null && e.getMessage().contains("Extraction not found")) {
+                System.err.println("Specific error: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(null); // Or use a custom DTO to provide a meaningful response
+            }
 
-                // Return an appropriate error response
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(null); // Or use a custom error DTO
+            // Handle all other exceptions generically
+            System.err.println("An error occurred: " + e.getMessage());
+            e.printStackTrace();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null); // Or use a custom error DTO
         }
     }
     @GetMapping("/projects/{username}/{projectName}/{extractionName}/documentsAndReport")
@@ -69,6 +76,7 @@ public class ExtractionController {
             @PathVariable String projectName,
             @PathVariable String extractionName,
             HttpServletRequest request) throws IOException {
+        System.out.println("documents and report");
         userService.validateToken(request);
         Extraction extraction = extractionService.getExtraction(username, projectName, extractionName);
         DocumentAndReportDTO documentAndReportDTO = new DocumentAndReportDTO();
@@ -88,10 +96,21 @@ public class ExtractionController {
             @PathVariable String username,
             @RequestBody ExtractionPostDTO extractionPostDTO,
             HttpServletRequest request) throws IOException {
-
+        System.out.println("extractions");
         userService.validateToken(request);
+
         Extraction extraction;
         extraction = DTOMapper.INSTANCE.convertExtractionPostDTOToEntity(extractionPostDTO);
+        extraction.setOwner(username);
+        extraction.setProjectName(projectName);
+        List<String> documentNames = extractionPostDTO.getDocumentNames();
+        List<SingleExtraction> singleExtractions = new ArrayList<>();
+        for (String documentName : documentNames) {
+            SingleExtraction singleExtraction = new SingleExtraction();
+            singleExtraction.setExtractionName(documentName);
+            singleExtractions.add(singleExtraction);
+        }
+        extraction.setExtractions(singleExtractions);
         extractionService.addExtraction(extraction);
 
         return ResponseEntity.ok("Extraction started successfully");
@@ -109,7 +128,7 @@ public class ExtractionController {
             @PathVariable String projectName,
             @PathVariable String username,
             HttpServletRequest request) throws IOException {
-
+        System.out.println("one extraction");
         userService.validateToken(request);/*
         List<Document> extractionDocuments = extractionService.getExtractionDocuments(username, projectName, documentName);
         List <Extraction> extractions = extractionService.getExtractions(username, projectName);

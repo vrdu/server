@@ -7,6 +7,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -28,12 +29,15 @@ public class PromptOrchestrator {
         this.executor = Executors.newFixedThreadPool(4);
     }
 
+    @Async
     public void startPromptGenerationOrchestration() {
+        System.out.println("prompt generation started");
         while (true) {
             try {
                 Map<Triple<String, String, String>, List<String>> extraction = extractionManager.getOldestExtraction();
 
                 if (extraction != null) {
+                    System.out.println("extraction not null");
                     promptOrchestrator(extraction, 5);
                 } else {
                     // No extractions available, wait and retry
@@ -47,7 +51,6 @@ public class PromptOrchestrator {
         }
     }
     private void promptOrchestrator(Map<Triple<String, String, String>, List<String>> extraction, int nrInstructions) {
-
         Triple<String, String, String> key = extraction.keySet().iterator().next();
         List<String> documentNames = extraction.get(key);
         Pageable pageable = PageRequest.of(0, nrInstructions);
@@ -66,7 +69,6 @@ public class PromptOrchestrator {
                 // Fetch the document from the database
                 Optional<Document> documentOpt = documentRepository.findByOwnerAndProjectNameAndDocumentName(
                         key.getLeft(), key.getMiddle(), documentName);
-
                 if (documentOpt.isPresent()) {
                     Document document = documentOpt.get();
 

@@ -28,7 +28,7 @@ public class DocumentController {
         this.documentService = documentService;
         this.userService = userService;
     }
-    @PostMapping("/projects/{username}/{projectName}/upload") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
+    @PostMapping("/projects/{username}/{projectName}/uploadInstruction") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public ResponseEntity<String> uploadFile(
@@ -36,6 +36,7 @@ public class DocumentController {
             @PathVariable String projectName,
             @PathVariable String username,
             HttpServletRequest request) throws IOException {
+        System.out.println("arrived in upload");
         userService.validateToken(request);
         DocumentPostDTO documentPostDTO = new DocumentPostDTO();
         documentPostDTO.setOwner(username);
@@ -49,7 +50,6 @@ public class DocumentController {
             documentPostDTO.setDocumentName(file.getOriginalFilename());
             Document document = DTOMapper.INSTANCE.convertDocumentPostDTOToEntity(documentPostDTO);
             document.setPdfData(file.getBytes());
-
             documentService.safeInDB(document);
             //for OCR uncomment the follwoing line:
             documentService.startOCRProcessAsync(document);
@@ -58,6 +58,48 @@ public class DocumentController {
 
         return ResponseEntity.ok("File uploaded successfully");
     }
+    @PostMapping("/projects/{username}/{projectName}/uploadExtraction")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<String> uploadExtractionFile(
+            @RequestParam("files") MultipartFile[] files,
+            @PathVariable String projectName,
+            @PathVariable String username,
+            HttpServletRequest request) throws IOException {
+
+
+        System.out.println("Arrived in uploadExtraction");
+        userService.validateToken(request);
+
+        Document document = new Document();
+        document.setOwner(username);
+        document.setProjectName(projectName);
+
+        for (MultipartFile file : files){
+            if (file.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File data is missing");
+            }
+            CustomFileDTO customFile = new CustomFileDTO();
+            customFile.setFileData(file.getBytes());
+            customFile.setName(file.getOriginalFilename());
+            customFile.setFileData(file.getBytes());
+
+            // Convert to entity
+            Document documentLoop = DTOMapper.INSTANCE.convertCustomFileDTOToEntity(customFile);
+            document.setDocumentName(documentLoop.getDocumentName());
+            document.setInstruction(false);
+            document.setPdfData(customFile.getFileData());
+            System.out.println("before save");
+            // Save and optionally start OCR
+            documentService.safeInDB(document);
+
+            documentService.startOCRProcessAsync(document);
+
+        }
+
+        return ResponseEntity.ok("File uploaded successfully");
+    }
+
 
     @DeleteMapping("/projects/{username}/{projectName}/delete") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
     @ResponseStatus(HttpStatus.OK)

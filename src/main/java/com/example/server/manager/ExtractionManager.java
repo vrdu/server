@@ -3,7 +3,6 @@ package com.example.server.manager;
 
 import java.util.*;
 
-import com.example.server.Orchestrator.PromptOrchestrator;
 import com.example.server.entity.Extraction;
 import com.example.server.entity.SingleExtraction;
 import com.example.server.repository.ExtractionRepository;

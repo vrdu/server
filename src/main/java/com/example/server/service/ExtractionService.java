@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Transactional
@@ -37,6 +39,9 @@ public class ExtractionService {
 
 
     public void addExtraction(Extraction extraction) {
+        if (extraction.getExtractionName() == null || extraction.getExtractionName().isEmpty()) {
+            extraction.setExtractionName(getRandomExtractionName());
+        }
         extraction.setStatus(Extraction.Status.PENDING);
         extractionRepository.save(extraction);
         extractionRepository.flush();
@@ -54,8 +59,13 @@ public class ExtractionService {
             extractionManager.addExtraction(extraction.getOwner(), extraction.getProjectName(), extraction.getExtractionName(), extractionNames);
             extractionRepository.save(extractionFromDB);
             extractionRepository.flush();
-            promptOrchestrator.startPromptGenerationOrchestration();
-            llmOrchestrator.startPromptingOrchestration();
+            CompletableFuture.runAsync(() -> {
+                promptOrchestrator.startPromptGenerationOrchestration();
+            });
+
+            CompletableFuture.runAsync(() -> {
+                llmOrchestrator.startPromptingOrchestration();
+            });
         }
     }
     public  Extraction getExtraction(String owner,String projectName, String extractionName){
@@ -79,5 +89,17 @@ public class ExtractionService {
     }
     public List <Extraction> getExtractions(String owner,String projectName){
         return extractionRepository.findAllByOwnerAndProjectName(owner,projectName);
+    }
+    private String getRandomExtractionName(){
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder randomName = new StringBuilder();
+        Random random = new Random();
+
+        for (int i = 0; i < 10; i++) {
+            int index = random.nextInt(characters.length());
+            randomName.append(characters.charAt(index));
+        }
+
+        return randomName.toString();
     }
 }

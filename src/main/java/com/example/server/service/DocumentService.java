@@ -48,12 +48,13 @@ public class DocumentService {
 
     @Async
     public CompletableFuture<Void> safeInDB(Document document) {
+        System.out.println("in safeInDB");
         boolean documentExists = checkDuplicates(document.getDocumentName(), document.getProjectName(), document.getOwner());
         if (!documentExists) {
             document.setCurrentlyInOCR(true);
             document = documentRepository.save(document);
             documentRepository.flush();
-            log.debug("safed document:{}", document);
+            System.out.println("safed document:{}" + document);
         } else {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Document already exists in the project");
         }

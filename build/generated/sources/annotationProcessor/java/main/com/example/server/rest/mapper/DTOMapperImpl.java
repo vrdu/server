@@ -6,6 +6,7 @@ import com.example.server.entity.Label;
 import com.example.server.entity.LabelFamily;
 import com.example.server.entity.Project;
 import com.example.server.entity.User;
+import com.example.server.rest.dto.CustomFileDTO;
 import com.example.server.rest.dto.DocumentDeleteDTO;
 import com.example.server.rest.dto.DocumentGetDTO;
 import com.example.server.rest.dto.DocumentPostDTO;
@@ -29,7 +30,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-04T18:51:51+0100",
+    date = "2024-12-06T16:47:32+0100",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.4.1 (Eclipse Adoptium)"
 )
 public class DTOMapperImpl implements DTOMapper {
@@ -285,11 +286,27 @@ public class DTOMapperImpl implements DTOMapper {
 
         Extraction extraction = new Extraction();
 
+        extraction.setExtractionName( extractionPostDTO.getExtractionName() );
         extraction.setId( (long) extractionPostDTO.getId() );
         extraction.setProjectName( extractionPostDTO.getProjectName() );
-        extraction.setExtractionName( extractionPostDTO.getExtractionName() );
 
         return extraction;
+    }
+
+    @Override
+    public Document convertCustomFileDTOToEntity(CustomFileDTO customFileDTO) {
+        if ( customFileDTO == null ) {
+            return null;
+        }
+
+        Document document = new Document();
+
+        document.setDocumentName( customFileDTO.getName() );
+        if ( customFileDTO.getId() != null ) {
+            document.setId( Long.parseLong( customFileDTO.getId() ) );
+        }
+
+        return document;
     }
 
     protected List<Label> labelPostDTOListToLabelList(List<LabelPostDTO> list) {

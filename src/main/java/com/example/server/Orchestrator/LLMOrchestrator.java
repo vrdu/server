@@ -7,6 +7,7 @@ import com.example.server.repository.DocumentRepository;
 import com.google.cloud.vertexai.api.GenerateContentResponse;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 
@@ -32,7 +33,9 @@ public class LLMOrchestrator {
         this.documentRepository = documentRepository;
         this.executor = Executors.newFixedThreadPool(4);
     }
+    @Async
     public void startPromptingOrchestration() {
+        System.out.println("prompt orchestration started");
         while (true) {
             try {
                 Map<Triple<String, String, String>, List<String>> promptMap = extractionManager.getNextPromptingExtraction();
