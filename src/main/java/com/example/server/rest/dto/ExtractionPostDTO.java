@@ -11,7 +11,7 @@ public class ExtractionPostDTO {
     private int id;
     private String username;
     private String projectName;
-    private String extractionName;
+    private String name;
     private List <String> documentNames;
 
 }

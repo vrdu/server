@@ -24,7 +24,7 @@ public class SingleExtraction implements Serializable {
     private String extractionName;
 
     @ManyToOne
-    @JoinColumn(name = "extraction_id")
+    @JoinColumn(name = "extractions_id")
     private Extraction extraction;
 }
 

@@ -79,11 +79,10 @@ public class ExtractionController {
         System.out.println("documents and report");
         userService.validateToken(request);
         Extraction extraction = extractionService.getExtraction(username, projectName, extractionName);
-        DocumentAndReportDTO documentAndReportDTO = new DocumentAndReportDTO();
-        documentAndReportDTO.setAnls(extraction.getAnls());
-        documentAndReportDTO.setF1(extraction.getF1());
+        DocumentAndReportDTO documentAndReportDTO = DTOMapper.INSTANCE.convertEntityToDocumentAndReportDTO(extraction);
         documentAndReportDTO.setDocumentNames(extractionService.extractExtractionDocuments(extraction.getExtractions()));
-
+        System.out.println("DocumentNames: "+ documentAndReportDTO.getDocumentNames());
+        System.out.println("DocumentNamesGetExtractions: "+ extraction.getExtractions());
 
         return ResponseEntity.ok(documentAndReportDTO);
     }
@@ -96,7 +95,7 @@ public class ExtractionController {
             @PathVariable String username,
             @RequestBody ExtractionPostDTO extractionPostDTO,
             HttpServletRequest request) throws IOException {
-        System.out.println("extractions");
+        System.out.println("ExtractionPostDTO extractionName: "+ extractionPostDTO.getName());
         userService.validateToken(request);
 
         Extraction extraction;
@@ -111,14 +110,11 @@ public class ExtractionController {
             singleExtractions.add(singleExtraction);
         }
         extraction.setExtractions(singleExtractions);
+        System.out.println("ExractionName: " + extraction.getExtractionName());
         extractionService.addExtraction(extraction);
 
         return ResponseEntity.ok("Extraction started successfully");
     }
-    //prompt genereation
-    //making prompt instance
-    //Waiting for LLM
-    //evtl. reporting the current state
 
     @GetMapping("/projects/{username}/{projectName}/{documentName}/oneExtraction")
     @ResponseStatus(HttpStatus.OK)

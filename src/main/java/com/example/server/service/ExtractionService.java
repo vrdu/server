@@ -10,7 +10,9 @@ import com.example.server.repository.DocumentRepository;
 import com.example.server.repository.ExtractionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +42,17 @@ public class ExtractionService {
 
     public void addExtraction(Extraction extraction) {
         if (extraction.getExtractionName() == null || extraction.getExtractionName().isEmpty()) {
-            extraction.setExtractionName(getRandomExtractionName());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No extraction name was sent.");
         }
+
         extraction.setStatus(Extraction.Status.PENDING);
+
+        if (extraction.getExtractions() != null) {
+            for (SingleExtraction singleExtraction : extraction.getExtractions()) {
+                singleExtraction.setExtraction(extraction);
+            }
+        }
+
         extractionRepository.save(extraction);
         extractionRepository.flush();
 
@@ -90,16 +100,5 @@ public class ExtractionService {
     public List <Extraction> getExtractions(String owner,String projectName){
         return extractionRepository.findAllByOwnerAndProjectName(owner,projectName);
     }
-    private String getRandomExtractionName(){
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder randomName = new StringBuilder();
-        Random random = new Random();
 
-        for (int i = 0; i < 10; i++) {
-            int index = random.nextInt(characters.length());
-            randomName.append(characters.charAt(index));
-        }
-
-        return randomName.toString();
-    }
 }

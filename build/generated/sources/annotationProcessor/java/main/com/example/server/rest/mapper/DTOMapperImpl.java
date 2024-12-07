@@ -7,6 +7,7 @@ import com.example.server.entity.LabelFamily;
 import com.example.server.entity.Project;
 import com.example.server.entity.User;
 import com.example.server.rest.dto.CustomFileDTO;
+import com.example.server.rest.dto.DocumentAndReportDTO;
 import com.example.server.rest.dto.DocumentDeleteDTO;
 import com.example.server.rest.dto.DocumentGetDTO;
 import com.example.server.rest.dto.DocumentPostDTO;
@@ -30,8 +31,8 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-06T16:47:32+0100",
-    comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.4.1 (Eclipse Adoptium)"
+    date = "2024-12-07T21:23:20+0100",
+    comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.6 (Amazon.com Inc.)"
 )
 public class DTOMapperImpl implements DTOMapper {
 
@@ -286,7 +287,7 @@ public class DTOMapperImpl implements DTOMapper {
 
         Extraction extraction = new Extraction();
 
-        extraction.setExtractionName( extractionPostDTO.getExtractionName() );
+        extraction.setExtractionName( extractionPostDTO.getName() );
         extraction.setId( (long) extractionPostDTO.getId() );
         extraction.setProjectName( extractionPostDTO.getProjectName() );
 
@@ -307,6 +308,21 @@ public class DTOMapperImpl implements DTOMapper {
         }
 
         return document;
+    }
+
+    @Override
+    public DocumentAndReportDTO convertEntityToDocumentAndReportDTO(Extraction extraction) {
+        if ( extraction == null ) {
+            return null;
+        }
+
+        DocumentAndReportDTO documentAndReportDTO = new DocumentAndReportDTO();
+
+        documentAndReportDTO.setName( extraction.getExtractionName() );
+        documentAndReportDTO.setF1( extraction.getF1() );
+        documentAndReportDTO.setAnls( extraction.getAnls() );
+
+        return documentAndReportDTO;
     }
 
     protected List<Label> labelPostDTOListToLabelList(List<LabelPostDTO> list) {
