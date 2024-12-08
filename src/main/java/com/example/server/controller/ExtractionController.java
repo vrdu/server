@@ -52,6 +52,7 @@ public class ExtractionController {
             DocumentAndExtractionDTO documentAndExtractionDTO = new DocumentAndExtractionDTO();
             documentAndExtractionDTO.setExtractions(extractionGetDTOS);
             documentAndExtractionDTO.setDocuments(documentGetDTOS);
+            System.out.println(documentAndExtractionDTO);
             return ResponseEntity.ok(documentAndExtractionDTO);
         }catch (Exception e) {
             if (e.getMessage() != null && e.getMessage().contains("Extraction not found")) {

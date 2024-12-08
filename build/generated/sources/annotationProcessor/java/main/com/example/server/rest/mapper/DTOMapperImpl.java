@@ -31,7 +31,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-07T21:23:20+0100",
+    date = "2024-12-08T17:23:32+0100",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.6 (Amazon.com Inc.)"
 )
 public class DTOMapperImpl implements DTOMapper {
@@ -274,7 +274,7 @@ public class DTOMapperImpl implements DTOMapper {
 
         ExtractionGetDTO extractionGetDTO = new ExtractionGetDTO();
 
-        extractionGetDTO.setExtractionName( extraction.getExtractionName() );
+        extractionGetDTO.setName( extraction.getExtractionName() );
 
         return extractionGetDTO;
     }

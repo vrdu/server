@@ -200,7 +200,7 @@ class DocumentControllerTest {
 
 
         when(userService.validateToken(request)).thenReturn(true);
-        when(documentService.getAnnotationDocuments("testUser", "testProject", "testDoc")).thenReturn(mockDocument);
+        when(documentService.getAnnotationDocument("testUser", "testProject", "testDoc")).thenReturn(mockDocument);
         when(documentService.convertEntityToDocumentGetCompleteDTO(mockDocument)).thenReturn(mockDTO);
         ResponseEntity<DocumentGetCompleteDTO> response = documentController.getFileToAnnotate("testDoc", "testProject", "testUser", request);
 
@@ -210,7 +210,7 @@ class DocumentControllerTest {
         assertEquals(Base64.getEncoder().encodeToString("Test PDF Data".getBytes()), response.getBody().getBase64PdfData());
 
         verify(userService, times(1)).validateToken(request);
-        verify(documentService, times(1)).getAnnotationDocuments("testUser", "testProject", "testDoc");
+        verify(documentService, times(1)).getAnnotationDocument("testUser", "testProject", "testDoc");
     }
 
 

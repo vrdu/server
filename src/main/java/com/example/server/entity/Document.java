@@ -51,7 +51,7 @@ public class Document implements Serializable {
     private String ocrDataAnnotation;
 
     @Lob
-    @Column(nullable = true)
+    @Column(columnDefinition = "TEXT",nullable = true)
     private String extractionResult;
 
     @Column(nullable = true)
@@ -69,9 +69,13 @@ public class Document implements Serializable {
     @Column(nullable = false)
     private boolean currentlyInOCR;
 
+    @Column(nullable = false)
+    private boolean corrected = false;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status = Status.PENDING;
+
 
     public enum Status {
         PENDING,

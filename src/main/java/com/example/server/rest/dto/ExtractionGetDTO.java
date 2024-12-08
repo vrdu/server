@@ -8,5 +8,5 @@ import java.util.List;
 @Getter
 @Setter
 public class ExtractionGetDTO {
-    private String extractionName;
+    private String name;
 }

@@ -95,7 +95,7 @@ public interface DTOMapper {
     @Mapping(source = "labelFamilyName", target = "labelFamilyName")
     LabelFamilyNameGetDTO convertEntityToLabelFamilyNameGetDTO(LabelFamily labelFamily);
 
-    @Mapping(source = "extractionName", target = "extractionName")
+    @Mapping(source = "extractionName", target = "name")
     ExtractionGetDTO convertEntityToExtractionGetDTO(Extraction extraction);
 
     @Mapping(source = "name", target = "extractionName")
