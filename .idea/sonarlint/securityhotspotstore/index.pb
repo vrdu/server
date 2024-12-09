@@ -106,17 +106,9 @@ Q.idea/sonarlint/securityhotspotstore/9/d/9de84502eae7f6a13cb8d8a62dab57eeb77371
 h
 8src/main/java/com/example/server/entity/BoundingBox.java,3\f\3f0b11f32e9e250105da09420f5b75b17eb5eb76
 u
-Esrc/main/java/com/example/server/rest/dto/DocumentSetCompleteDTO.java,1\9\193c0372b76d37f1ded6e467905005dcb3f634a7
-u
 Esrc/main/java/com/example/server/rest/dto/DocumentGetCompleteDTO.java,f\9\f9250b7d23609fda64ac5103c775878b1f0c40eb
-g
-7src/main/java/com/example/server/entity/Annotation.java,8\7\879eb00dac2dc0186e3023a0789c9e236710d21e
 m
 =src/main/java/com/example/server/rest/dto/DocumentGetDTO.java,6\a\6a8758192ae9908c24bad1a037250e33465ee2a1
-v
-Fsrc/main/java/com/example/server/repository/LabelFamilyRepository.java,e\d\ed0ee0b3f312291c707415218712559364c19750
-p
-@src/main/java/com/example/server/repository/LabelRepository.java,6\9\691531095074a6a215db2eb42c49c9f55d3a6e22
 o
 ?src/main/java/com/example/server/rest/dto/ExtractionGetDTO.java,d\5\d5d7d7668ea0538a03d848442b889b0b19fff78e
 b
@@ -125,8 +117,6 @@ b
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 ?
 settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
-n
->src/main/java/com/example/server/controller/LLMController.java,b\5\b533254a8726a09ebd708188b4330e9c721b8c54
 m
 =src/test/java/com/example/server/service/UserServiceTest.java,c\c\cc61452f465670993b7b23b02de6e2c01a06e1c0
 l
@@ -135,8 +125,6 @@ l
 <src/test/java/com/example/server/ServerApplicationTests.java,d\1\d179c4983b5aa63b0cffe6fb8e64c0377dacb5f5
 p
 @src/test/java/com/example/server/service/ProjectServiceTest.java,3\3\33abe9d0a1a26524afbedef3634759b9e73d660f
-j
-:src/main/java/com/example/server/service/LabelService.java,a\9\a95027e5f37413d88eb4d38daaf2ee0065263764
 o
 ?src/main/java/com/example/server/controller/UserController.java,b\6\b69f5545b12ac2edba5a996608209e4073a938d1
 s
@@ -163,3 +151,11 @@ i
 9src/main/java/com/example/server/service/UserService.java,3\7\37c0ce0461f731389dd276b37db2d49799010dc8
 p
 @src/main/java/com/example/server/rest/dto/DocumentDeleteDTO.java,e\3\e366728b07dd55def7b930ce5e20568e0a155120
+p
+@src/main/java/com/example/server/rest/dto/ExtractionPostDTO.java,3\8\384ccd021e6ccf20214f58149ee0a8a16e99e85d
+g
+7src/main/java/com/example/server/entity/Extraction.java,f\9\f92193674411a175b1f9568d15ca0fa3e2914916
+i
+9src/main/java/com/example/server/rest/dto/ContentDTO.java,1\1\11b6a92daca37928520481fa1678c5cca435c602
+g
+7src/main/java/com/example/server/ServerApplication.java,2\5\25734794e2895aaafdd8a8fc7bda0662cfecbd7d

@@ -8,6 +8,7 @@ import com.example.server.rest.dto.DocumentGetCompleteDTO;
 import com.example.server.rest.dto.DocumentSetCompleteDTO;
 import com.example.server.rest.dto.HighlightDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import net.sourceforge.tess4j.ITesseract;
@@ -42,6 +43,8 @@ import static com.example.server.entity.Document.Status.EXTRACTION_COMPLETE;
 public class DocumentService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
     private final DocumentRepository documentRepository;
+    private ObjectMapper objectMapper = new ObjectMapper();
+
 
     @Autowired
     public DocumentService(DocumentRepository documentRepository) {
@@ -160,9 +163,9 @@ public class DocumentService {
 
         if (!document.isOcrNotPossible()) {
             ITesseract tesseract = new Tesseract();
-            /*tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");LAPTOP*/
+            tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");/*LAPTOP*/
 
-            tesseract.setDatapath("E:\\program files\\tessdata");/* PC*/
+            /*tesseract.setDatapath("E:\\program files\\tessdata");/* PC*/
             tesseract.setLanguage("eng");
             tesseract.setTessVariable("user_defined_dpi", "300");
 
@@ -229,8 +232,21 @@ public class DocumentService {
         return document;
     }
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
+        private String extractAnnotation(String jsonString) {
+            try {
+
+                JsonNode rootNode = objectMapper.readTree(jsonString);
+
+                JsonNode annotationNode = rootNode.get("annotation");
+
+                // Convert the annotation node back to a JSON string
+                return objectMapper.writeValueAsString(annotationNode);
+            } catch (Exception e) {
+                throw new RuntimeException("Failded to find Annotations", e);
+
+            }
+        }
     @Transactional
     public void convertDocumentSetCompleteDTOToEntity(DocumentSetCompleteDTO documentSetCompleteDTO, String documentName, String projectName, String username) {
 
@@ -250,7 +266,8 @@ public class DocumentService {
                         String jsonData = objectMapper.writeValueAsString(highlight); // Serialize each highlight to JSON
                         Annotation annotation = new Annotation();
                         annotation.setAnnotationId(generateUniqueAnnotationId()); // Generate unique ID
-                        annotation.setJsonData(jsonData);
+                        System.out.println(jsonData);
+                        annotation.setJsonData(extractAnnotation(jsonData));
                         return annotation;
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException("Failed to save annotations", e);

@@ -57,7 +57,8 @@ public class Document implements Serializable {
     @Column(nullable = true)
     private String annotation;
 
-    @Column(nullable = true)
+    @Lob
+    @Column(columnDefinition = "TEXT",nullable = true)
     private String prompt;
 
     @Column(nullable = false)

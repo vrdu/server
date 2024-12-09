@@ -1,8 +1,12 @@
 package com.example.server.Orchestrator;
 
 import com.example.server.entity.Document;
+import com.example.server.entity.Label;
+import com.example.server.entity.LabelFamily;
 import com.example.server.manager.ExtractionManager;
 import com.example.server.repository.DocumentRepository;
+import com.example.server.repository.LabelFamilyRepository;
+import com.example.server.repository.LabelRepository;
 import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -21,11 +25,15 @@ public class PromptOrchestrator {
     private final ExecutorService executor;
     private final DocumentRepository documentRepository;
     private final Semaphore semaphore = new Semaphore(4); // Control worker availability
+    private final LabelFamilyRepository labelFamilyRepository;
+    private final LabelRepository labelRepository;
 
     @Autowired
-    public PromptOrchestrator(ExtractionManager extractionManager, DocumentRepository documentRepository, LLMOrchestrator llmOrchestrator) {
+    public PromptOrchestrator(ExtractionManager extractionManager, DocumentRepository documentRepository, LLMOrchestrator llmOrchestrator, LabelFamilyRepository labelFamilyRepository, LabelRepository labelRepository) {
         this.extractionManager = extractionManager;
         this.documentRepository = documentRepository;
+        this.labelFamilyRepository = labelFamilyRepository;
+        this.labelRepository = labelRepository;
         this.executor = Executors.newFixedThreadPool(4);
     }
 
@@ -54,7 +62,7 @@ public class PromptOrchestrator {
         Triple<String, String, String> key = extraction.keySet().iterator().next();
         List<String> documentNames = extraction.get(key);
         Pageable pageable = PageRequest.of(0, nrInstructions);
-
+        //is set to max 5 instructions look startPromptGenerationOrchestration
         List<Document> instructionDocuments = documentRepository.findAllByProjectNameAndOwnerAndInstructionTrue(key.getMiddle(), key.getLeft(), pageable);
 
         List<Document> currentBatch = new ArrayList<>();
@@ -122,22 +130,35 @@ public class PromptOrchestrator {
 
     }
     private void makePrompts(String owner, String projectName, List<Document> extractionDocuments, List<Document> instructionDocuments) {
+
+        List <LabelFamily> instructionFamilies = labelFamilyRepository.findAllByProjectNameAndOwner(projectName, owner);
+
+        List <Label> labels = new ArrayList<>();
+        for (LabelFamily instructionFamily : instructionFamilies) {
+            labels.addAll(labelRepository.findAllByLabelFamilyId(instructionFamily.getId()));
+        }
         String generatingPrompt = "";
         for (Document extractionDocument : extractionDocuments) {
             generatingPrompt += "This is the opening instruction\n";
-            generatingPrompt += "Label part from instructionDocument[0]\n";
-            generatingPrompt += "Now are a couple of instruciton documents following\n";
+            for (Label label : labels) {
+                generatingPrompt += label.getLabelName() + "\n";
+                generatingPrompt += label.getLabelDescription() + "\n";
+            }
+            generatingPrompt += "Now are a couple of instruction documents following\n";
             for (Document instructionDocument : instructionDocuments) {
                 generatingPrompt += "For this document:\n";
                 generatingPrompt += instructionDocument.getOcrData();
                 generatingPrompt += "\n";
                 generatingPrompt += "This would be the solution\n";
+
                 generatingPrompt += instructionDocument.getExtractionResult();
                 generatingPrompt += "\n";
             }
             generatingPrompt += "This would be your document, where you have to extract the information\n";
-            extractionDocument.getOcrData();
+            generatingPrompt += extractionDocument.getOcrData();
             extractionDocument.setPrompt(generatingPrompt);
+            System.out.println("finished prompt:");
+            System.out.println(generatingPrompt);
             extractionDocument.setStatus(Document.Status.PROMPT_COMPLETE);
             documentRepository.save(extractionDocument);
         }
