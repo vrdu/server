@@ -115,8 +115,6 @@ b
 2src/main/java/com/example/server/entity/Label.java,5\5\5516c45e59b55bda737a613aedd6427a277df98d
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
-?
-settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
 m
 =src/test/java/com/example/server/service/UserServiceTest.java,c\c\cc61452f465670993b7b23b02de6e2c01a06e1c0
 l
@@ -159,3 +157,13 @@ i
 9src/main/java/com/example/server/rest/dto/ContentDTO.java,1\1\11b6a92daca37928520481fa1678c5cca435c602
 g
 7src/main/java/com/example/server/ServerApplication.java,2\5\25734794e2895aaafdd8a8fc7bda0662cfecbd7d
+o
+?src/main/java/com/example/server/service/ExtractionService.java,d\d\dd0e3af301eda5062068dfa754098fbb6bb94f36
+u
+Esrc/main/java/com/example/server/controller/ExtractionController.java,b\f\bf82d7bbc7502778595ada5d6182c080a3a9cd0e
+k
+;src/main/java/com/example/server/rest/mapper/DTOMapper.java,8\6\86fd1a7b6230dc64336d9c08738fc69d013b1bf0
+u
+Esrc/main/java/com/example/server/rest/dto/DocumentSetCompleteDTO.java,1\9\193c0372b76d37f1ded6e467905005dcb3f634a7
+g
+7src/main/java/com/example/server/entity/Annotation.java,8\7\879eb00dac2dc0186e3023a0789c9e236710d21e

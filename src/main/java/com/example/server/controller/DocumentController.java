@@ -6,17 +6,20 @@ import com.example.server.rest.mapper.DTOMapper;
 import com.example.server.service.DocumentService;
 import com.example.server.service.ProjectService;
 import com.example.server.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @RestController
 public class DocumentController {
@@ -63,39 +66,61 @@ public class DocumentController {
     @ResponseBody
     public ResponseEntity<String> uploadExtractionFile(
             @RequestParam("files") MultipartFile[] files,
+            @RequestParam(value = "extractionResults", required = false) String extractionResultsJson,
             @PathVariable String projectName,
             @PathVariable String username,
             HttpServletRequest request) throws IOException {
 
 
+
         System.out.println("Arrived in uploadExtraction");
         userService.validateToken(request);
 
-        Document document = new Document();
-        document.setOwner(username);
-        document.setProjectName(projectName);
+        // Parse the JSON string into a Map
+        Map<String, Object> extractionResults = new HashMap<>();
+        if (extractionResultsJson != null && !extractionResultsJson.isBlank()) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                // Check if `extractionResultsJson` is stringified JSON
+                if (extractionResultsJson.startsWith("{") && extractionResultsJson.endsWith("}")) {
+                    extractionResults = objectMapper.readValue(extractionResultsJson, new TypeReference<Map<String, Object>>() {});
+                }
+            } catch (Exception e) {
+                extractionResults = null;
+            }
+        }
+
 
         for (MultipartFile file : files){
             if (file.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File data is missing");
             }
+            System.out.println(file);
+
             CustomFileDTO customFile = new CustomFileDTO();
             customFile.setFileData(file.getBytes());
             customFile.setName(file.getOriginalFilename());
-            customFile.setFileData(file.getBytes());
 
             // Convert to entity
-            Document documentLoop = DTOMapper.INSTANCE.convertCustomFileDTOToEntity(customFile);
-            document.setDocumentName(documentLoop.getDocumentName());
+            Document document = DTOMapper.INSTANCE.convertCustomFileDTOToEntity(customFile);
+            document.setOwner(username);
+            document.setProjectName(projectName);
             document.setInstruction(false);
             document.setPdfData(customFile.getFileData());
+            if (extractionResults != null) {
+                document.setExtractionSolution(extractionResults.toString());
+            }
+
             System.out.println("before save");
+            System.out.println(document.getExtractionSolution().toString());
             // Save and optionally start OCR
             documentService.safeInDB(document);
-
+            System.out.println("GOOGLE_APPLICATION_CREDENTIALS: " + System.getenv("GOOGLE_APPLICATION_CREDENTIALS"));
             documentService.startOCRProcessAsync(document);
 
         }
+
 
         return ResponseEntity.ok("File uploaded successfully");
     }

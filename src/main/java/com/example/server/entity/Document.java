@@ -61,6 +61,10 @@ public class Document implements Serializable {
     @Column(columnDefinition = "TEXT",nullable = true)
     private String prompt;
 
+    @Lob
+    @Column(columnDefinition = "TEXT",nullable = true)
+    private String extractionSolution;
+
     @Column(nullable = false)
     private boolean instruction;
 

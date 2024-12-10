@@ -13,6 +13,7 @@ public class CustomFileDTO {
     private String id;
     private boolean extract;
     private byte[] fileData;
+    private String extractionResult;
 
 }
 
