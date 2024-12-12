@@ -47,7 +47,7 @@ public class ExtractionManager {
             );
             List<String> extractionNames = new ArrayList<>();
             for (SingleExtraction singleExtraction : extraction.getExtractions()) {
-                extractionNames.add(singleExtraction.getExtractionName());
+                extractionNames.add(singleExtraction.getExtractionDocumentName());
             }
             Map<Triple<String, String, String>, List<String>> extractionMap = new ConcurrentHashMap<>();
             extractionMap.put(key, extractionNames);
@@ -87,7 +87,7 @@ public class ExtractionManager {
             );
             List<String> extractionNames = new ArrayList<>();
             for (SingleExtraction singleExtraction : extraction.getExtractions()) {
-                extractionNames.add(singleExtraction.getExtractionName());
+                extractionNames.add(singleExtraction.getExtractionDocumentName());
             }
             Map<Triple<String, String, String>, List<String>> extractionMap = new ConcurrentHashMap<>();
             extractionMap.put(key, extractionNames);

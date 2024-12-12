@@ -15,7 +15,6 @@ import java.util.List;
 
 public class LLMController {
     public GenerateContentResponse generateContent(String text, String projectId, String region) throws IOException {
-        System.out.println("made it into generateContent");
         GenerateContentResponse response = null;
 
         try (VertexAI vertexAi = new VertexAI(projectId, region)) {
@@ -57,7 +56,7 @@ public class LLMController {
 
             try {
                 response = chatSession.sendMessage(text); // For multi-turn chat, use sendMessage.
-                System.out.println("response: " + response);
+                return response;
             } catch (Exception e) {
                 System.err.println("Error during content generation: " + e.getMessage());
                 e.printStackTrace();

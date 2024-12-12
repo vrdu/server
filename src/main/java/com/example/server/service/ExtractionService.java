@@ -17,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -26,14 +25,16 @@ public class ExtractionService {
 
     private final ExtractionRepository extractionRepository;
     private final DocumentRepository documentRepository;
+    private final DocumentService documentService;
     private final ExtractionManager extractionManager;
     private final LLMOrchestrator llmOrchestrator;
     private final PromptOrchestrator promptOrchestrator;
 
     @Autowired
-    public ExtractionService(ExtractionRepository extractionRepository, DocumentRepository documentRepository, ExtractionManager extractionManager, LLMOrchestrator llmOrchestrator, PromptOrchestrator promptOrchestrator) {
+    public ExtractionService(ExtractionRepository extractionRepository, DocumentRepository documentRepository, DocumentService documentService, ExtractionManager extractionManager, LLMOrchestrator llmOrchestrator, PromptOrchestrator promptOrchestrator) {
         this.extractionRepository = extractionRepository;
         this.documentRepository = documentRepository;
+        this.documentService = documentService;
         this.extractionManager = extractionManager;
         this.llmOrchestrator = llmOrchestrator;
         this.promptOrchestrator = promptOrchestrator;
@@ -64,7 +65,7 @@ public class ExtractionService {
             extractionFromDB.setStatus(Extraction.Status.PROMPT_GENERATION_IN_PROGRESS);
             List<String> extractionNames = new ArrayList<>();
             for (SingleExtraction singleExtraction : extraction.getExtractions()) {
-                extractionNames.add(singleExtraction.getExtractionName());
+                extractionNames.add(singleExtraction.getExtractionDocumentName());
             }
             extractionManager.addExtraction(extraction.getOwner(), extraction.getProjectName(), extraction.getExtractionName(), extractionNames);
             extractionRepository.save(extractionFromDB);
@@ -88,7 +89,7 @@ public class ExtractionService {
     public List <String> extractExtractionDocuments(List <SingleExtraction> extractions){
         List <String> documentNames = new ArrayList<>();
         for (SingleExtraction singleExtraction : extractions){
-                documentNames.add(singleExtraction.getExtractionName());
+                documentNames.add(singleExtraction.getExtractionDocumentName());
             }
         return documentNames;
     }
@@ -99,6 +100,30 @@ public class ExtractionService {
     }
     public List <Extraction> getExtractions(String owner,String projectName){
         return extractionRepository.findAllByOwnerAndProjectName(owner,projectName);
+    }
+
+    public void calculateF1ForExtraction(String owner, String projectName, String extractionName) throws Exception {
+        List<Double> f1Scores = new ArrayList<>();
+        Optional<Extraction> extractionOpt = extractionRepository.findByOwnerAndProjectNameAndExtractionName(owner, projectName, extractionName);
+        if (extractionOpt.isPresent()) {
+            Extraction extraction = extractionOpt.get();
+            List<SingleExtraction> singleExtractions = extraction.getExtractions();
+            for (SingleExtraction singleExtraction : singleExtractions) {
+                Optional<Document> documentOpt = documentRepository.findByOwnerAndProjectNameAndDocumentName(owner, projectName, singleExtraction.getExtractionDocumentName());
+                if (documentOpt.isPresent()) {
+                    Document document = documentOpt.get();
+                    if (document.getF1()==null) {
+                        double f1 = documentService.calculateF1Score(document.getExtractionResult(), document.getExtractionSolution());
+                        document.setF1(f1);
+                    }
+                    f1Scores.add(document.getF1());
+                    documentRepository.save(document);
+                }
+            }
+            double averageF1 = f1Scores.stream().mapToDouble(val -> val).average().orElse(0.0);
+            extraction.setF1(averageF1);
+            extractionRepository.save(extraction);
+        }
     }
 
 }

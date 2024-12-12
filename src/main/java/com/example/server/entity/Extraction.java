@@ -29,10 +29,10 @@ public class Extraction {
     @Column(nullable = false)
     private boolean extractionInProgress;
 
-    @Column(nullable = false)
-    private float f1;
+    @Column(nullable = true)
+    private Double f1;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private float anls;
 
 

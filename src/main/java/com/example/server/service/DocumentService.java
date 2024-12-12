@@ -105,6 +105,7 @@ public class DocumentService {
     }
     public Document getCorrectionDocument(String username, String projectName, String documentName){
         Optional <Document> documentDBOpt = documentRepository.findByOwnerAndProjectNameAndDocumentName(username,projectName,documentName);
+        System.out.println(username +" " + projectName+" " + documentName);
         if (documentDBOpt.isPresent()){
             Document documentDB = documentDBOpt.get();
             if(!documentDB.isCurrentlyInOCR()){
@@ -129,6 +130,18 @@ public class DocumentService {
             }
         }else{
             throw new RuntimeException("Something went wrong the document does not exist.");
+        }
+    }
+    public void saveCorrectionExtraction(String username, String projectName, String documentName, Document document){
+        Optional <Document> documentDBOpt = documentRepository.findByOwnerAndProjectNameAndDocumentName(username,projectName,documentName);
+        if (documentDBOpt.isPresent()){
+            System.out.println(document.getExtractionSolution());
+            Document documentDB = documentDBOpt.get();
+            documentDB.setExtractionSolution(document.getExtractionSolution());
+            documentRepository.save(documentDB);
+            documentRepository.flush();
+        }else{
+            throw new RuntimeException("Document not found for saving extraction result.");
         }
     }
     public void deleteDocument(Document documentToDelete){
@@ -320,187 +333,43 @@ public class DocumentService {
             throw new RuntimeException("Document not found for setting as instruction.");
         }
     }
+    public static double calculateF1Score(String groundTruthJson, String extractedJson) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
 
-    /* First approach:
-    public void setAnnotations(Document document, DocumentSetCompleteDTO documentSetCompleteDTO){
-        boolean documentExists = checkDuplicates(document.getDocumentName(), document.getProjectName(), document.getOwner());
-        if (documentExists) {
-            List <String> stringAnnotations = documentSetCompleteDTO.getAnnotation();
-            List <Annotation> listAnnotations = new ArrayList<>();
-            for (String annotationString : stringAnnotations){
-                Annotation annotation = new Annotation();
-                annotation.setJsonData(annotationString);
-                listAnnotations.add(annotation);
+        // Parse JSON strings into maps
+        Map<String, Object> groundTruthMap = objectMapper.readValue(groundTruthJson, Map.class);
+        Map<String, Object> extractedMap = objectMapper.readValue(extractedJson, Map.class);
+
+        int truePositive = 0;
+        int falsePositive = 0;
+        int falseNegative = 0;
+
+        Set<String> allKeys = groundTruthMap.keySet();
+        for (String key : allKeys) {
+            Object groundTruthValue = groundTruthMap.get(key);
+            Object extractedValue = extractedMap.get(key);
+
+            if (groundTruthValue == null) {
+                continue; // Ignore null values in ground truth
             }
-            document.setAnnotations(listAnnotations);
-            documentRepository.save(document);
-            documentRepository.flush();
-        } else {
-            safeInDB(document);
-            setAnnotations(document, documentSetCompleteDTO);
-        }
-    }
-    public List <String> getAnnotations(List <Annotation> annotationsToParse){
-        List <String> annotationsAsString = new ArrayList<>();
-        for (Annotation annotation : annotationsToParse){
-            annotationsAsString.add(annotation.getJsonData());
-        }
-        return  annotationsAsString;
-    }
 
-    private  static String mapJsonToString(Object json) {
-        try {
-            return objectMapper.writeValueAsString(json);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to convert JSON to string", e);
-        }
-    }
-    private static JsonNode mapStringToJson(String jsonString) {
-        try {
-            return objectMapper.readTree(jsonString);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to convert string to JSON", e);
-        }
-    }
-*/
-/* with correct boxes implementation
-    public Document performOCRForPrompt(Document document) {
-        log.debug("Started OCR process for document: {}", document.getDocumentName());
-
-        if (!document.isOcrNotPossible()) {
-            ITesseract tesseract = new Tesseract();
-            tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");
-            tesseract.setLanguage("deu");
-            tesseract.setTessVariable("user_defined_dpi", "300");
-
-            StringBuilder ocrResultBuilder = new StringBuilder();
-            List<BoundingBox> boundingBoxes = new ArrayList<>();
-
-            try (PDDocument pdfDocument = PDDocument.load(new ByteArrayInputStream(document.getPdfData()))) {
-                PDFRenderer pdfRenderer = new PDFRenderer(pdfDocument);
-                int pageCount = pdfDocument.getNumberOfPages();
-                log.info("PDF has {} pages", pageCount);
-
-                for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-                    BufferedImage image = pdfRenderer.renderImageWithDPI(pageIndex, 300);
-
-                    int maxRetries = 3;
-                    int attempt = 0;
-                    boolean success = false;
-
-                    while (attempt < maxRetries && !success) {
-                        try {
-                            List<Word> words = tesseract.getWords(image, ITessAPI.TessPageIteratorLevel.RIL_WORD);
-                            StringBuilder pageResult = new StringBuilder();
-
-                            for (Word word : words) {
-                                pageResult.append(word.getText()).append(" ");
-                                BoundingBox box = new BoundingBox(word.getBoundingBox(), word.getText());
-                                boundingBoxes.add(box);
-                            }
-
-                            pageResult.append("\n\n");
-
-                            ocrResultBuilder.append("Page ").append(pageIndex + 1).append(":\n")
-                                    .append(pageResult.toString()).append("\n");
-
-                            log.info("OCR successful on page {} at attempt {}", pageIndex + 1, attempt + 1);
-                            success = true;
-                        } catch (Exception e) {
-                            attempt++;
-                            log.error("OCR failed on attempt {}: {}", attempt, e.getMessage());
-
-                            if (attempt < maxRetries) {
-                                log.info("Retrying OCR...");
-                            } else {
-                                log.error("Max retries reached. OCR failed.");
-                                document.setOcrNotPossible(true);
-                            }
-                        }
-                    }
-                }
-
-                document.setOcrData(ocrResultBuilder.toString());
-                document.setOcrBoxes(boundingBoxes);
-
-                return document;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (extractedValue != null && groundTruthValue.equals(extractedValue)) {
+                truePositive++; // Correct match
+            } else if (extractedValue != null) {
+                falsePositive++; // Value exists but is incorrect
+            } else {
+                falseNegative++; // Value is missing
             }
         }
-        return document;
+
+        // Calculate precision, recall, and F1 score
+        double precision = (truePositive + falsePositive) > 0 ? (double) truePositive / (truePositive + falsePositive) : 0;
+        double recall = (truePositive + falseNegative) > 0 ? (double) truePositive / (truePositive + falseNegative) : 0;
+        double f1Score = (precision + recall) > 0 ? 2 * ((precision * recall) / (precision + recall)) : 0;
+
+        return f1Score;
     }
 
-*/
-/*
-    public Document performOCRForPrompt(Document document) {
-        log.debug("Started OCR process for document: {}", document.getDocumentName());
 
-        if (!document.isOcrNotPossible()) {  // Simplified boolean check
-            ITesseract tesseract = new Tesseract();
-            tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");  // Set the Tesseract data path
-            tesseract.setLanguage("deu");  // Set the language to German
-            tesseract.setTessVariable("user_defined_dpi", "300");
-
-            // Use StringBuilder to accumulate OCR results from multiple pages
-            StringBuilder ocrResultBuilder = new StringBuilder();
-
-            // Convert byte[] (PDF data) to BufferedImage(s) using PDFBox
-            try (PDDocument pdfDocument = PDDocument.load(new ByteArrayInputStream(document.getPdfData()))) {
-                PDFRenderer pdfRenderer = new PDFRenderer(pdfDocument);
-                int pageCount = pdfDocument.getNumberOfPages();
-                log.info("PDF has {} pages", pageCount);
-
-                for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
-                    BufferedImage image = pdfRenderer.renderImageWithDPI(pageIndex, 300);
-
-                    // Retry OCR process up to 3 times
-                    int maxRetries = 3;
-                    int attempt = 0;
-                    boolean success = false;
-
-                    while (attempt < maxRetries && !success) {
-                        try {
-                            // Perform OCR on the image
-                            String result = tesseract.doOCR(image);
-
-                            result = result.replaceAll("\\r\\n|\\r|\\n", "\n").replaceAll("(?m)^[ \\t]*\\n", "\n\n");
-
-                            log.info("OCR successful on page {} at attempt {}", pageIndex + 1, attempt + 1);
-
-
-                            // Append the OCR result for the current page to the StringBuilder
-                            ocrResultBuilder.append("Page ").append(pageIndex + 1).append(":\n")
-                                    .append(result).append("\n\n");  // Preserving newlines
-
-                            success = true;  // OCR succeeded for this page
-                        } catch (TesseractException e) {
-                            attempt++;
-                            log.error("OCR failed on attempt {}: {}", attempt, e.getMessage());
-
-                            // Retry logic
-                            if (attempt < maxRetries) {
-                                log.info("Retrying OCR...");
-                            } else {
-                                log.error("Max retries reached. OCR failed.");
-                                document.setOcrNotPossible(true);
-                            }
-                        }
-                    }
-                }
-
-                // Store the complete OCR result with preserved formatting
-                document.setOcrData(ocrResultBuilder.toString());
-
-
-                return document;
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return document;
-    }
-*/
 }
 

@@ -1,8 +1,10 @@
 package com.example.server.service;
 
+import com.example.server.entity.Extraction;
 import com.example.server.entity.Label;
 import com.example.server.entity.LabelFamily;
 import com.example.server.entity.Project;
+import com.example.server.repository.ExtractionRepository;
 import com.example.server.repository.LabelFamilyRepository;
 import com.example.server.repository.LabelRepository;
 import com.example.server.repository.ProjectRepository;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,17 +29,19 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final LabelFamilyRepository labelFamilyRepository;
     private final LabelRepository labelRepository;
+    private final ExtractionRepository extractionRepository;
+    private final ExtractionService extractionService;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, LabelFamilyRepository labelFamilyRepository, LabelRepository labelRepository) {
+    public ProjectService(ProjectRepository projectRepository, LabelFamilyRepository labelFamilyRepository, LabelRepository labelRepository, ExtractionRepository extractionRepository, ExtractionService extractionService) {
         this.projectRepository = projectRepository;
         this.labelFamilyRepository = labelFamilyRepository;
         this.labelRepository = labelRepository;
+        this.extractionRepository = extractionRepository;
+        this.extractionService = extractionService;
     }
     public Project createProject(Project project, String owner){
         checkIfProjectExists(project.getProjectName(),owner);
-        project.setAnls(0);
-        project.setF1(0);
         project.setOwner(owner);
         project = projectRepository.save(project);
         projectRepository.flush();
@@ -99,6 +104,25 @@ public class ProjectService {
     public List<Project> getProjectsByUsername(String username){
         List<Project> projects = projectRepository.findAllByOwner(username);
         return projects;
+    }
+    public void calculateF1OfProject(String owner, String projectName) throws Exception {
+        Project project = projectRepository.findByProjectNameAndOwner(projectName, owner);
+        if (project == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Project with name '" + projectName + "' not found.");
+        }
+        List<Extraction> extractions = extractionRepository.findAllByOwnerAndProjectName(owner, projectName);
+        List<Double> f1 = new ArrayList<>();
+
+        for (Extraction extraction : extractions){
+            if (extraction.getF1() == null){
+                extractionService.calculateF1ForExtraction(owner, projectName, extraction.getExtractionName());
+            }
+            f1.add(extraction.getF1());
+        }
+        Double averageF1 = f1.stream().mapToDouble(val -> val).average().orElse(0.0);
+        project.setF1(averageF1);
+        projectRepository.save(project);
+        projectRepository.flush();
     }
 
     //Helpers

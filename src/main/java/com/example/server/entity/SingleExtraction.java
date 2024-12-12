@@ -21,7 +21,7 @@ public class SingleExtraction implements Serializable {
     private Long id;
 
     @Column
-    private String extractionName;
+    private String extractionDocumentName;
 
     @ManyToOne
     @JoinColumn(name = "extractions_id")

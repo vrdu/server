@@ -68,6 +68,9 @@ public class Document implements Serializable {
     @Column(nullable = false)
     private boolean instruction;
 
+    @Column(nullable = true)
+    private Double f1;
+
     @Column(nullable = false)
     private boolean ocrNotPossible;
 
@@ -90,4 +93,22 @@ public class Document implements Serializable {
         EXTRACTION_COMPLETE,
         FAILED
     }
+    @Override
+    public String toString() {
+        return "Document{" +
+                "id=" + id +
+                ", owner='" + owner + '\'' +
+                ", documentName='" + documentName + '\'' +
+                ", projectName='" + projectName + '\'' +
+                ", ocrBoxes=" + ocrBoxes +
+                ", annotations=" + annotations +
+                ", instruction=" + instruction +
+                ", f1=" + f1 +
+                ", ocrNotPossible=" + ocrNotPossible +
+                ", currentlyInOCR=" + currentlyInOCR +
+                ", corrected=" + corrected +
+                ", status=" + status +
+                '}';
+    }
+
 }

@@ -11,6 +11,8 @@ import com.example.server.rest.dto.DocumentAndReportDTO;
 import com.example.server.rest.dto.DocumentDeleteDTO;
 import com.example.server.rest.dto.DocumentGetDTO;
 import com.example.server.rest.dto.DocumentPostDTO;
+import com.example.server.rest.dto.ExtractionCorrectionGetDTO;
+import com.example.server.rest.dto.ExtractionCorrectionPostDTO;
 import com.example.server.rest.dto.ExtractionGetDTO;
 import com.example.server.rest.dto.ExtractionPostDTO;
 import com.example.server.rest.dto.LabelFamilyGetDTO;
@@ -31,7 +33,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-10T11:23:23+0100",
+    date = "2024-12-12T18:56:54+0100",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.4.1 (Eclipse Adoptium)"
 )
 public class DTOMapperImpl implements DTOMapper {
@@ -100,8 +102,12 @@ public class DTOMapperImpl implements DTOMapper {
         ProjectGetDTO projectGetDTO = new ProjectGetDTO();
 
         projectGetDTO.setProjectName( project.getProjectName() );
-        projectGetDTO.setF1( project.getF1() );
-        projectGetDTO.setAnls( project.getAnls() );
+        if ( project.getF1() != null ) {
+            projectGetDTO.setF1( project.getF1().intValue() );
+        }
+        if ( project.getAnls() != null ) {
+            projectGetDTO.setAnls( project.getAnls().intValue() );
+        }
 
         return projectGetDTO;
     }
@@ -320,10 +326,38 @@ public class DTOMapperImpl implements DTOMapper {
         DocumentAndReportDTO documentAndReportDTO = new DocumentAndReportDTO();
 
         documentAndReportDTO.setName( extraction.getExtractionName() );
-        documentAndReportDTO.setF1( extraction.getF1() );
+        if ( extraction.getF1() != null ) {
+            documentAndReportDTO.setF1( extraction.getF1().floatValue() );
+        }
         documentAndReportDTO.setAnls( extraction.getAnls() );
 
         return documentAndReportDTO;
+    }
+
+    @Override
+    public ExtractionCorrectionGetDTO convertEntityToExtractionCorrectionGetDTO(Document document) {
+        if ( document == null ) {
+            return null;
+        }
+
+        ExtractionCorrectionGetDTO extractionCorrectionGetDTO = new ExtractionCorrectionGetDTO();
+
+        extractionCorrectionGetDTO.setExtractionResult( document.getExtractionResult() );
+
+        return extractionCorrectionGetDTO;
+    }
+
+    @Override
+    public Document convertExtractionCorrectionPostDTOToEntity(ExtractionCorrectionPostDTO extractionCorrectionPostDTO) {
+        if ( extractionCorrectionPostDTO == null ) {
+            return null;
+        }
+
+        Document document = new Document();
+
+        document.setExtractionSolution( extractionCorrectionPostDTO.getExtractionSolution() );
+
+        return document;
     }
 
     protected List<Label> labelPostDTOListToLabelList(List<LabelPostDTO> list) {

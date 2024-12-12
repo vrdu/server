@@ -107,4 +107,7 @@ public interface DTOMapper {
     @Mapping(source = "extractionName", target = "name")
 
     DocumentAndReportDTO convertEntityToDocumentAndReportDTO(Extraction extraction);
+
+    ExtractionCorrectionGetDTO convertEntityToExtractionCorrectionGetDTO(Document document);
+    Document convertExtractionCorrectionPostDTOToEntity(ExtractionCorrectionPostDTO extractionCorrectionPostDTO);
 }

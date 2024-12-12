@@ -116,7 +116,6 @@ public class DocumentController {
             System.out.println(document.getExtractionSolution().toString());
             // Save and optionally start OCR
             documentService.safeInDB(document);
-            System.out.println("GOOGLE_APPLICATION_CREDENTIALS: " + System.getenv("GOOGLE_APPLICATION_CREDENTIALS"));
             documentService.startOCRProcessAsync(document);
 
         }
@@ -201,8 +200,6 @@ public class DocumentController {
         return ResponseEntity.ok("File uploaded successfully");
     }
 
-    //make an extraction Instance with all the instructionNames
-    //Start the prompting process
 
     @GetMapping("/projects/{username}/{projectName}/{documentName}/annotate")
     @ResponseStatus(HttpStatus.OK)
@@ -221,6 +218,40 @@ public class DocumentController {
         //documentGetCompleteDTO.setBoxes(document.getOcrBoxes());
         return ResponseEntity.ok(documentGetCompleteDTO);
     }
+    @GetMapping("/projects/{username}/{projectName}/{documentName}/getCorrection")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<ExtractionCorrectionGetDTO> getAnnotationsToCorrect(
+            @PathVariable String documentName,
+            @PathVariable String projectName,
+            @PathVariable String username,
+            HttpServletRequest request) throws IOException {
+        System.out.println("gettingCorrection");
+        userService.validateToken(request);
+        Document document = documentService.getCorrectionDocument(username, projectName, documentName);
+        ExtractionCorrectionGetDTO extractionCorrectionGetDTO = DTOMapper.INSTANCE.convertEntityToExtractionCorrectionGetDTO(document);
+        return ResponseEntity.ok(extractionCorrectionGetDTO);
+    }
+
+    @PostMapping("/projects/{username}/{projectName}/{documentName}/setCorrection")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public ResponseEntity<String> setAnnotationsToCorrect(
+            @PathVariable String documentName,
+            @PathVariable String projectName,
+            @PathVariable String username,
+            @RequestBody ExtractionCorrectionPostDTO extractionCorrectionPostDTO,
+            HttpServletRequest request) throws IOException {
+        System.out.println("settingCorrection");
+        userService.validateToken(request);
+        System.out.println(extractionCorrectionPostDTO.toString());
+        Document document = DTOMapper.INSTANCE.convertExtractionCorrectionPostDTOToEntity(extractionCorrectionPostDTO);
+        System.out.println(document.toString());
+        documentService.saveCorrectionExtraction(username, projectName, documentName, document);
+
+        return ResponseEntity.ok("successfully saved");
+    }
+
     @GetMapping("/projects/{username}/{projectName}/{documentName}/correct")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -232,8 +263,8 @@ public class DocumentController {
 
         userService.validateToken(request);
         System.out.println(documentName+" "+ projectName+ " "+ username);
-        Document document = documentService.getAnnotationDocument(username, projectName, documentName);
-        //Document document = documentService.getCorrectionDocument(username, projectName, documentName);
+        //Document document = documentService.getAnnotationDocument(username, projectName, documentName);
+        Document document = documentService.getCorrectionDocument(username, projectName, documentName);
         DocumentGetCompleteDTO documentGetCompleteDTO = documentService.convertEntityToDocumentGetCompleteDTO(document);
         documentGetCompleteDTO.setBase64PdfData(Base64.getEncoder().encodeToString(document.getPdfData()));
         //documentGetCompleteDTO.setBoxes(document.getOcrBoxes());
@@ -268,22 +299,6 @@ public class DocumentController {
         documentService.setAsInstruction(documentName, projectName, username);
         return ResponseEntity.ok("Annotations saved successfully!");
     }
-    /*
-    @PostMapping("/projects/{username}/{projectName}/startExtraction")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public ResponseEntity<String> setAnnotationsToFile(
-            @PathVariable String documentName,
-            @PathVariable String projectName,
-            @RequestBody ExtractionGetDTO extractionDTO,
-            HttpServletRequest request) throws IOException {
 
-        userService.validateToken(request);
-        //System.out.println(documentSetCompleteDTO.toString());
-        //documentService.convertDocumentSetCompleteDTOToEntity(documentSetCompleteDTO,  documentName,  projectName,  username);
-
-        return ResponseEntity.ok("Annotations saved successfully!");
-    }
-*/
 
 }

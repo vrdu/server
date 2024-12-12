@@ -76,9 +76,10 @@ public class ExtractionController {
             @PathVariable String username,
             @PathVariable String projectName,
             @PathVariable String extractionName,
-            HttpServletRequest request) throws IOException {
+            HttpServletRequest request) throws Exception {
         System.out.println("documents and report");
         userService.validateToken(request);
+        extractionService.calculateF1ForExtraction(username, projectName, extractionName);
         Extraction extraction = extractionService.getExtraction(username, projectName, extractionName);
         DocumentAndReportDTO documentAndReportDTO = DTOMapper.INSTANCE.convertEntityToDocumentAndReportDTO(extraction);
         documentAndReportDTO.setDocumentNames(extractionService.extractExtractionDocuments(extraction.getExtractions()));
@@ -107,7 +108,7 @@ public class ExtractionController {
         List<SingleExtraction> singleExtractions = new ArrayList<>();
         for (String documentName : documentNames) {
             SingleExtraction singleExtraction = new SingleExtraction();
-            singleExtraction.setExtractionName(documentName);
+            singleExtraction.setExtractionDocumentName(documentName);
             singleExtractions.add(singleExtraction);
         }
         extraction.setExtractions(singleExtractions);

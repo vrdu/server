@@ -36,6 +36,7 @@ public class ProjectController {
     @ResponseBody
     public ProjectGetDTO createUser(@RequestBody ProjectPostDTO projectPostDTO,@PathVariable String username, HttpServletRequest request){
         userService.validateToken(request);
+
         Project userInput = DTOMapper.INSTANCE.convertProjectPostDTOToEntity(projectPostDTO);
         Project createdProject = projectService.createProject(userInput, username);
         return DTOMapper.INSTANCE.convertEntityProjectGetDTO(createdProject);

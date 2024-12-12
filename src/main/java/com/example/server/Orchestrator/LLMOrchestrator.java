@@ -4,9 +4,15 @@ import com.example.server.controller.LLMController;
 import com.example.server.entity.Document;
 import com.example.server.manager.ExtractionManager;
 import com.example.server.repository.DocumentRepository;
+import com.example.server.service.DocumentService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.vertexai.api.GenerateContentResponse;
+import com.google.protobuf.util.JsonFormat;
 import org.apache.commons.lang3.tuple.Triple;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -20,16 +26,20 @@ import java.util.concurrent.Semaphore;
 
 @Component
 public class LLMOrchestrator {
-
+    @Value("${spring.ai.vertex.ai.gemini.project-id}")
+    private String projectId;
+    private ObjectMapper objectMapper = new ObjectMapper();
     private final ExtractionManager extractionManager;
     private final ExecutorService executor;
+    private final DocumentService documentService;
     private final DocumentRepository documentRepository;
     private final Semaphore semaphore = new Semaphore(8); // Control worker availability
     private final LLMController llmController = new LLMController();
 
     @Autowired
-    public LLMOrchestrator(ExtractionManager extractionManager, DocumentRepository documentRepository) {
+    public LLMOrchestrator(ExtractionManager extractionManager, DocumentService documentService, DocumentRepository documentRepository) {
         this.extractionManager = extractionManager;
+        this.documentService = documentService;
         this.documentRepository = documentRepository;
         this.executor = Executors.newFixedThreadPool(4);
     }
@@ -125,13 +135,32 @@ public class LLMOrchestrator {
             }
         }
     }
+
+    public static JSONObject parseInvoiceToJson(String invoiceText) {
+        JSONObject invoiceJson = new JSONObject();
+
+        String[] lines = invoiceText.split("\\n");
+        for (String line : lines) {
+            if (line.contains(":")) {
+                String[] keyValue = line.split(":", 2);
+                String key = keyValue[0].trim();
+                String value = keyValue[1].trim();
+
+                invoiceJson.put(key.replace(" ", ""), value);
+                }
+            }
+
+
+        return invoiceJson;
+    }
+
     private void promptLLM(List <Document> prompts) throws IOException, InterruptedException {
-        String projectId = "key";
+
         String region = "europe-west6";
         int maxRetries = 5;
 
         for (Document promptDocument : prompts) {
-            promptDocument.setStatus(Document.Status.PROMPT_GENERATION_IN_PROGRESS);
+            promptDocument.setStatus(Document.Status.EXTRACTION_IN_PROGRESS);
             documentRepository.save(promptDocument);
             documentRepository.flush();
 
@@ -142,8 +171,25 @@ public class LLMOrchestrator {
                 try {
                     attempts++;
                     GenerateContentResponse responseEntity = llmController.generateContent(promptDocument.getPrompt(), projectId, region);
-                    promptDocument.setPrompt(responseEntity.toString());
-                    promptDocument.setStatus(Document.Status.PROMPT_COMPLETE);
+                    System.out.println("response: \n" +responseEntity);
+                    String jsonResponse = JsonFormat.printer().print(responseEntity);
+                    JsonNode rootNode = objectMapper.readTree(jsonResponse);
+                    System.out.println("here");
+                    String extraction = rootNode.path("candidates")
+                            .get(0)
+                            .path("content")
+                            .path("parts")
+                            .get(0)
+                            .path("text")
+                            .asText();
+
+                    System.out.println("Result prompt:" );
+                    System.out.println(extraction);
+
+                    JSONObject extractionJson = parseInvoiceToJson(extraction);
+                    promptDocument.setExtractionResult(extractionJson.toString());
+
+                    promptDocument.setStatus(Document.Status.EXTRACTION_COMPLETE);
                     documentRepository.save(promptDocument);
                     documentRepository.flush();
                     success = true; // Mark success if no exception occurs
@@ -154,6 +200,7 @@ public class LLMOrchestrator {
                         documentRepository.flush();
                         System.err.println("Failed to generate prompt after " + maxRetries + " attempts for document: " + promptDocument.getId());
                     } else {
+                        System.out.println("Error during prompt generation: " + e.getMessage());
                         System.err.println("Retrying... (" + attempts + "/" + maxRetries + ")");
                         wait(1000);
                     }

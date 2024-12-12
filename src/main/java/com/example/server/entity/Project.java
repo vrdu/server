@@ -20,11 +20,11 @@ public class Project implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @Column(nullable = false)
-    private int f1;
+    @Column(nullable = true)
+    private Double f1;
 
-    @Column(nullable = false)
-    private int anls;
+    @Column(nullable = true)
+    private Double anls;
 
     @Column(nullable = false)
     private String projectName;
