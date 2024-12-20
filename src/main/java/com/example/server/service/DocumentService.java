@@ -132,12 +132,13 @@ public class DocumentService {
             throw new RuntimeException("Something went wrong the document does not exist.");
         }
     }
-    public void saveCorrectionExtraction(String username, String projectName, String documentName, Document document){
+    public void saveCorrectionExtraction(String username, String projectName, String documentName, Document document) throws Exception {
         Optional <Document> documentDBOpt = documentRepository.findByOwnerAndProjectNameAndDocumentName(username,projectName,documentName);
         if (documentDBOpt.isPresent()){
             System.out.println(document.getExtractionSolution());
             Document documentDB = documentDBOpt.get();
             documentDB.setExtractionSolution(document.getExtractionSolution());
+            documentDB.setF1(calculateF1Score(documentDB.getExtractionSolution(), documentDB.getExtractionResult()));
             documentRepository.save(documentDB);
             documentRepository.flush();
         }else{
@@ -290,7 +291,7 @@ public class DocumentService {
 
         // Set the new annotations on the existing document
         existingDocument.setAnnotations(annotations);
-
+        System.out.println("Annotations: " + annotations);
         // Save the updated document
         documentRepository.save(existingDocument);
         documentRepository.flush();
@@ -333,9 +334,18 @@ public class DocumentService {
             throw new RuntimeException("Document not found for setting as instruction.");
         }
     }
+    private static String removeStarAndSpace(String input) {
+        if (input == null) return null;
+        return input.replaceAll("[* ]", "");
+    }
     public static double calculateF1Score(String groundTruthJson, String extractedJson) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
 
+        groundTruthJson = removeStarAndSpace(groundTruthJson);
+        extractedJson = removeStarAndSpace(extractedJson);
+
+        System.out.println("Ground Truth: " + groundTruthJson);
+        System.out.println("Extracted: " + extractedJson);
         // Parse JSON strings into maps
         Map<String, Object> groundTruthMap = objectMapper.readValue(groundTruthJson, Map.class);
         Map<String, Object> extractedMap = objectMapper.readValue(extractedJson, Map.class);
@@ -366,7 +376,9 @@ public class DocumentService {
         double precision = (truePositive + falsePositive) > 0 ? (double) truePositive / (truePositive + falsePositive) : 0;
         double recall = (truePositive + falseNegative) > 0 ? (double) truePositive / (truePositive + falseNegative) : 0;
         double f1Score = (precision + recall) > 0 ? 2 * ((precision * recall) / (precision + recall)) : 0;
-
+        System.out.println("Precision: " + precision);
+        System.out.println("Recall: " + recall);
+        System.out.println("F1 Score: " + f1Score);
         return f1Score;
     }
 

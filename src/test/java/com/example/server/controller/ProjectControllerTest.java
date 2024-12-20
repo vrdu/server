@@ -74,7 +74,7 @@ class ProjectControllerTest {
     }
 
     @Test
-    void testGetProjectsByUsername() {
+    void testGetProjectsByUsername() throws Exception {
         // Arrange
         List<Project> projects = new ArrayList<>();
         Project project = new Project();

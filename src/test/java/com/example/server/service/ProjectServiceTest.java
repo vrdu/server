@@ -238,7 +238,7 @@ class ProjectServiceTest {
     }
 
     @Test
-    void getProjectsByUsername_Success() {
+    void getProjectsByUsername_Success() throws Exception {
 
         String username = "testUser";
         List<Project> expectedProjects = new ArrayList<>();

@@ -43,7 +43,7 @@ public class Document implements Serializable {
     @ElementCollection
     private List<BoundingBox> ocrBoxes;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<Annotation> annotations;
 
     @Lob

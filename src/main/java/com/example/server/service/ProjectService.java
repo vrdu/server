@@ -101,11 +101,17 @@ public class ProjectService {
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Project with name '" + projectByRepository.getProjectName() + "' already exists.");
         }
     }
-    public List<Project> getProjectsByUsername(String username){
+    public List<Project> getProjectsByUsername(String username) throws Exception {
         List<Project> projects = projectRepository.findAllByOwner(username);
-        return projects;
+        for (Project project : projects){
+            calculateF1OfProject(username, project.getProjectName());
+            }
+
+        List <Project> projectsWithF1 = projectRepository.findAllByOwner(username);
+        return projectsWithF1;
     }
     public void calculateF1OfProject(String owner, String projectName) throws Exception {
+        System.out.println("Calculating F1 for project: " + projectName);
         Project project = projectRepository.findByProjectNameAndOwner(projectName, owner);
         if (project == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Project with name '" + projectName + "' not found.");

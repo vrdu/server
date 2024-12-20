@@ -6,7 +6,6 @@ import com.example.server.rest.mapper.DTOMapper;
 import com.example.server.service.DocumentService;
 import com.example.server.service.ProjectService;
 import com.example.server.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -18,18 +17,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @RestController
 public class DocumentController {
     private final DocumentService documentService;
     private final UserService userService;
+    private final ProjectService projectService;
 
-    public DocumentController(ProjectService projectService, DocumentService documentService, UserService userService) {
+    public DocumentController(ProjectService projectService, DocumentService documentService, UserService userService, ProjectService projectService1) {
 
         this.documentService = documentService;
         this.userService = userService;
+        this.projectService = projectService1;
     }
     @PostMapping("/projects/{username}/{projectName}/uploadInstruction") //to make it unique the projectName is a concatenation of username and projectName they are seperated by &
     @ResponseStatus(HttpStatus.OK)
@@ -132,7 +132,7 @@ public class DocumentController {
             @RequestBody String fileName,
             @PathVariable String projectName,
             @PathVariable String username,
-            HttpServletRequest request) throws IOException {
+            HttpServletRequest request) throws Exception {
             userService.validateToken(request);
 
             DocumentDeleteDTO documentDeleteDTO = new DocumentDeleteDTO();
@@ -241,13 +241,14 @@ public class DocumentController {
             @PathVariable String projectName,
             @PathVariable String username,
             @RequestBody ExtractionCorrectionPostDTO extractionCorrectionPostDTO,
-            HttpServletRequest request) throws IOException {
+            HttpServletRequest request) throws Exception {
         System.out.println("settingCorrection");
         userService.validateToken(request);
         System.out.println(extractionCorrectionPostDTO.toString());
         Document document = DTOMapper.INSTANCE.convertExtractionCorrectionPostDTOToEntity(extractionCorrectionPostDTO);
         System.out.println(document.toString());
         documentService.saveCorrectionExtraction(username, projectName, documentName, document);
+        projectService.calculateF1OfProject(username, projectName);
 
         return ResponseEntity.ok("successfully saved");
     }
@@ -282,6 +283,7 @@ public class DocumentController {
             HttpServletRequest request) throws IOException {
 
         userService.validateToken(request);
+        System.out.println("settingAnnotations");
         System.out.println(documentSetCompleteDTO.toString());
         documentService.convertDocumentSetCompleteDTOToEntity(documentSetCompleteDTO,  documentName,  projectName,  username);
 

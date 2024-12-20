@@ -19,4 +19,7 @@ public class Annotation {
     public Annotation(String jsonData) {
         this.jsonData = jsonData;
     }
+    @Override
+    public String toString() {return  jsonData ;}
+
 }

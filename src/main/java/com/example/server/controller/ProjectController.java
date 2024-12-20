@@ -44,8 +44,9 @@ public class ProjectController {
     @GetMapping("/projects/{username}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public ResponseEntity<List<ProjectGetDTO>> getProjectsByUsername(@PathVariable String username, HttpServletRequest request) {
+    public ResponseEntity<List<ProjectGetDTO>> getProjectsByUsername(@PathVariable String username, HttpServletRequest request) throws Exception {
         userService.validateToken(request);
+        System.out.println("Getting projects");
         List<Project> projects = projectService.getProjectsByUsername(username);
 
         // Convert the list of Project entities to a list of ProjectDTOs (using a DTOMapper or similar)

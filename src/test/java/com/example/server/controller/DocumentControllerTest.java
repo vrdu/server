@@ -155,7 +155,7 @@ class DocumentControllerTest {
 
 
     @Test
-    void testDeleteFile() throws IOException {
+    void testDeleteFile() throws Exception {
         when(userService.validateToken(request)).thenReturn(true);
         doNothing().when(documentService).deleteDocument(any(Document.class));
 

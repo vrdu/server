@@ -130,7 +130,6 @@ public class PromptOrchestrator {
 
     }
     private void makePrompts(String owner, String projectName, List<Document> extractionDocuments, List<Document> instructionDocuments) {
-
         List <LabelFamily> instructionFamilies = labelFamilyRepository.findAllByProjectNameAndOwner(projectName, owner);
 
         List <Label> labels = new ArrayList<>();
@@ -146,13 +145,15 @@ public class PromptOrchestrator {
             }
             generatingPrompt += "Now are a couple of instruction documents following\n";
             for (Document instructionDocument : instructionDocuments) {
+
                 generatingPrompt += "For this document:\n";
                 generatingPrompt += instructionDocument.getOcrData();
                 generatingPrompt += "\n";
                 generatingPrompt += "This would be the solution\n";
-
-                generatingPrompt += instructionDocument.getExtractionResult();
+                System.out.println("middle"+instructionDocument.getAnnotations().toString());
+                generatingPrompt += instructionDocument.getAnnotations().toString();
                 generatingPrompt += "\n";
+
             }
             generatingPrompt += "This would be your document, where you have to extract the information\n";
             generatingPrompt += extractionDocument.getOcrData();
