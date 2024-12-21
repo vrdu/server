@@ -150,8 +150,8 @@ public class PromptOrchestrator {
                     "Now all the used labels are explained:";
 
             for (Label label : labels) {
-                generatingPrompt += "Label name: " +label.getLabelName() + "\n";
-                generatingPrompt += "Label description: "+ label.getLabelDescription() + "\n";
+                //generatingPrompt += "Label name: " +label.getLabelName() + "\n";
+                //generatingPrompt += "Label description: "+ label.getLabelDescription() + "\n";
             }
             generatingPrompt += "Now are a couple of instruction documents following\n";
             for (Document instructionDocument : instructionDocuments) {
@@ -162,14 +162,14 @@ public class PromptOrchestrator {
                 generatingPrompt += instructionDocument.getOcrData();
                 generatingPrompt += "\n";
                 generatingPrompt += "This would be the solution\n";
-                generatingPrompt += parsedAnnotations;
+                //generatingPrompt += parsedAnnotations;
                 generatingPrompt += "\n";
 
             }
             generatingPrompt += "This would be your document, where you have to extract the information\n";
             generatingPrompt += extractionDocument.getOcrData();
             generatingPrompt += "Please fill in all the None in the following JSON: \n";
-            generatingPrompt += JSONToFill;
+            //generatingPrompt += JSONToFill;
             extractionDocument.setPrompt(generatingPrompt);
             System.out.println("finished prompt:");
             System.out.println(generatingPrompt);
@@ -177,5 +177,6 @@ public class PromptOrchestrator {
             documentRepository.save(extractionDocument);
         }
     }
+
 
 }

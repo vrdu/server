@@ -336,16 +336,27 @@ public class DocumentService {
     }
     private static String removeStarAndSpace(String input) {
         if (input == null) return null;
-        return input.replaceAll("[* ]", "");
+        return input.replaceAll("[*\" ]", "");
+    }
+    private static String removeBackslashQuotes(String input) {
+        System.out.println("input: "+ input);
+        if (input == null) return null;
+        input = input.replaceAll("\\\\", "");
+        System.out.println("input: "+ input);
+        input = input.replace("\"\"", "\"");
+        System.out.println("input: "+ input);
+        input = input.replaceAll("\",\",\"","\",\"");
+        input = input.replace("\",\"}", "\"}");
+        return input;
     }
     public static double calculateF1Score(String groundTruthJson, String extractedJson) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        groundTruthJson = removeStarAndSpace(groundTruthJson);
-        extractedJson = removeStarAndSpace(extractedJson);
-
+        System.out.println("Extracted: " + extractedJson);
+        extractedJson = removeBackslashQuotes(extractedJson);
         System.out.println("Ground Truth: " + groundTruthJson);
         System.out.println("Extracted: " + extractedJson);
+
         // Parse JSON strings into maps
         Map<String, Object> groundTruthMap = objectMapper.readValue(groundTruthJson, Map.class);
         Map<String, Object> extractedMap = objectMapper.readValue(extractedJson, Map.class);
@@ -359,6 +370,14 @@ public class DocumentService {
             Object groundTruthValue = groundTruthMap.get(key);
             Object extractedValue = extractedMap.get(key);
 
+            if(groundTruthMap.get(key) != null){
+                groundTruthValue = removeStarAndSpace(groundTruthMap.get(key).toString());
+            }
+            if(extractedMap.get(key)!= null){
+                extractedValue = removeStarAndSpace(extractedMap.get(key).toString());
+            }
+            System.out.println("groundTruthValue: "+ groundTruthValue);
+            System.out.println("extractedValue: " +extractedValue);
             if (groundTruthValue == null) {
                 continue; // Ignore null values in ground truth
             }
