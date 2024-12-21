@@ -177,9 +177,9 @@ public class DocumentService {
 
         if (!document.isOcrNotPossible()) {
             ITesseract tesseract = new Tesseract();
-            tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");/*LAPTOP*/
+            /*tesseract.setDatapath("C:\\Program Files\\Tesseract-OCR\\tessdata");/*LAPTOP*/
 
-            /*tesseract.setDatapath("E:\\program files\\tessdata");/* PC*/
+            tesseract.setDatapath("E:\\program files\\tessdata");/* PC*/
             tesseract.setLanguage("eng");
             tesseract.setTessVariable("user_defined_dpi", "300");
 

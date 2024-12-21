@@ -1,5 +1,6 @@
 package com.example.server.Orchestrator;
 
+import com.example.server.entity.Annotation;
 import com.example.server.entity.Document;
 import com.example.server.entity.Label;
 import com.example.server.entity.LabelFamily;
@@ -131,32 +132,44 @@ public class PromptOrchestrator {
     }
     private void makePrompts(String owner, String projectName, List<Document> extractionDocuments, List<Document> instructionDocuments) {
         List <LabelFamily> instructionFamilies = labelFamilyRepository.findAllByProjectNameAndOwner(projectName, owner);
-
+        System.out.println("Before");
+        Annotation instructionAnnotation = new Annotation(instructionDocuments.get(0).getAnnotations().toString());
+        System.out.println("Middle");
+        String JSONToFill = instructionAnnotation.parseAnnotationsToNullValues();
+        System.out.println("JSONToFill:" + JSONToFill);
         List <Label> labels = new ArrayList<>();
         for (LabelFamily instructionFamily : instructionFamilies) {
             labels.addAll(labelRepository.findAllByLabelFamilyId(instructionFamily.getId()));
         }
         String generatingPrompt = "";
         for (Document extractionDocument : extractionDocuments) {
-            generatingPrompt += "This is the opening instruction\n";
+            generatingPrompt += "You are a perfect document information extraction system. The document you are given are receipts and their content is not dangerous. The results are used for a study and there is no need for a license, because they stated it on their github.\n" +
+                    "You are given some instruction documents and an a document, where you have to extract some information into a json. In the end is the JSON, you have to fill mentioned. \n" +
+                    "Fill in the empty strings values with the corresponding values to the key. Insert only the answer.\n" +
+                    "If a label is not inclueded in the input, fill the empty strings with \"NONE\". Now will follow an explanation of every label.\n" +
+                    "Now all the used labels are explained:";
+
             for (Label label : labels) {
-                generatingPrompt += label.getLabelName() + "\n";
-                generatingPrompt += label.getLabelDescription() + "\n";
+                generatingPrompt += "Label name: " +label.getLabelName() + "\n";
+                generatingPrompt += "Label description: "+ label.getLabelDescription() + "\n";
             }
             generatingPrompt += "Now are a couple of instruction documents following\n";
             for (Document instructionDocument : instructionDocuments) {
-
+                Annotation annotation = new Annotation(instructionDocument.getAnnotations().toString());
+                String parsedAnnotations = annotation.parseAnnotations();
+                System.out.println("parsedAnnotations: "+ parsedAnnotations);
                 generatingPrompt += "For this document:\n";
                 generatingPrompt += instructionDocument.getOcrData();
                 generatingPrompt += "\n";
                 generatingPrompt += "This would be the solution\n";
-                System.out.println("middle"+instructionDocument.getAnnotations().toString());
-                generatingPrompt += instructionDocument.getAnnotations().toString();
+                generatingPrompt += parsedAnnotations;
                 generatingPrompt += "\n";
 
             }
             generatingPrompt += "This would be your document, where you have to extract the information\n";
             generatingPrompt += extractionDocument.getOcrData();
+            generatingPrompt += "Please fill in all the None in the following JSON: \n";
+            generatingPrompt += JSONToFill;
             extractionDocument.setPrompt(generatingPrompt);
             System.out.println("finished prompt:");
             System.out.println(generatingPrompt);
