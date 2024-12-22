@@ -341,6 +341,7 @@ public class DocumentService {
     private static String removeBackslashQuotes(String input) {
         System.out.println("input: "+ input);
         if (input == null) return null;
+        input = input.replaceAll("\\\\n", "");
         input = input.replaceAll("\\\\", "");
         System.out.println("input: "+ input);
         input = input.replace("\"\"", "\"");

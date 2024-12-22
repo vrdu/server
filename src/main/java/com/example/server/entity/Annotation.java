@@ -52,7 +52,7 @@ public class Annotation {
             for (Map<String, Object> annotation : annotations) {
                 String labelName = (String) annotation.get("labelName");
                 String text = (String) annotation.get("text");
-                output.append(labelName).append(": ").append(text).append(", ");
+                output.append("\"").append(labelName).append("\"").append(": ").append("\"").append(text).append("\"").append(", ");
             }
 
             // Remove the trailing comma and space, and close the JSON object
@@ -116,7 +116,7 @@ public class Annotation {
             StringBuilder output = new StringBuilder("{");
             for (Map<String, Object> annotation : annotations) {
                 String labelName = (String) annotation.get("labelName");
-                output.append(labelName).append(": null, ");
+                output.append("\"").append(labelName).append("\"").append(": null, ");
             }
 
             // Remove the trailing comma and space, and close the JSON object

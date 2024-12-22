@@ -185,9 +185,10 @@ public class LLMOrchestrator {
 
                     System.out.println("Result prompt:" );
                     System.out.println(extraction);
+                    extraction = parseJSON(extraction);
+                   // JSONObject extractionJson = parseInvoiceToJson(extraction);
 
-                    JSONObject extractionJson = parseInvoiceToJson(extraction);
-                    promptDocument.setExtractionResult(extractionJson.toString());
+                    promptDocument.setExtractionResult(extraction);
 
                     promptDocument.setStatus(Document.Status.EXTRACTION_COMPLETE);
                     documentRepository.save(promptDocument);
@@ -208,5 +209,12 @@ public class LLMOrchestrator {
             }
         }
     }
-
+    private static String parseJSON(String input) {
+        System.out.println("input: "+ input);
+        if (input == null) return null;
+        input = input.replaceAll("```json","" );
+        input = input.replaceAll("```","");
+        System.out.println("input: " + input);
+        return input;
+    }
 }

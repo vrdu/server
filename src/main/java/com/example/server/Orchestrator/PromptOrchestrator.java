@@ -162,14 +162,14 @@ public class PromptOrchestrator {
                 generatingPrompt += instructionDocument.getOcrData();
                 generatingPrompt += "\n";
                 generatingPrompt += "This would be the solution\n";
-                //generatingPrompt += parsedAnnotations;
+                generatingPrompt += parsedAnnotations;
                 generatingPrompt += "\n";
 
             }
             generatingPrompt += "This would be your document, where you have to extract the information\n";
             generatingPrompt += extractionDocument.getOcrData();
-            generatingPrompt += "Please fill in all the None in the following JSON: \n";
-            //generatingPrompt += JSONToFill;
+            generatingPrompt += "Please fill in all the None in the following String: \n";
+            generatingPrompt += JSONToFill;
             extractionDocument.setPrompt(generatingPrompt);
             System.out.println("finished prompt:");
             System.out.println(generatingPrompt);
