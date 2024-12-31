@@ -7,8 +7,8 @@ import lombok.Setter;
 @Setter
 public class ProjectGetDTO {
     private String projectName;
-    private int f1;
-    private int anls;
+    private double f1;
+    private double anls;
 
     @Override
     public String toString() {

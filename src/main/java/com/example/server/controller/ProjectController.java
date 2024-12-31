@@ -49,7 +49,6 @@ public class ProjectController {
         System.out.println("Getting projects");
         List<Project> projects = projectService.getProjectsByUsername(username);
 
-        // Convert the list of Project entities to a list of ProjectDTOs (using a DTOMapper or similar)
         List<ProjectGetDTO> projectDTOs = projects.stream()
                 .map(DTOMapper.INSTANCE::convertEntityProjectGetDTO)
                 .collect(Collectors.toList());

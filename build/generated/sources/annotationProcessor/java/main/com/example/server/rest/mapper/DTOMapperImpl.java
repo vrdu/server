@@ -33,7 +33,7 @@ import javax.annotation.processing.Generated;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-22T10:19:57+0100",
+    date = "2024-12-31T09:32:41+0100",
     comments = "version: 1.5.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.1.jar, environment: Java 17.0.6 (Amazon.com Inc.)"
 )
 public class DTOMapperImpl implements DTOMapper {
@@ -103,10 +103,10 @@ public class DTOMapperImpl implements DTOMapper {
 
         projectGetDTO.setProjectName( project.getProjectName() );
         if ( project.getF1() != null ) {
-            projectGetDTO.setF1( project.getF1().intValue() );
+            projectGetDTO.setF1( project.getF1() );
         }
         if ( project.getAnls() != null ) {
-            projectGetDTO.setAnls( project.getAnls().intValue() );
+            projectGetDTO.setAnls( project.getAnls() );
         }
 
         return projectGetDTO;
