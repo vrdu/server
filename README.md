@@ -26,6 +26,6 @@ The application consists of the following components, which are graphically pres
 
 - **Repository:**  
   Repositories are interfaces provided by Spring Boot to abstract database interactions. They support CRUD (Create, Read, Update, Delete) operations, enabling efficient data management. Each database table is associated with a dedicated repository to ensure modular and maintainable interactions with the data layer.
-  ![Application Architecture](architecture.png "Architecture Overview")
+  ![Application Architecture](componentDiagram.png "Architecture Overview")
 
 
